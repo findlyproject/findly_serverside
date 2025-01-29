@@ -7,5 +7,5 @@ router.get("/registration",()=>{
     
 })
 
-
+       
 export {router}

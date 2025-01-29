@@ -8,10 +8,15 @@
     "mongoose": "^8.9.5",
     "nodemon": "^3.1.9"
   },
+  "scripts": {
+    "start": "nodemon index.ts"
+  },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^8.2.3",
-    "@types/mongoose": "^5.11.97"
+    "@types/mongoose": "^5.11.97",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   }
 }

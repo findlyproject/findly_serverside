@@ -16,10 +16,10 @@ const UserSchema = new mongoose.Schema(
     jobLocation:[ { type: String,  }],
     
     education: {
-      qualification: { type: String, required: true },
+      qualification: { type: String, },
       startYear: { type:String , required: true },
       endYear: { type: String, required: true },
-      location: { type: String, required: true },
+      collage: { type: String, required: true },
     },
 
     projects: [

@@ -5,7 +5,7 @@ const router = express.Router()
 
 router
 .post("/registration",RegistrationUser)
-.post("/emailus",EmailUs)
+.post("/emailus", EmailUs)
 
        
 export {router}

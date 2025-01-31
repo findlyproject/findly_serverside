@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+
+
 const UserSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
@@ -46,7 +48,7 @@ const UserSchema = new mongoose.Schema(
     coverLetter: { type: String },
 
     isBlocked: { type: Boolean, default: false },
-
+    role:{type:String,enum:['user',"premium"]},
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true } 

@@ -22,6 +22,46 @@ import { Request, Response } from "express";
 };
 
 
+const getUserRatings = async (req: Request, res: Response) => {
+
+      const { userId } = req.params; 
+
+      if (!userId) {
+          res.status(400).json({ message: "User ID is required." });
+          return;
+      }
+
+      const userRatings = await Rating.find({ userId });
+
+      if (userRatings.length === 0) {
+          res.status(404).json({ message: "No ratings found for this user." });
+          return;
+      }
+
+      res.status(200).json({ userRatings });
+
+};
+
+const deleteRating = async (req: Request, res: Response) => {
+ 
+      const { ratingId } = req.params; 
+
+      if (!ratingId) {
+          res.status(400).json({ message: "Rating ID is required." });
+          return;
+      }
+
+      const deletedRating = await Rating.findByIdAndDelete(ratingId);
+
+      if (!deletedRating) {
+          res.status(404).json({ message: "Rating not found." });
+          return;
+      }
+
+      res.status(200).json({ message: "Rating deleted successfully." });
 
 
-export{createRating}
+    }
+
+
+    export { createRating, getUserRatings, deleteRating };

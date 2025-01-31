@@ -4,6 +4,7 @@ import { connectMongodb } from "./config/dbconections";
 import cors from 'cors';
 import cookieParser from "cookie-parser";
 import { router } from "./Routes/user/registration";
+import { rating } from "./Routes/Rating/rating";
 dotenv.config();
 const app = express();
 
@@ -14,7 +15,9 @@ app.use(cors({
     credentials: true,
   }));
   app.use("/api/user",router)
-   
+  app.use("/api/rating",rating)
+
+
 
 connectMongodb()
 

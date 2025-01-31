@@ -61,10 +61,10 @@ const UserSchema = new Schema<IUser>(
     jobLocation: [{ type: String }],
 
     education: {
-      qualification: { type: String, required: true },
-      startYear: { type: String, required: true },
+      qualification: { type: String, },
+      startYear: { type:String , required: true },
       endYear: { type: String, required: true },
-      location: { type: String, required: true },
+      collage: { type: String, required: true },
     },
 
     projects: [
@@ -95,7 +95,7 @@ const UserSchema = new Schema<IUser>(
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  { timestamps: true } 
 );
 
 const User = mongoose.model<IUser>("User", UserSchema);

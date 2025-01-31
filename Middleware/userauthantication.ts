@@ -7,6 +7,18 @@ declare module "express-serve-static-core" {
         token?: string;
     }
 }
+export interface CustomRequest extends Request {
+	user?: {
+		id: string;
+	} & JwtPayload;
+}
+
+export type JwtDecoded = {
+	id: string;
+	iat: number;
+	exp: number;
+	role: "user" | "admin";
+};
 
 const userAuthMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -28,7 +40,7 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
                 return;
             }
 
-            req.user = user;
+            req.user = user as JwtDecoded;
             next();
         });
     } catch (error) {

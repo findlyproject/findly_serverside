@@ -13,7 +13,7 @@ const emailRegex = /\S+@\S+\.\S+/;
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-     res.status(400).json({ message: "User already exists" });
+     res.status(400).json({ message: "User already exists" });   
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);

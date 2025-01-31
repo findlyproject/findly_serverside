@@ -71,7 +71,7 @@ if(!logeduser){
    return
     }
     if(verfyuser){
-      const token = jwt.sign({ id: logeduser._id, email: logeduser.email, user:logeduser},process.env.USER_SECRETKEY!,{ expiresIn: "1d" }
+      const token = jwt.sign({ id: logeduser._id, email: logeduser.email},process.env.USER_SECRETKEY!,{ expiresIn: "1d" }
       );
       res.cookie("token", token, {
         httpOnly: true,
@@ -79,12 +79,41 @@ if(!logeduser){
         sameSite: "lax",
         maxAge: 24 * 60 * 60 * 1000,
       });
+      const refreshToken = jwt.sign(
+        { id: logeduser._id, email: logeduser.email },
+        process.env.USER_SECRETKEY!,
+        { expiresIn: "1d" }
+      );
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+    
   }
   res.status(200).json({status:true,message:"Login successful",logeduser})
 
 }
 
-export{RegistrationUser,
-  login,
+////////////////////////////// Log out //////////////////////
 
+const logout = async (req:Request,res:Response): Promise<void>=>{
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  res.status(200).json({ status: true, message: "Logout successfully" });
+}
+
+export{
+  RegistrationUser,
+  login,
+  logout
 }

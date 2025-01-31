@@ -1,7 +1,7 @@
 import User from "../../Model/UserSchema";
 import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 
 
 const RegistrationUser=async(req: Request, res: Response): Promise<void>=>{
@@ -112,8 +112,10 @@ const logout = async (req:Request,res:Response): Promise<void>=>{
   res.status(200).json({ status: true, message: "Logout successfully" });
 }
 
+
 export{
   RegistrationUser,
   login,
-  logout
+  logout,
+  demo
 }

@@ -3,44 +3,40 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 
 declare module "express-serve-static-core" {
     interface Request {
-        user?: JwtPayload | string;
+        user?: JwtDecoded;
         token?: string;
     }
 }
-export interface CustomRequest extends Request {
-	user?: {
-		id: string;
-	} & JwtPayload;
+
+export interface JwtDecoded extends JwtPayload {
+    id: string;
+    name: string;
+    email: string;
+    isBlocked: boolean;
 }
 
-export type JwtDecoded = {
-	id: string;
-	iat: number;
-	exp: number;
-	role: "user" | "admin";
-};
 
 const userAuthMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const token: string | undefined = req.cookies?.token;
         if (!token) {
-            res.status(401).json({ message: "Authentication token missing" });
-            return;
+             res.status(401).json({ message: "Authentication token missing" });
+             return
         }
 
         const secretKey = process.env.USER_SECRETKEY;
         if (!secretKey) {
-            res.status(500).json({ message: "Server error: Secret key is missing" });
-            return;
+             res.status(500).json({ message: "Server error: Secret key is missing" });
+             return
         }
 
-        jwt.verify(token, secretKey, (error, user) => {
+       const a = jwt.verify(token, secretKey, (error, user) => {
             if (error) {
-                res.status(401).json({ status: false, message: "Invalid token", response: error });
-                return;
+                 res.status(401).json({ status: false, message: "Invalid token", response: error });
+                 return
             }
 
-            req.user = user as JwtDecoded;
+            req.user = user as JwtDecoded; 
             next();
         });
     } catch (error) {

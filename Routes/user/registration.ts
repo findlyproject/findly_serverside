@@ -1,11 +1,9 @@
 import express from "express";
-
+import { RegistrationUser } from "../../Controller/User/Registration";
 const router = express.Router()
 
-router.get("/registration",()=>{
-    console.log("jkfhdsjf");
-    
-})
+router
+.post("/registration",RegistrationUser)
 
        
 export {router}

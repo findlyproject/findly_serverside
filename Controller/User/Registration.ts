@@ -55,4 +55,36 @@ const emailRegex = /\S+@\S+\.\S+/;
   res.status(200).json({message:'success',user})
 }
 
-export{RegistrationUser}
+////////////////////// Login api ////////////////////
+
+const login = async (req:Request,res:Response): Promise<void>=>{
+  const {email,password} = req.body
+  const logeduser =await User.findOne({email})  
+  console.log("logeduser",logeduser)
+if(!logeduser){
+   res.status(404).json({status:false,message:"email id is wrong"})
+   return
+}
+    const verfyuser = await bcrypt.compare(password, logeduser.password);
+    if(!verfyuser){
+   res.status(404).json({status:false,message:"password is wrong"})
+   return
+    }
+    if(verfyuser){
+      const token = jwt.sign({ id: logeduser._id, email: logeduser.email, user:logeduser},process.env.USER_SECRETKEY!,{ expiresIn: "1d" }
+      );
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+  }
+  res.status(200).json({status:true,message:"Login successful",logeduser})
+
+}
+
+export{RegistrationUser,
+  login,
+
+}

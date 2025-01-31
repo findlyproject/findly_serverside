@@ -56,7 +56,7 @@ const PostSchema = new Schema<IPost>(
           required: true,
         },
         comment: { type: String, required: true },
-        commentedAt: { type: Date, default: Date.now }, // Timestamp for comment
+        commentedAt: { type: Date, default: Date.now }, 
         replies: [
           {
             user: {
@@ -65,7 +65,7 @@ const PostSchema = new Schema<IPost>(
               required: true,
             },
             reply: { type: String, required: true },
-            repliedAt: { type: Date, default: Date.now }, // Timestamp for reply
+            repliedAt: { type: Date, default: Date.now }, 
           },
         ],
       },

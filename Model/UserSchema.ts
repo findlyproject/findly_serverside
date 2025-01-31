@@ -1,20 +1,65 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
-const UserSchema = new mongoose.Schema(
+export interface IUser extends Document {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phoneNumber?: string;
+  dateOfBirth?: Date;
+  location?: string;
+  profileImage?: string;
+  banner?: string;
+  skills?: string[];
+  jobTitle?: string[];
+  jobLocation?: string[];
+
+  education: {
+    qualification: string;
+    startYear: string;
+    endYear: string;
+    location: string;
+  };
+
+  projects?: {
+    title: string;
+    description: string;
+    link?: string;
+  }[];
+
+  followers?: mongoose.Types.ObjectId[];
+  following?: mongoose.Types.ObjectId[];
+
+  about?: string;
+
+  resume?: {
+    fileUrl: string;
+    type: "PDF" | "Video";
+    uploadedAt?: Date;
+  }[];
+
+  coverLetter?: string;
+  isBlocked?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+
+const UserSchema = new Schema<IUser>(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    email: { type: String, required: true, unique: true }, 
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    phoneNumber: { type: String, }, 
-    dateOfBirth: { type: Date,  },
-    location: { type: String, },
-    profileImage: { type: String,  },
-    banner: { type: String,  },
-    skills: [{ type: String, }],
-    jobTitle:[{ type: String,  }] ,
-    jobLocation:[ { type: String,  }],
-    
+    phoneNumber: { type: String },
+    dateOfBirth: { type: Date },
+    location: { type: String },
+    profileImage: { type: String },
+    banner: { type: String },
+    skills: [{ type: String }],
+    jobTitle: [{ type: String }],
+    jobLocation: [{ type: String }],
+
     education: {
       qualification: { type: String, },
       startYear: { type:String , required: true },
@@ -30,10 +75,10 @@ const UserSchema = new mongoose.Schema(
       },
     ],
 
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], 
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], 
+    followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
 
-    about: { type: String, },
+    about: { type: String },
 
     resume: [
       {
@@ -48,9 +93,10 @@ const UserSchema = new mongoose.Schema(
     isBlocked: { type: Boolean, default: false },
 
     createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
   },
   { timestamps: true } 
 );
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.model<IUser>("User", UserSchema);
 export default User;

@@ -117,5 +117,5 @@ export{
   RegistrationUser,
   login,
   logout,
-  demo
+  
 }

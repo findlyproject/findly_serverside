@@ -71,7 +71,7 @@ if(!logeduser){
    return
     }
     if(verfyuser){
-      const token = jwt.sign({ id: logeduser._id, email: logeduser.email},process.env.USER_SECRETKEY!,{ expiresIn: "1d" }
+      const token = jwt.sign({ id: logeduser._id, email: logeduser.email,isBlocked:logeduser.isBlocked},process.env.USER_SECRETKEY!,{ expiresIn: "1d" }
       );
       res.cookie("token", token, {
         httpOnly: true,
@@ -99,16 +99,20 @@ if(!logeduser){
 ////////////////////////////// Log out //////////////////////
 
 const logout = async (req:Request,res:Response): Promise<void>=>{
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-  });
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-  });
+  // res.clearCookie("token", {
+  //   httpOnly: true,
+  //   secure: false,
+  //   sameSite: "lax",
+  // });
+  // res.clearCookie("refreshToken", {
+  //   httpOnly: true,
+  //   secure: false,
+  //   sameSite: "lax",
+  // });
+
+  const user = req.user
+  console.log("user",user)
+  
   res.status(200).json({ status: true, message: "Logout successfully" });
 }
 

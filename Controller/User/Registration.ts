@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 
 
 const RegistrationUser=async(req: Request, res: Response): Promise<void>=>{
-const{email,password,firstName,lastName,education,jobTitle,jobLocation}=req.body
+const{email,password,firstName,lastName,education,jobTitles,jobLocations }=req.body
 const emailRegex = /\S+@\S+\.\S+/;
   if (!emailRegex.test(email)) {
      res.status(400).json({ message: "Invalid email format" });
@@ -13,11 +13,11 @@ const emailRegex = /\S+@\S+\.\S+/;
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-     res.status(400).json({ message: "User already exists" });
+     res.status(400).json({ message: "User already exists" });   
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
- const user= new User({email,password:hashedPassword,firstName,lastName,education,jobTitle,jobLocation})
+ const user= new User({email,password:hashedPassword,firstName,lastName,education,jobTitle:jobTitles,jobLocation:jobLocations })
  await user.save();
 
  const token = jwt.sign(

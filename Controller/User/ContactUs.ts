@@ -1,4 +1,3 @@
-
 //CONTACT US api
 import nodemailer from "nodemailer";
 import { Request, Response } from "express";

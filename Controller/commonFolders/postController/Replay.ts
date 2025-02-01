@@ -8,9 +8,13 @@ import { Post } from "../../../Model/PostSchema";
 
 
 const replyToComment = async (req: Request, res: Response): Promise<void> => {
+    if(!req.user){
+        res.status(404).json({success:false,message:"Unauthorized"})
+        return
+    }
 
-
-    const { postId, commentId, userId, replyText } = req.body;
+const userId =req.user?.id
+    const { postId, commentId,  replyText } = req.body;
 
 
     if (!postId || !commentId || !userId || !replyText) {
@@ -39,7 +43,7 @@ const replyToComment = async (req: Request, res: Response): Promise<void> => {
 
 
     const reply = new Reply({
-        user: new mongoose.Types.ObjectId(userId),
+        user: userId,
         reply: replyText,
         repliedAt: new Date(),
     });
@@ -125,8 +129,46 @@ const editReply = async (req: Request, res: Response): Promise<void> => {
     
 };
 
+const deleteReplay = async (req: Request, res: Response) => {
+    if(!req.user){
+         res.status(404).json({success:false,message:"Unauthorized"})
+         return 
+    }
+   
+      const { commentId, replayId } = req.body;
+  
+      if (!commentId) {
+         res.status(404).json({ success: false, message: "Comment ID not found" });
+         return
+      }
+      if (!replayId) {
+         res.status(404).json({ success: false, message: "Reply ID not found" });
+         return
+      }
+  
+      const comment = await Comment.findById(commentId);
+      if (!comment) {
+         res.status(404).json({ success: false, message: "Comment not found" });
+         return
+      }
+  
+
+      if (!comment.replies.includes(replayId)) {
+         res.status(404).json({ success: false, message: "Reply ID not found in replies" });
+         return
+      }
+  
+      
+      await Comment.findByIdAndUpdate(commentId, { $pull: { replies: replayId } });
+  
+   
+      await Reply.findByIdAndDelete(replayId);
+  
+      res.status(200).json({ success: true, message: "Reply deleted successfully" });
+   
+  };
+  
 
 
 
-
-export { replyToComment,getRepliesForComment,editReply };
+export { replyToComment,getRepliesForComment,editReply,deleteReplay };

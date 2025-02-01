@@ -42,6 +42,7 @@ export interface IUser extends Document {
   isBlocked?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  _id:string;
 }
 
 

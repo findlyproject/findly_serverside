@@ -1,5 +1,5 @@
 import express from "express";
-import { googleauthlogin, login, logout, RegistrationUser } from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser } from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
 import { errorCatch } from "../../Middleware/tryCatch";
 import { userAuthMiddleware } from "../../Middleware/userauthantication";
@@ -11,7 +11,8 @@ router
 .post("/googleauthlogin",errorCatch(googleauthlogin))
 
 .post("/logout",userAuthMiddleware,errorCatch(logout))
-
 .post("/emailus",userAuthMiddleware,errorCatch(EmailUs))
+
+.get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
        
 export {router}

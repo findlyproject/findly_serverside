@@ -1,7 +1,8 @@
 import User from "../../Model/UserSchema";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";import { string } from "zod";
+
 
 const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   const {
@@ -189,4 +190,36 @@ const googleauthlogin = async (req: Request, res: Response) => {
   }
 };
 
-export { RegistrationUser, login, logout, googleauthlogin };
+
+
+const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
+
+  const userId = req.user?.id
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized: No user ID found" });
+    return;
+  }
+
+  console.log("User ID:", userId);
+
+  const currentUserDetails = await User.findById(userId).select("-password");
+
+  if (!currentUserDetails) {
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
+
+  res.status(200).json({success:true,currentUserDetails});
+
+}
+
+
+
+
+export{
+  RegistrationUser,
+  login,
+  logout,
+  findCurrentUserDetails,
+  googleauthlogin
+}

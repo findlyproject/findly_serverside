@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { router } from "./Routes/user/registration";
 import { rating } from "./Routes/Rating/rating";
 import postRouter from "./Routes/PostRoute/post";
+import { paymentRouter } from "./Routes/PaymentRoute/PaymentRoutes";
 dotenv.config();
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(cors({
   app.use("/api/user",router)
   app.use("/api/rating",rating)
   app.use("/api/post",postRouter)
+  app.use("/api/payment",paymentRouter)
 
 
 

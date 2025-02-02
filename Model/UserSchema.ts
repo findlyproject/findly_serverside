@@ -42,6 +42,7 @@ export interface IUser extends Document {
   isBlocked?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  role?:"user"|"premium"
   _id:string;
 }
 
@@ -75,6 +76,11 @@ const UserSchema = new Schema<IUser>(
         link: { type: String },
       },
     ],
+    role: {
+      type: String,
+      enum: ["user","premium"],
+      default: "user",
+    },
 
     followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: Schema.Types.ObjectId, ref: "User" }],

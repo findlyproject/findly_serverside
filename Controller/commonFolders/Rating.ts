@@ -4,10 +4,11 @@ import {  Request, Response } from "express";
 
  const createRating = async (req:Request,res:Response): Promise<void>=>{
 
-  const { review, starsRating, userId } = req.body;
+  const userId=req.user?.id
+  const { review, starsRating } = req.body;
 
   if (!review || !starsRating || !userId) {
-     res.status(400).json({ message: "All fields are required." });
+     res.status(400).json({success:false, message: "All fields are required." });
      return 
   }
 
@@ -18,32 +19,50 @@ import {  Request, Response } from "express";
   });
 
   await newRating.save();
-  res.status(201).json({ message: "Rating created successfully", newRating });
+  res.status(201).json({ success:true ,message: "Rating created successfully", newRating });
 
 };
 
 
 const getUserRatings = async (req: Request, res: Response) => {
 
-      const { userId } = req.params; 
+    
 
-      if (!userId) {
-          res.status(400).json({ message: "User ID is required." });
-          return;
-      }
-
+      const userId=req.user?.id
+    if(!userId){
+      res.status(404).json({success:false,message:"Unauthorized"})
+    }
+  console.log("Fasfd")
       const userRatings = await Rating.find({ userId });
 
       if (userRatings.length === 0) {
-          res.status(404).json({ message: "No ratings found for this user." });
+          res.status(404).json({success:false, message: "No ratings found for this user." });
           return;
       }
 
-      res.status(200).json({ userRatings });
+      res.status(200).json({ success:true ,userRatings });
 
 };
 
+
+     const getAllRatings=async(req:Request,res:Response)=>{
+
+      const allratings=await Rating.find()
+      console.log("allratings",allratings)
+      if(!allratings){
+        res.status(404).json({success:false,message:" No review about findly"})
+        return
+      }
+      res.status(200).json({success:true,message:"found it ",allratings})
+     }
+
 const deleteRating = async (req: Request, res: Response) => {
+
+  const userId=req.user?.id
+if(!userId){
+  res.status(404).json({success:false,message:"Unauthorized"})
+  return
+}
  
       const { ratingId } = req.params; 
 
@@ -65,4 +84,4 @@ const deleteRating = async (req: Request, res: Response) => {
     }
 
 
-    export { createRating, getUserRatings, deleteRating };
+    export { createRating, getUserRatings, deleteRating,getAllRatings };

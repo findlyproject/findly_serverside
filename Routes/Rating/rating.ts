@@ -1,13 +1,16 @@
 import express from "express";
-import  {createRating, deleteRating, getUserRatings}  from "../../Controller/commonFolders/Rating";
+import  {createRating, deleteRating, getAllRatings, getUserRatings}  from "../../Controller/commonFolders/Rating";
 import { errorCatch } from "../../Middleware/tryCatch";
+import { userAuthMiddleware } from "../../Middleware/userauthantication";
 const rating = express.Router()
 
 rating
 
-.post("/user",errorCatch(createRating))
-.get("/user/:userId",errorCatch(getUserRatings))
-.delete("/user/:ratingId",errorCatch(deleteRating))
+.post("/createreview",userAuthMiddleware,errorCatch(createRating))
+.delete("/:ratingId",userAuthMiddleware,errorCatch(deleteRating))
+.get("/findallreviews",errorCatch(getAllRatings))
+.get("/:userId",userAuthMiddleware,errorCatch(getUserRatings))
+
 
 
        

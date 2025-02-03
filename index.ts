@@ -21,6 +21,7 @@ app.use(cors({
   app.use("/api/rating",rating)
   app.use("/api/post",postRouter)
   app.use("/api/payment",paymentRouter)
+  app.use("/api/user",Searchrouter)
 
 
 

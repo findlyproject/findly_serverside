@@ -3,7 +3,7 @@ import { UserSearch } from '../../Controller/commonFolders/searchController/user
 import { errorCatch } from '../../Middleware/tryCatch'
 const Searchrouter=express.Router()
 Searchrouter
-.get(`/usersearch`,errorCatch(UserSearch))
+.get(`/search`,errorCatch(UserSearch))
 
 
 export{Searchrouter}

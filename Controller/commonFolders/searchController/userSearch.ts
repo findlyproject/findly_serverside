@@ -4,6 +4,7 @@ import User from "../../../Model/UserSchema";
 
 const UserSearch=async(req:Request, res:Response):Promise<void> => {
 
+console.log("hhhhhhhhhh");
 
     const { firstName } = req.query; 
 

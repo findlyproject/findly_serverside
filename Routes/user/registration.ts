@@ -3,6 +3,7 @@ import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUse
 import { EmailUs } from "../../Controller/User/ContactUs";
 import { errorCatch } from "../../Middleware/tryCatch";
 import { userAuthMiddleware } from "../../Middleware/userauthantication";
+import {upload} from '../../Middleware/upload'
 const router = express.Router()
 
 router
@@ -14,5 +15,5 @@ router
 .post("/emailus",userAuthMiddleware,errorCatch(EmailUs))
 
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
-       
+
 export {router}

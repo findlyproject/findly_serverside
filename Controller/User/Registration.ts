@@ -2,8 +2,8 @@ import User from "../../Model/UserSchema";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";import { string } from "zod";
-
-
+import mongoose from "mongoose";
+import multer, { Multer } from "multer";
 const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   const {
     email,
@@ -213,6 +213,51 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
 
 }
 
+// Function to get People You Might Know based on followers and following
+//  const getPeopleYouMightKnow = async (req: Request, res: Response): Promise<void> => {
+  
+//     const userId = req.user?.id;  // Assuming authentication middleware attaches user ID
+
+//     // Validate that the user is authenticated
+//     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+//        res.status(400).json({ error: "Valid User ID is required" });
+//        return
+//     }
+
+//     // Fetch the authenticated user's details including their followers and following
+//     const user = await User.findById(userId).populate("followers following");
+
+//     if (!user) {
+//        res.status(404).json({ error: "User not found" });
+//        return
+//     }
+
+//     // Get the list of potential users who are NOT in the user's following or followers list
+//     const peopleYouMightKnow = await User.find({
+//       _id: { $ne: userId }, // Exclude the current user
+//       _id: { $nin: user.following?.map((follower) => follower._id) }, // Exclude users already followed
+//       _id: { $nin: user.followers?.map((follower) => follower._id) }, // Exclude users who are already followers
+//     }).populate("followers following");  // Optionally populate followers and following to find mutual connections
+
+//     // Filter out users with mutual followers or following
+//     const suggestedPeople = peopleYouMightKnow.filter((person) => {
+//       // Find mutual followers
+//       const mutualFollowers = user.followers?.filter((follower) =>
+//         person.followers?.includes(follower._id)
+//       );
+//       // Find mutual followings
+//       const mutualFollowing = user.following?.filter((following) =>
+//         person.following?.includes(following._id)
+//       );
+
+//       // Suggest people with at least 1 mutual follower or mutual following
+//        mutualFollowers.length > 0 || mutualFollowing.length > 0;
+//     });
+
+//      res.status(200).json({ suggestedPeople });
+//      return
+  
+// };
 
 
 
@@ -221,5 +266,6 @@ export{
   login,
   logout,
   findCurrentUserDetails,
-  googleauthlogin
+  googleauthlogin,
+  
 }

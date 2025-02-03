@@ -5,6 +5,7 @@ import {errorCatch} from '../../Middleware/tryCatch'
 
 import { userAuthMiddleware } from "../../Middleware/userauthantication";
 import { deleteReplay, editReply, getRepliesForComment, replyToComment } from "../../Controller/commonFolders/postController/Replay";
+import { LikeOrDislike } from "../../Controller/commonFolders/postController/Post";
 const postRouter = express.Router();
 
 
@@ -14,6 +15,7 @@ postRouter
 .get("/user/findreply/:commentId",userAuthMiddleware,errorCatch(getRepliesForComment))
 .get("/user/editreplay",userAuthMiddleware,errorCatch(editReply))
 .delete("/user/deletereplay",userAuthMiddleware,errorCatch(deleteReplay))
+.post("/user/likepost/:postid",userAuthMiddleware,errorCatch(LikeOrDislike))
 
 export default postRouter;
  

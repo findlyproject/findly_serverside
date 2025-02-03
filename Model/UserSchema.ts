@@ -47,13 +47,16 @@ const UserSchema = new Schema<IUser>(
 
     about: { type: String },
 
-    resume: [
-      {
-        fileUrl: { type: String },
-        type: { type: String, enum: ["PDF", "Video"] },
-        uploadedAt: { type: Date, default: Date.now },
-      },
-    ],
+    resumePDF: {
+      fileUrl: { type: String },
+      fileName: { type: String },
+      uploadedAt: { type: Date, default: Date.now },
+    },
+    resumeVideo: {
+      fileUrl: { type: String },
+      fileName: { type: String },
+      uploadedAt: { type: Date, default: Date.now },
+    },
 
     coverLetter: { type: String },
     isBlocked: { type: Boolean, default: false },

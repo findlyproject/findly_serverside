@@ -28,5 +28,5 @@ const ReplySchema = new Schema<IReply> (
   );
   
   export const Reply = mongoose.model("Reply", ReplySchema);
-  export const Comment = mongoose.model("Comment", CommentSchema);
+  export const Comment = mongoose.model("Comment", CommentSchema); 
   

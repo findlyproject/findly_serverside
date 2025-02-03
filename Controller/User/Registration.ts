@@ -482,21 +482,20 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
 
   // Check and handle file uploads for profile image and cover image
   if (req.files && typeof req.files === "object") {
-    // Type assertion to assure TypeScript that `req.files` is an object
+   
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-    // Handle profile image upload
+
     if (files["profileImage"] && Array.isArray(files["profileImage"])) {
       updateData.profileImage = files["profileImage"][0].path; 
     }
 
-    // Handle cover image (banner) upload
+ 
     if (files["banner"] && Array.isArray(files["banner"])) {
       updateData.banner = files["banner"][0].path; 
     }
   }
 
-  // Update the user profile in the database
   const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
 
   if (!updatedUser) {
@@ -504,8 +503,74 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
     return;
   }
 
-  res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
+  res.status(200).json({success:false, message: "Profile updated successfully", user: updatedUser });
 };
+
+
+
+export const uploadResume = async (req: Request, res: Response):Promise<void> => {
+
+ 
+    const files = req.files as { resume: Express.Multer.File[] }; 
+    const file = files?.resume ? files.resume[0] : null; 
+    console.log("files",files)
+
+    if (!file) {
+       res.status(400).json({ success:false,message: "No file uploaded" });
+       return
+    }
+
+    const fileUrl = file.path; 
+    const fileName = file.originalname;
+    const fileType = file.mimetype.startsWith("video") ? "Video" : "PDF";
+
+    
+    const userId = req.user?.id; 
+    const user = await User.findById(userId);
+
+    if (!user) {
+       res.status(404).json({success:false, message: "User not found" });
+       return
+    }
+
+
+    if (!user.resumePDF) {
+      user.resumePDF = {
+        fileUrl: "",
+        fileName: "",
+        uploadedAt: new Date(),
+      };
+    }
+
+    if (!user.resumeVideo) {
+      user.resumeVideo = {
+        fileUrl: "",
+        fileName: "",
+        uploadedAt: new Date(),
+      };
+    }
+
+   
+    if (fileType === "PDF") {
+      user.resumePDF = {
+        fileUrl,
+        fileName,
+        uploadedAt: new Date(),
+      };
+    } else if (fileType === "Video") {
+      user.resumeVideo = {
+        fileUrl,
+        fileName,
+        uploadedAt: new Date(),
+      };
+    }
+
+    await user.save(); 
+
+     res.status(200).json({ message: "Resume uploaded successfully", user });
+
+};
+
 
 
 export{

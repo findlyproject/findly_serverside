@@ -88,6 +88,17 @@ export interface IUser extends Document {
     endYear: string;
     location: string;
   };
+  resumePDF?: {
+    fileUrl: string;
+    fileName: string;
+    uploadedAt?: Date;
+  };
+
+  resumeVideo?: {
+    fileUrl: string;
+    fileName: string;
+    uploadedAt?: Date;
+  };
 
   projects?: {
     title: string;

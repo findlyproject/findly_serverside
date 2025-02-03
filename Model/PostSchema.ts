@@ -12,6 +12,7 @@ const PostSchema = new Schema <IPost>(
     likedBy: [{ type: Schema.Types.ObjectId, ref: "Users" }],
     reports: [{ type: Schema.Types.ObjectId, ref: "Report" }], 
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+    
   },
   { timestamps: true }
 );

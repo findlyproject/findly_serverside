@@ -25,7 +25,8 @@ export interface IReport extends Document {
 export interface IPost extends Document {
     description?: string;
     owner: Types.ObjectId;
-    images?: string;
+    images?: string[];  
+  video?: string; 
     lists: Types.ObjectId[];
     likedBy: Types.ObjectId[];
     reports: IReport[]; 

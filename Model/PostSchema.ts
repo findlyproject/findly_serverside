@@ -1,77 +1,17 @@
-import mongoose, { Document, Schema, Types } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose"
+import {  } from "module";
+import { IPost } from "../types/allTypes";
 
-interface IPost extends Document {
-  description?: string;
-  owner: Types.ObjectId;
-  images?: string;
-  lists: Types.ObjectId[];
-  likedBy: Types.ObjectId[];
-  reports: {
-    reportedBy: Types.ObjectId;
-    reason: string;
-    reportedAt: Date;
-  }[];
-  comments: {
-    user: Types.ObjectId;
-    comment: string;
-    commentedAt: Date; 
-    replies: {
-      user: Types.ObjectId;
-      reply: string;
-      repliedAt: Date;
-    }[];
-  }[];
-}
-
-const PostSchema = new Schema<IPost>(
+const PostSchema = new Schema <IPost>(
   {
     description: { type: String, maxlength: 500 },
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: "Users",
-      required: true,
-    },
-    likedBy: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Users",
-      },
-    ],
-    reports: [
-      {
-        reportedBy: {
-          type: Schema.Types.ObjectId,
-          ref: "Users",
-          required: true,
-        },
-        reason: { type: String, required: true },
-        reportedAt: { type: Date, default: Date.now },
-      },
-    ],
-    comments: [
-      {
-        user: {
-          type: Schema.Types.ObjectId,
-          ref: "Users",
-          required: true,
-        },
-        comment: { type: String, required: true },
-        commentedAt: { type: Date, default: Date.now }, // Timestamp for comment
-        replies: [
-          {
-            user: {
-              type: Schema.Types.ObjectId,
-              ref: "Users",
-              required: true,
-            },
-            reply: { type: String, required: true },
-            repliedAt: { type: Date, default: Date.now }, 
-          },
-        ],
-      },
-    ],
+    owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    likedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    reports: [{ type: Schema.Types.ObjectId, ref: "Report" }], 
+    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   },
   { timestamps: true }
 );
 
-export const Post = mongoose.model<IPost>("Post", PostSchema);
+export const Post = mongoose.model("Post", PostSchema);
+

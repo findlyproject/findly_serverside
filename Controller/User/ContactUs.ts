@@ -8,7 +8,7 @@ const EmailUs = async (req: Request, res: Response): Promise<void> => {
     const { email, message } = req.body;
     if (!email || !message) {
       res.status(400).json({ message: "Email and message are required." });
-      return;
+      return;   
     }
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email)) {

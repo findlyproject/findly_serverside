@@ -51,7 +51,7 @@ export interface IPost extends Document {
     startDate?:Date,
     endDate?:Date,
     sessionId?:string,
-    type: "UserSubscription" | "CompanySubscription"; 
+    type: "UserSubscription" | "CompanySubscription",
     paymentStatus:"pending"|"completed"
 
   }
@@ -63,6 +63,8 @@ export interface IPost extends Document {
     email: string;
     contact: number;
     employees: string; 
-    role?:"user"|"premium"
+    role?:"user"|"premium",
+    subscriptionEndDate: Date | null,
+      subscriptionStartDate: Date | null,
 }
   

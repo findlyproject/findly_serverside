@@ -42,7 +42,9 @@ export interface IUser extends Document {
   isBlocked?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
-  role?:"user"|"premium"
+  role?:"user"|"premium",
+  subscriptionEndDate: Date | null,
+  subscriptionStartDate: Date | null,
   _id:string;
 }
 
@@ -81,6 +83,11 @@ const UserSchema = new Schema<IUser>(
       enum: ["user","premium"],
       default: "user",
     },
+
+
+    subscriptionEndDate:{ type: Date, default: null},
+    subscriptionStartDate:{ type: Date, default: null },
+   
 
     followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: Schema.Types.ObjectId, ref: "User" }],

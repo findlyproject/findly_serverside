@@ -122,6 +122,25 @@ const login = async (req: Request, res: Response): Promise<void> => {
 ////////////////////////////// Log out //////////////////////
 
 const logout = async (req: Request, res: Response): Promise<void> => {
+
+
+  const userId = req.user?.id;
+
+  if (userId) {
+    const user = await User.findById(userId);
+
+    if (user && user.role === "premium" && user.subscriptionEndDate) {
+      const currentDate = new Date();
+
+      if (user.subscriptionEndDate < currentDate) {
+        user.role = "user"; 
+        user.subscriptionStartDate = null;
+        user.subscriptionEndDate = null;
+        await user.save();
+      }
+    }
+  }
+
   res.clearCookie("token", {
     httpOnly: true,
     secure: false,
@@ -132,6 +151,14 @@ const logout = async (req: Request, res: Response): Promise<void> => {
     secure: false,
     sameSite: "lax",
   });
+
+  res.clearCookie("subscriptionToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  
+  
 
   res.status(200).json({ status: true, message: "Logout successfully" });
 };

@@ -15,6 +15,10 @@ const CompanySchema = new Schema<ICompany>({
         enum: ["company","premium"],
         default: "company",
       },
+      
+    subscriptionEndDate:{ type: Date, default: null},
+    subscriptionStartDate:{ type: Date, default: null },
+      
 }, { timestamps: true });
 
 export const Company = mongoose.model("Company", CompanySchema);

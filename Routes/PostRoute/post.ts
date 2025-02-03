@@ -1,5 +1,5 @@
 import express from "express";
-import {getpostbyid,getPostsByOwner } from "../../Controller/commonFolders/postController/Post";
+import {getpostbyid,getPostsByOwner, ReportPost } from "../../Controller/commonFolders/postController/Post";
 import { upload } from "../../Middleware/upload";
 import {errorCatch} from '../../Middleware/tryCatch'
 // import { replyToPost } from "../../Controller/commonFolders/postController/Replay";
@@ -7,6 +7,7 @@ import { getCommentById,addCommentToPost,editComment,deleteComment} from "../../
 
 import { userAuthMiddleware } from "../../Middleware/userauthantication";
 import { deleteReplay, editReply, getRepliesForComment, replyToComment } from "../../Controller/commonFolders/postController/Replay";
+import { LikeOrDislike } from "../../Controller/commonFolders/postController/Post";
 const postRouter = express.Router();
 
 
@@ -26,6 +27,7 @@ postRouter
 .get("/user/findreply/:commentId",userAuthMiddleware,errorCatch(getRepliesForComment))
 .get("/user/editreplay",userAuthMiddleware,errorCatch(editReply))
 .delete("/user/deletereplay",userAuthMiddleware,errorCatch(deleteReplay))
-
+.post("/user/likepost/:postid",userAuthMiddleware,errorCatch(LikeOrDislike))
+.post("/user/reportpost",userAuthMiddleware,errorCatch(ReportPost))
 export default postRouter;
  

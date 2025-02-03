@@ -4,7 +4,7 @@ import { IReport } from "../types/allTypes";
 
 const ReportSchema = new Schema<IReport> (
     {
-      reportedBy: { type: Schema.Types.ObjectId, ref: "Users", required: true },
+      reportedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
       reason: { type: String, required: true },
       reportedAt: { type: Date, default: Date.now },
     },

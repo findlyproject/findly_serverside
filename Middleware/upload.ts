@@ -34,6 +34,11 @@ const storage = new CloudinaryStorage({
         resource_type: "image",
         allowed_formats: ["png", "jpg", "jpeg"],
       },
+      media: {
+        folder: "posts/media", // For post media (images/videos)
+        resource_type: "auto", // Cloudinary will automatically determine if it's an image or video
+        allowed_formats: ["jpg", "jpeg", "png", "mp4", "mov"], // Supported image and video formats
+      },
     };
 
     if (!uploadConfig[file.fieldname]) {
@@ -44,7 +49,6 @@ const storage = new CloudinaryStorage({
   },
 });
 
-// ✅ Fix: Create `multerInstance` before calling `.fields()`
 const multerInstance: Multer = multer({ storage });
 
 export const upload = multerInstance;

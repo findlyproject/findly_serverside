@@ -1,7 +1,10 @@
 import mongoose from "mongoose"
 
 
-const ratingSchema = new mongoose.Schema(
+import { IRating } from "../types/allTypes";
+
+
+const ratingSchema = new mongoose.Schema <IRating>(
   {
     review: {
       type: String,

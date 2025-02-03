@@ -86,6 +86,16 @@ const login = async (req: Request, res: Response): Promise<void> => {
     res.status(404).json({ status: false, message: "password is wrong" });
     return;
   }
+  const currentDate = new Date();
+  if (logeduser.role === "premium" && logeduser.subscriptionEndDate) {
+    if (logeduser.subscriptionEndDate < currentDate) {
+      
+      logeduser.role = "user";
+      logeduser.subscriptionStartDate = null;
+      logeduser.subscriptionEndDate = null;
+      await logeduser.save();
+    }
+  }
   if (verfyuser) {
     const token = jwt.sign(
       {
@@ -114,6 +124,68 @@ const login = async (req: Request, res: Response): Promise<void> => {
       maxAge: 24 * 60 * 60 * 1000,
     });
   }
+
+
+
+  if (logeduser.role === "premium" && logeduser.subscriptionEndDate) {
+
+    const subscriptionEndDate = logeduser.subscriptionEndDate
+      ? new Date(logeduser.subscriptionEndDate)
+      : null;
+  
+    console.log("Subscription End Date:", subscriptionEndDate);
+    
+    if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
+      const currentDate = new Date();
+      console.log("Current Date:", currentDate);
+  
+     
+      const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
+  
+      const normalizedEndDate = startOfDay(subscriptionEndDate);
+      const normalizedCurrentDate = startOfDay(currentDate);
+  
+      const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
+      console.log("Time Difference:", differenceInTime);
+  
+      const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
+  
+      console.log("Remaining Days:", remainingValidityDays);
+
+
+      if (remainingValidityDays > 0) {
+        const payload = {
+            userId: logeduser._id,
+            email: logeduser.email,
+            role: logeduser.role,
+            remainingValidityDays,
+        };
+
+        const secretKey = process.env.USER_SECRETKEY!;
+
+        const subscriptionToken = jwt.sign(payload, secretKey, {
+            expiresIn: `${remainingValidityDays}d`,
+        });
+
+        res.cookie('subscriptionToken', subscriptionToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/', 
+            maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
+          });
+    } else {
+         res.status(403).json({
+            success: false,
+            message: "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+        });
+        return
+    }
+    } else {
+      console.error("Invalid subscription end date");
+    }
+  }
+  
   res
     .status(200)
     .json({ status: true, message: "Login successful", logeduser });
@@ -122,6 +194,25 @@ const login = async (req: Request, res: Response): Promise<void> => {
 ////////////////////////////// Log out //////////////////////
 
 const logout = async (req: Request, res: Response): Promise<void> => {
+
+
+  const userId = req.user?.id;
+
+  if (userId) {
+    const user = await User.findById(userId);
+
+    if (user && user.role === "premium" && user.subscriptionEndDate) {
+      const currentDate = new Date();
+
+      if (user.subscriptionEndDate < currentDate) {
+        user.role = "user"; 
+        user.subscriptionStartDate = null;
+        user.subscriptionEndDate = null;
+        await user.save();
+      }
+    }
+  }
+
   res.clearCookie("token", {
     httpOnly: true,
     secure: false,
@@ -132,6 +223,14 @@ const logout = async (req: Request, res: Response): Promise<void> => {
     secure: false,
     sameSite: "lax",
   });
+
+  res.clearCookie("subscriptionToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  
+  
 
   res.status(200).json({ status: true, message: "Logout successfully" });
 };
@@ -157,6 +256,79 @@ const googleauthlogin = async (req: Request, res: Response) => {
       process.env.USER_SECRETKEY!,
       { expiresIn: "1d" }
     );
+
+
+    const currentDate = new Date();
+    if (finduser.role === "premium" && finduser.subscriptionEndDate) {
+      if (finduser.subscriptionEndDate < currentDate) {
+        
+        finduser.role = "user";
+        finduser.subscriptionStartDate = null;
+        finduser.subscriptionEndDate = null;
+        await finduser.save();
+      }
+    }
+
+
+
+    if (finduser.role === "premium" && finduser.subscriptionEndDate) {
+
+    const subscriptionEndDate = finduser.subscriptionEndDate
+      ? new Date(finduser.subscriptionEndDate)
+      : null;
+  
+    console.log("Subscription End Date:", subscriptionEndDate);
+    
+    if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
+      const currentDate = new Date();
+      console.log("Current Date:", currentDate);
+  
+     
+      const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
+  
+      const normalizedEndDate = startOfDay(subscriptionEndDate);
+      const normalizedCurrentDate = startOfDay(currentDate);
+  
+      const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
+      console.log("Time Difference:", differenceInTime);
+  
+      const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
+  
+      console.log("Remaining Days:", remainingValidityDays);
+
+
+      if (remainingValidityDays > 0) {
+        const payload = {
+            userId: finduser._id,
+            email: finduser.email,
+            role: finduser.role,
+            remainingValidityDays,
+        };
+
+        const secretKey = process.env.USER_SECRETKEY!;
+
+        const subscriptionToken = jwt.sign(payload, secretKey, {
+            expiresIn: `${remainingValidityDays}d`,
+        });
+
+        res.cookie('subscriptionToken', subscriptionToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/', 
+            maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
+          });
+    } else {
+         res.status(403).json({
+            success: false,
+            message: "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+        });
+        return
+    }
+    } else {
+      console.error("Invalid subscription end date");
+    }
+  }
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,

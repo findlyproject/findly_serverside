@@ -1,5 +1,5 @@
 
-import mongoose, { Document, Schema, Types } from "mongoose";
+import mongoose, { Schema, } from "mongoose";
 import { IReport } from "../types/allTypes";
 
 const ReportSchema = new Schema<IReport> (

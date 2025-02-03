@@ -1,47 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { IUser } from "../types/allTypes";
 
-export interface IUser extends Document {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  phoneNumber?: string;
-  dateOfBirth?: Date;
-  location?: string;
-  profileImage?: string;
-  banner?: string;
-  skills?: string[];
-  jobTitle?: string[];
-  jobLocation?: string[];
-
-  education: {
-    qualification: string;
-    startYear: string;
-    endYear: string;
-    location: string;
-  };
-
-  projects?: {
-    title: string;
-    description: string;
-    link?: string;
-  }[];
-
-  followers?: mongoose.Types.ObjectId[];
-  following?: mongoose.Types.ObjectId[];
-
-  about?: string;
-
-  resume?: {
-    fileUrl: string;
-    type: "PDF" | "Video";
-    uploadedAt?: Date;
-  }[];
-
-  coverLetter?: string;
-  isBlocked?: boolean;
-  _id: string;
-}
 
 const UserSchema = new Schema<IUser>(
   {
@@ -72,6 +31,16 @@ const UserSchema = new Schema<IUser>(
         link: { type: String },
       },
     ],
+    role: {
+      type: String,
+      enum: ["user","premium"],
+      default: "user",
+    },
+
+
+    subscriptionEndDate:{ type: Date, default: null},
+    subscriptionStartDate:{ type: Date, default: null },
+   
 
     followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: Schema.Types.ObjectId, ref: "User" }],

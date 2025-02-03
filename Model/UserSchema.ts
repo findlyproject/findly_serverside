@@ -45,15 +45,16 @@ export interface IUser extends Document {
   role?:string;
   createdAt?: Date;
   updatedAt?: Date;
+  _id:string;
 }
 
 
 const UserSchema = new Schema<IUser>(
   {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    firstName: { type: String,  },
+    lastName: { type: String,  },
+    email: { type: String, unique: true },
+    password: { type: String,  },
     phoneNumber: { type: String },
     dateOfBirth: { type: Date },
     location: { type: String },
@@ -65,15 +66,15 @@ const UserSchema = new Schema<IUser>(
 
     education: {
       qualification: { type: String, },
-      startYear: { type:String , required: true },
-      endYear: { type: String, required: true },
-      collage: { type: String, required: true },
+      startYear: { type:String ,  },
+      endYear: { type: String,  },
+      collage: { type: String,  },
     },
 
     projects: [
       {
-        title: { type: String, required: true },
-        description: { type: String, required: true },
+        title: { type: String,  },
+        description: { type: String,  },
         link: { type: String },
       },
     ],
@@ -85,8 +86,8 @@ const UserSchema = new Schema<IUser>(
 
     resume: [
       {
-        fileUrl: { type: String, required: true },
-        type: { type: String, enum: ["PDF", "Video"], required: true },
+        fileUrl: { type: String,  },
+        type: { type: String, enum: ["PDF", "Video"],  },
         uploadedAt: { type: Date, default: Date.now },
       },
     ],

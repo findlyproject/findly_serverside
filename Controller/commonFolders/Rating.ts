@@ -1,13 +1,14 @@
 import Rating from "../../Model/RatingSchema";
-import { Request, Response } from "express";
+import {  Request, Response } from "express";
 
 
- const createRating = async (req:Request, res:Response ):Promise<void> =>  {
+ const createRating = async (req:Request,res:Response): Promise<void>=>{
 
   const { review, starsRating, userId } = req.body;
 
   if (!review || !starsRating || !userId) {
      res.status(400).json({ message: "All fields are required." });
+     return 
   }
 
   const newRating = new Rating({

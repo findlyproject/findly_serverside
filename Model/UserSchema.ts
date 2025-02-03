@@ -27,8 +27,7 @@ export interface IUser extends Document {
     link?: string;
   }[];
 
-  followers?: mongoose.Types.ObjectId[];
-  following?: mongoose.Types.ObjectId[];
+  connecting?: mongoose.Types.ObjectId[];
 
   about?: string;
 
@@ -75,9 +74,7 @@ const UserSchema = new Schema<IUser>(
         link: { type: String },
       },
     ],
-
-    followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    connecting: [],
 
     about: { type: String },
 

@@ -41,9 +41,7 @@ const UserSchema = new Schema<IUser>(
     subscriptionEndDate:{ type: Date, default: null},
     subscriptionStartDate:{ type: Date, default: null },
    
-
-    followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    connecting: [],
 
     about: { type: String },
 

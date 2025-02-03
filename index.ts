@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import { router } from "./Routes/user/registration";
 import { rating } from "./Routes/Rating/rating";
 import postRouter from "./Routes/PostRoute/post";
+import { paymentRouter } from "./Routes/PaymentRoute/PaymentRoutes";
+import{Searchrouter} from'./Routes/SearchRoute/search';
 import { connectionrout } from "./Routes/user/connection";
 dotenv.config();
 const app = express();
@@ -13,12 +15,13 @@ const app = express();
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors({
-    origin: 'http://localhost:3000', 
+    origin: 'http://localhost:3000',   
     credentials: true,
   }));
   app.use("/api/user",router)
   app.use("/api/rating",rating)
   app.use("/api/post",postRouter)
+  app.use("/api/payment",paymentRouter)
   app.use("/api/connecting",connectionrout)
 
 

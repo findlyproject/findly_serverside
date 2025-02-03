@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
-import User, { IUser } from "../../Model/UserSchema";
 import mongoose from "mongoose";
+import User from "../../Model/UserSchema";
 
 
 const userconnections = async (req:Request,res:Response):Promise<void>=>{
@@ -33,10 +33,6 @@ const userconnections = async (req:Request,res:Response):Promise<void>=>{
     }
 
     const userid = new mongoose.Types.ObjectId(connectionid);
-
-    if (!Array.isArray(finduser.connecting)) {
-        finduser.connecting = [];
-    }
 
     if (!finduser.connecting.some((id) => id.toString() === connectionid)) {
         finduser.connecting.push(userid);   

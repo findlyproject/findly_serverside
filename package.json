@@ -13,6 +13,7 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
+    "stripe": "^17.6.0",
     "zod": "^3.24.1"
   },
   "scripts": {
@@ -25,6 +26,7 @@
     "@types/dotenv": "^8.2.3",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/mongoose": "^5.11.97",
+    "@types/multer": "^1.4.12",
     "@types/nodemailer": "^6.4.17",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"

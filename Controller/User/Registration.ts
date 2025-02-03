@@ -2,8 +2,8 @@ import User from "../../Model/UserSchema";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";import { string } from "zod";
-
-
+import mongoose from "mongoose";
+import multer, { Multer } from "multer";
 const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   const {
     email,
@@ -86,6 +86,16 @@ const login = async (req: Request, res: Response): Promise<void> => {
     res.status(404).json({ status: false, message: "password is wrong" });
     return;
   }
+  const currentDate = new Date();
+  if (logeduser.role === "premium" && logeduser.subscriptionEndDate) {
+    if (logeduser.subscriptionEndDate < currentDate) {
+      
+      logeduser.role = "user";
+      logeduser.subscriptionStartDate = null;
+      logeduser.subscriptionEndDate = null;
+      await logeduser.save();
+    }
+  }
   if (verfyuser) {
     const token = jwt.sign(
       {
@@ -114,6 +124,68 @@ const login = async (req: Request, res: Response): Promise<void> => {
       maxAge: 24 * 60 * 60 * 1000,
     });
   }
+
+
+
+  if (logeduser.role === "premium" && logeduser.subscriptionEndDate) {
+
+    const subscriptionEndDate = logeduser.subscriptionEndDate
+      ? new Date(logeduser.subscriptionEndDate)
+      : null;
+  
+    console.log("Subscription End Date:", subscriptionEndDate);
+    
+    if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
+      const currentDate = new Date();
+      console.log("Current Date:", currentDate);
+  
+     
+      const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
+  
+      const normalizedEndDate = startOfDay(subscriptionEndDate);
+      const normalizedCurrentDate = startOfDay(currentDate);
+  
+      const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
+      console.log("Time Difference:", differenceInTime);
+  
+      const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
+  
+      console.log("Remaining Days:", remainingValidityDays);
+
+
+      if (remainingValidityDays > 0) {
+        const payload = {
+            userId: logeduser._id,
+            email: logeduser.email,
+            role: logeduser.role,
+            remainingValidityDays,
+        };
+
+        const secretKey = process.env.USER_SECRETKEY!;
+
+        const premiumToken = jwt.sign(payload, secretKey, {
+            expiresIn: `${remainingValidityDays}d`,
+        });
+
+        res.cookie('premiumToken', premiumToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/', 
+            maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
+          });
+    } else {
+         res.status(403).json({
+            success: false,
+            message: "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+        });
+        return
+    }
+    } else {
+      console.error("Invalid subscription end date");
+    }
+  }
+  
   res
     .status(200)
     .json({ status: true, message: "Login successful", logeduser });
@@ -184,6 +256,79 @@ const googleauthlogin = async (req: Request, res: Response) => {
       process.env.USER_SECRETKEY!,
       { expiresIn: "1d" }
     );
+
+
+    const currentDate = new Date();
+    if (finduser.role === "premium" && finduser.subscriptionEndDate) {
+      if (finduser.subscriptionEndDate < currentDate) {
+        
+        finduser.role = "user";
+        finduser.subscriptionStartDate = null;
+        finduser.subscriptionEndDate = null;
+        await finduser.save();
+      }
+    }
+
+
+
+    if (finduser.role === "premium" && finduser.subscriptionEndDate) {
+
+    const subscriptionEndDate = finduser.subscriptionEndDate
+      ? new Date(finduser.subscriptionEndDate)
+      : null;
+  
+    console.log("Subscription End Date:", subscriptionEndDate);
+    
+    if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
+      const currentDate = new Date();
+      console.log("Current Date:", currentDate);
+  
+     
+      const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
+  
+      const normalizedEndDate = startOfDay(subscriptionEndDate);
+      const normalizedCurrentDate = startOfDay(currentDate);
+  
+      const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
+      console.log("Time Difference:", differenceInTime);
+  
+      const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
+  
+      console.log("Remaining Days:", remainingValidityDays);
+
+
+      if (remainingValidityDays > 0) {
+        const payload = {
+            userId: finduser._id,
+            email: finduser.email,
+            role: finduser.role,
+            remainingValidityDays,
+        };
+
+        const secretKey = process.env.USER_SECRETKEY!;
+
+        const premiumToken = jwt.sign(payload, secretKey, {
+            expiresIn: `${remainingValidityDays}d`,
+        });
+
+        res.cookie('premiumToken', premiumToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/', 
+            maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
+          });
+    } else {
+         res.status(403).json({
+            success: false,
+            message: "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+        });
+        return
+    }
+    } else {
+      console.error("Invalid subscription end date");
+    }
+  }
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
@@ -240,6 +385,51 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
 
 }
 
+// Function to get People You Might Know based on followers and following
+//  const getPeopleYouMightKnow = async (req: Request, res: Response): Promise<void> => {
+  
+//     const userId = req.user?.id;  // Assuming authentication middleware attaches user ID
+
+//     // Validate that the user is authenticated
+//     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+//        res.status(400).json({ error: "Valid User ID is required" });
+//        return
+//     }
+
+//     // Fetch the authenticated user's details including their followers and following
+//     const user = await User.findById(userId).populate("followers following");
+
+//     if (!user) {
+//        res.status(404).json({ error: "User not found" });
+//        return
+//     }
+
+//     // Get the list of potential users who are NOT in the user's following or followers list
+//     const peopleYouMightKnow = await User.find({
+//       _id: { $ne: userId }, // Exclude the current user
+//       _id: { $nin: user.following?.map((follower) => follower._id) }, // Exclude users already followed
+//       _id: { $nin: user.followers?.map((follower) => follower._id) }, // Exclude users who are already followers
+//     }).populate("followers following");  // Optionally populate followers and following to find mutual connections
+
+//     // Filter out users with mutual followers or following
+//     const suggestedPeople = peopleYouMightKnow.filter((person) => {
+//       // Find mutual followers
+//       const mutualFollowers = user.followers?.filter((follower) =>
+//         person.followers?.includes(follower._id)
+//       );
+//       // Find mutual followings
+//       const mutualFollowing = user.following?.filter((following) =>
+//         person.following?.includes(following._id)
+//       );
+
+//       // Suggest people with at least 1 mutual follower or mutual following
+//        mutualFollowers.length > 0 || mutualFollowing.length > 0;
+//     });
+
+//      res.status(200).json({ suggestedPeople });
+//      return
+  
+// };
 
 
 
@@ -248,5 +438,6 @@ export{
   login,
   logout,
   findCurrentUserDetails,
-  googleauthlogin
+  googleauthlogin,
+  
 }

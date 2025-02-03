@@ -97,68 +97,6 @@ if(!session.id){
 };
 
 
-
-// const verifySubscription = async (req: Request, res: Response) => {
-//     const { sessionId } = req.params;
-
-//     console.log("sessionId", sessionId);
-
-//     const subscription = await SubscriptionPlan.findOne({ sessionId });
-
-//     if (!subscription) {
-//         res.status(404).json({ success: false, message: "Payment not found" });
-//         return;
-//     }
-//     let accountInfo = null;
-
-//     if (subscription.type === "UserSubscription" && subscription.userId) {
-//         accountInfo = await User.findById(subscription.userId);
-//     } else if (subscription.type === "CompanySubscription" && subscription.companyId) {
-//         accountInfo = await Company.findById(subscription.companyId); 
-//     }
-
-//     if (!accountInfo) {
-//         res.status(404).json({ success: false, message: "User or Company not found" });
-//         return;
-//     }
-
-//     if (subscription.paymentStatus === "completed") {
-//         res.status(400).json({ success: false, message: "Payment has already been processed" });
-//         return;
-//     }
-
-//     subscription.paymentStatus = "completed";
-//     await subscription.save();
-
-   
-//     const payload = {
-//         userId: accountInfo._id,
-//         email: accountInfo.email,
-        
-       
-//       };
-//     const duration=subscription.plan==="one month"?"30":subscription.plan==="six month"?"180":"360"
-
-//      const secretKey = process.env.USER_SECRETKEY!;
-
-//   const subscriptionToken = jwt.sign(payload, secretKey, { expiresIn: duration });
-//   if(!subscriptionToken){
-//     res.status(400).json({success:true,message:"error on creting subscriptionToken"})
-//     return 
-//   }
-
-
-//   res.cookie('subscriptionToken', subscriptionToken, {
-//     httpOnly: false,
-//     secure: true,
-//     sameSite: 'lax',
-//     maxAge: 30 * 24 * 60 * 60 * 1000, 
-//   });
-
-//     res.status(200).json({ success: true, subscription, accountInfo });
-// };
-
-
 const verifySubscription = async (req: Request, res: Response) => {
     const { sessionId } = req.params;
 

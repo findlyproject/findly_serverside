@@ -1,60 +1,13 @@
 import mongoose, { Document, Schema } from "mongoose";
-
-export interface IUser extends Document {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  phoneNumber?: string;
-  dateOfBirth?: Date;
-  location?: string;
-  profileImage?: string;
-  banner?: string;
-  skills?: string[];
-  jobTitle?: string[];
-  jobLocation?: string[];
-
-  education: {
-    qualification: string;
-    startYear: string;
-    endYear: string;
-    location: string;
-  };
-
-  projects?: {
-    title: string;
-    description: string;
-    link?: string;
-  }[];
-
-  followers?: mongoose.Types.ObjectId[];
-  following?: mongoose.Types.ObjectId[];
-
-  about?: string;
-
-  resume?: {
-    fileUrl: string;
-    type: "PDF" | "Video";
-    uploadedAt?: Date;
-  }[];
-
-  coverLetter?: string;
-  isBlocked?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-  role?:"user"|"premium",
-  subscriptionEndDate: Date | null,
-  subscriptionStartDate: Date | null,
-  _id:string;
-}
+import { IUser } from "../types/allTypes";
 
 
 const UserSchema = new Schema<IUser>(
   {
-    firstName: { type: String,  },
-    lastName: { type: String,  },
+    firstName: { type: String },
+    lastName: { type: String },
     email: { type: String, unique: true },
-    password: { type: String,  },
+    password: { type: String },
     phoneNumber: { type: String },
     dateOfBirth: { type: Date },
     location: { type: String },
@@ -65,16 +18,16 @@ const UserSchema = new Schema<IUser>(
     jobLocation: [{ type: String }],
 
     education: {
-      qualification: { type: String, },
-      startYear: { type:String ,  },
-      endYear: { type: String,  },
-      collage: { type: String,  },
+      qualification: { type: String },
+      startYear: { type: String },
+      endYear: { type: String },
+      collage: { type: String },
     },
 
     projects: [
       {
-        title: { type: String,  },
-        description: { type: String,  },
+        title: { type: String },
+        description: { type: String },
         link: { type: String },
       },
     ],
@@ -96,20 +49,16 @@ const UserSchema = new Schema<IUser>(
 
     resume: [
       {
-        fileUrl: { type: String,  },
-        type: { type: String, enum: ["PDF", "Video"],  },
+        fileUrl: { type: String },
+        type: { type: String, enum: ["PDF", "Video"] },
         uploadedAt: { type: Date, default: Date.now },
       },
     ],
 
     coverLetter: { type: String },
-
     isBlocked: { type: Boolean, default: false },
-
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
 
 const User = mongoose.model<IUser>("User", UserSchema);

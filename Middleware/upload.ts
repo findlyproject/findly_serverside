@@ -29,7 +29,7 @@ const storage = new CloudinaryStorage({
         resource_type: "image",
         allowed_formats: ["png", "jpg", "jpeg"],
       },
-      coverImage: {
+      banner: {
         folder: "users/banner",
         resource_type: "image",
         allowed_formats: ["png", "jpg", "jpeg"],

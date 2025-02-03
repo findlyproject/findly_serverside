@@ -261,6 +261,81 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
 
 
 
+export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.id; // Assuming user ID comes from authentication middleware
+
+  // Validate user ID
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    res.status(400).json({ error: "Valid User ID is required" });
+    return;
+  }
+
+  // Find the user by their ID
+  const user = await User.findById(userId);
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  const {
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    dateOfBirth,
+    location,
+    skills,
+    jobTitle,
+    jobLocation,
+    about,
+    education,
+    projects,
+  } = req.body;
+
+  // Prepare the update object dynamically
+  const updateData: { [key: string]: any } = {
+    ...(firstName && { firstName }),
+    ...(lastName && { lastName }),
+    ...(email && { email }),
+    ...(phoneNumber && { phoneNumber }),
+    ...(dateOfBirth && { dateOfBirth }),
+    ...(location && { location }),
+    ...(skills && { skills }),
+    ...(jobTitle && { jobTitle }),
+    ...(jobLocation && { jobLocation }),
+    ...(about && { about }),
+    ...(education && { education }), // Add education if provided
+    ...(projects && { projects }),   // Add projects if provided
+  };
+
+  // Check and handle file uploads for profile image and cover image
+  if (req.files && typeof req.files === "object") {
+    // Type assertion to assure TypeScript that `req.files` is an object
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+    // Handle profile image upload
+    if (files["profileImage"] && Array.isArray(files["profileImage"])) {
+      updateData.profileImage = files["profileImage"][0].path; 
+    }
+
+    // Handle cover image (banner) upload
+    if (files["banner"] && Array.isArray(files["banner"])) {
+      updateData.banner = files["banner"][0].path; 
+    }
+  }
+
+  // Update the user profile in the database
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+  if (!updatedUser) {
+    res.status(500).json({ error: "Error updating user profile" });
+    return;
+  }
+
+  res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
+};
+
+
 export{
   RegistrationUser,
   login,

@@ -86,6 +86,16 @@ const login = async (req: Request, res: Response): Promise<void> => {
     res.status(404).json({ status: false, message: "password is wrong" });
     return;
   }
+  const currentDate = new Date();
+  if (logeduser.role === "premium" && logeduser.subscriptionEndDate) {
+    if (logeduser.subscriptionEndDate < currentDate) {
+      
+      logeduser.role = "user";
+      logeduser.subscriptionStartDate = null;
+      logeduser.subscriptionEndDate = null;
+      await logeduser.save();
+    }
+  }
   if (verfyuser) {
     const token = jwt.sign(
       {
@@ -114,6 +124,68 @@ const login = async (req: Request, res: Response): Promise<void> => {
       maxAge: 24 * 60 * 60 * 1000,
     });
   }
+
+
+
+  if (logeduser.role === "premium" && logeduser.subscriptionEndDate) {
+
+    const subscriptionEndDate = logeduser.subscriptionEndDate
+      ? new Date(logeduser.subscriptionEndDate)
+      : null;
+  
+    console.log("Subscription End Date:", subscriptionEndDate);
+    
+    if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
+      const currentDate = new Date();
+      console.log("Current Date:", currentDate);
+  
+     
+      const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
+  
+      const normalizedEndDate = startOfDay(subscriptionEndDate);
+      const normalizedCurrentDate = startOfDay(currentDate);
+  
+      const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
+      console.log("Time Difference:", differenceInTime);
+  
+      const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
+  
+      console.log("Remaining Days:", remainingValidityDays);
+
+
+      if (remainingValidityDays > 0) {
+        const payload = {
+            userId: logeduser._id,
+            email: logeduser.email,
+            role: logeduser.role,
+            remainingValidityDays,
+        };
+
+        const secretKey = process.env.USER_SECRETKEY!;
+
+        const subscriptionToken = jwt.sign(payload, secretKey, {
+            expiresIn: `${remainingValidityDays}d`,
+        });
+
+        res.cookie('subscriptionToken', subscriptionToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/', 
+            maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
+          });
+    } else {
+         res.status(403).json({
+            success: false,
+            message: "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+        });
+        return
+    }
+    } else {
+      console.error("Invalid subscription end date");
+    }
+  }
+  
   res
     .status(200)
     .json({ status: true, message: "Login successful", logeduser });
@@ -122,6 +194,25 @@ const login = async (req: Request, res: Response): Promise<void> => {
 ////////////////////////////// Log out //////////////////////
 
 const logout = async (req: Request, res: Response): Promise<void> => {
+
+
+  const userId = req.user?.id;
+
+  if (userId) {
+    const user = await User.findById(userId);
+
+    if (user && user.role === "premium" && user.subscriptionEndDate) {
+      const currentDate = new Date();
+
+      if (user.subscriptionEndDate < currentDate) {
+        user.role = "user"; 
+        user.subscriptionStartDate = null;
+        user.subscriptionEndDate = null;
+        await user.save();
+      }
+    }
+  }
+
   res.clearCookie("token", {
     httpOnly: true,
     secure: false,
@@ -132,6 +223,14 @@ const logout = async (req: Request, res: Response): Promise<void> => {
     secure: false,
     sameSite: "lax",
   });
+
+  res.clearCookie("subscriptionToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  
+  
 
   res.status(200).json({ status: true, message: "Logout successfully" });
 };
@@ -157,6 +256,79 @@ const googleauthlogin = async (req: Request, res: Response) => {
       process.env.USER_SECRETKEY!,
       { expiresIn: "1d" }
     );
+
+
+    const currentDate = new Date();
+    if (finduser.role === "premium" && finduser.subscriptionEndDate) {
+      if (finduser.subscriptionEndDate < currentDate) {
+        
+        finduser.role = "user";
+        finduser.subscriptionStartDate = null;
+        finduser.subscriptionEndDate = null;
+        await finduser.save();
+      }
+    }
+
+
+
+    if (finduser.role === "premium" && finduser.subscriptionEndDate) {
+
+    const subscriptionEndDate = finduser.subscriptionEndDate
+      ? new Date(finduser.subscriptionEndDate)
+      : null;
+  
+    console.log("Subscription End Date:", subscriptionEndDate);
+    
+    if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
+      const currentDate = new Date();
+      console.log("Current Date:", currentDate);
+  
+     
+      const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
+  
+      const normalizedEndDate = startOfDay(subscriptionEndDate);
+      const normalizedCurrentDate = startOfDay(currentDate);
+  
+      const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
+      console.log("Time Difference:", differenceInTime);
+  
+      const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
+  
+      console.log("Remaining Days:", remainingValidityDays);
+
+
+      if (remainingValidityDays > 0) {
+        const payload = {
+            userId: finduser._id,
+            email: finduser.email,
+            role: finduser.role,
+            remainingValidityDays,
+        };
+
+        const secretKey = process.env.USER_SECRETKEY!;
+
+        const subscriptionToken = jwt.sign(payload, secretKey, {
+            expiresIn: `${remainingValidityDays}d`,
+        });
+
+        res.cookie('subscriptionToken', subscriptionToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/', 
+            maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
+          });
+    } else {
+         res.status(403).json({
+            success: false,
+            message: "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+        });
+        return
+    }
+    } else {
+      console.error("Invalid subscription end date");
+    }
+  }
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
@@ -259,6 +431,81 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
   
 // };
 
+
+
+export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.id; // Assuming user ID comes from authentication middleware
+
+  // Validate user ID
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    res.status(400).json({ error: "Valid User ID is required" });
+    return;
+  }
+
+  // Find the user by their ID
+  const user = await User.findById(userId);
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  const {
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    dateOfBirth,
+    location,
+    skills,
+    jobTitle,
+    jobLocation,
+    about,
+    education,
+    projects,
+  } = req.body;
+
+  // Prepare the update object dynamically
+  const updateData: { [key: string]: any } = {
+    ...(firstName && { firstName }),
+    ...(lastName && { lastName }),
+    ...(email && { email }),
+    ...(phoneNumber && { phoneNumber }),
+    ...(dateOfBirth && { dateOfBirth }),
+    ...(location && { location }),
+    ...(skills && { skills }),
+    ...(jobTitle && { jobTitle }),
+    ...(jobLocation && { jobLocation }),
+    ...(about && { about }),
+    ...(education && { education }), // Add education if provided
+    ...(projects && { projects }),   // Add projects if provided
+  };
+
+  // Check and handle file uploads for profile image and cover image
+  if (req.files && typeof req.files === "object") {
+    // Type assertion to assure TypeScript that `req.files` is an object
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+    // Handle profile image upload
+    if (files["profileImage"] && Array.isArray(files["profileImage"])) {
+      updateData.profileImage = files["profileImage"][0].path; 
+    }
+
+    // Handle cover image (banner) upload
+    if (files["banner"] && Array.isArray(files["banner"])) {
+      updateData.banner = files["banner"][0].path; 
+    }
+  }
+
+  // Update the user profile in the database
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+  if (!updatedUser) {
+    res.status(500).json({ error: "Error updating user profile" });
+    return;
+  }
+
+  res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
+};
 
 
 export{

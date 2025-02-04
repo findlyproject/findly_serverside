@@ -1,13 +1,13 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { IUser } from "../types/allTypes";
-const profile = require("../Assets/profile.png");
-const banner = require("../Assets/banner.png");
+const profile = "../Assets/profile.png";
+const banner = "../Assets/banner.png";
 
 const UserSchema = new Schema<IUser>(
   {
     firstName: { type: String },
     lastName: { type: String },
-    email: { type: String, unique: true },
+    email: { type: String, unique: true },  
     password: { type: String },
     phoneNumber: { type: String },
     dateOfBirth: { type: Date },

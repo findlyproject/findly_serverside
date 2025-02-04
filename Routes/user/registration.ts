@@ -1,5 +1,5 @@
 import express from "express";
-import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile, uploadResume } from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow, uploadResume } from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
 import { errorCatch } from "../../Middleware/tryCatch";
 import { userAuthMiddleware } from "../../Middleware/userauthantication";
@@ -16,7 +16,8 @@ router
 .post("/emailus",userAuthMiddleware,errorCatch(EmailUs))
 
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
-// .put("/uploadresume", upload.fields([{ name: "resume", maxCount: 1 }]), uploadResume)
+.get("/people-you-might-know", userAuthMiddleware, errorCatch(getPeopleYouMightKnow))
+
 .post("/uploadressume",userAuthMiddleware,uploadressume,errorCatch(uploadResume))
 
 .put(
@@ -26,7 +27,7 @@ router
       { name: "profileImage", maxCount: 1 },   
       { name: "banner", maxCount: 1 },
     ]),
-    errorCatch(updateUserProfile) // Make sure errorCatch handles async properly
+    errorCatch(updateUserProfile) 
   );
 
 export {router}

@@ -3,47 +3,46 @@ import { Post } from "../../../Model/PostSchema";
 import { Report } from "../../../Model/ReportSchema";
 import mongoose from "mongoose";
 
-// // Function to Add a New Post
-// export const addPost = async (req: Request, res: Response):Promise<void> => {
-//   try {
-//     const { description, owner } = req.body;
-
-//     // Validate Owner ID
-//     if (!owner || !mongoose.Types.ObjectId.isValid(owner)) {
-//        res.status(400).json({ error: "Valid Owner ID is required" });
-//        return
-//     }
-
-//     let mediaUrls: string[] = [];
-
-//     // Check if files were uploaded
-//     if (req.files) {
-//       if (Array.isArray(req.files)) {
-//         mediaUrls = req.files.map((file: Express.Multer.File) => file.path);
-//       } else if (req.files["images"]) {
-//         mediaUrls = (req.files["images"] as Express.Multer.File[]).map(file => file.path);
-//       }
-//     } else if (req.file) {
-//       mediaUrls = [req.file.path];
-//     }
-
-//     // Create new post
-//     const newPost = new Post({
-//       description,
-//       owner,
-//       images: mediaUrls.length > 0 ? mediaUrls : undefined,
-//     });
-
-//     await newPost.save();
-
-//      res.status(201).json({ message: "Post created successfully", post: newPost })
-//      return;
-//   } catch (error) {
-//     console.error("Error adding post:", error);
-//      res.status(500).json({ error: "Internal Server Error" })
-//      return;
-//   }
-// };
+// Function to Add a New Post
+export const addPost = async (req: Request, res: Response): Promise<void> => {
+   const { description } = req.body;
+ 
+   // Validate description and owner fields
+   if (!description || !req.user?.id) {
+      res.status(400).json({ message: "Description and owner are required" });
+   }
+ 
+   // Type assertion to specify the structure of req.files
+   const postMedia = (req.files as { [fieldname: string]: Express.Multer.File[] }).media;
+ 
+   // Ensure media exists (either image or video)
+   let mediaUrl: string | null = null;
+   if (postMedia && postMedia.length > 0) {
+     const file = postMedia[0]; // Retrieve the uploaded media  
+     mediaUrl = file.path;
+     console.log(mediaUrl) // URL of the uploaded media (image or video)
+   } else {
+      res.status(400).json({ message: "No media uploaded" });
+   }
+ 
+   
+     // Create the new post with description, owner, and media
+     const newPost = new Post({
+       description,
+       owner:req.user?.id,
+       media: mediaUrl, // Add media URL to the post
+     });
+ 
+     // Save the post to the database
+     await newPost.save();
+ 
+     // Send success response with the created post details
+     res.status(201).json({
+       message: "Post uploaded successfully",
+       post: newPost,
+     });
+  
+ };
 
 //  Get Posts by user
 const getPostsByOwner = async (req: Request, res: Response): Promise<void> => {

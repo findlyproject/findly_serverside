@@ -25,7 +25,7 @@ console.log("userId",userId);
     return
   }
   if (userId && companyId) {
-     res.status(400).json({ message: "Only one of userId or companyId should be provided." });
+     res.status(400).json({ success:false,message: "Only one of userId or companyId should be provided." });
      return
   }
 

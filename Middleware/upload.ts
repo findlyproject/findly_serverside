@@ -3,21 +3,21 @@ import multer, { Multer } from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { v2 as cloudinary } from "cloudinary";
 
-dotenv.config(); // Load environment variables
+dotenv.config(); 
 
-// Ensure Cloudinary credentials exist
+
 if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
   throw new Error("Missing Cloudinary credentials in .env file");
 }
 
-// Cloudinary configuration
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Define Cloudinary Storage
+
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (_req, file) => {
@@ -34,8 +34,11 @@ const storage = new CloudinaryStorage({
         resource_type: "image",
         allowed_formats: ["png", "jpg", "jpeg"],
       },
-     
-
+      media: {
+        folder: "posts/media", 
+        resource_type: "auto", 
+        allowed_formats: ["jpg", "jpeg", "png", "mp4", "mov"], 
+      },
     };
 
     if (!uploadConfig[file.fieldname]) {
@@ -45,7 +48,6 @@ const storage = new CloudinaryStorage({
     return uploadConfig[file.fieldname];
   },
 });
-
 
 const multerInstance: Multer = multer({ storage });
 

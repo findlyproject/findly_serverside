@@ -1,10 +1,8 @@
-import mongoose from "mongoose"
-
+import mongoose from "mongoose";
 
 import { IRating } from "../types/allTypes";
 
-
-const ratingSchema = new mongoose.Schema <IRating>(
+const ratingSchema = new mongoose.Schema<IRating>(
   {
     review: {
       type: String,
@@ -30,7 +28,6 @@ const ratingSchema = new mongoose.Schema <IRating>(
   },
   { timestamps: true }
 );
-
 
 const Rating = mongoose.model("Rating", ratingSchema);
 export default Rating;

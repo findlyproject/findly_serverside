@@ -11,7 +11,7 @@ const PostSchema = z.object({
     images: z.string().optional(),
     lists: z.array(ObjectIdSchema),
     likedBy: z.array(ObjectIdSchema),
-    reports: z.array(
+    reports: z.array(           
       z.object({
         reportedBy: ObjectIdSchema,
         reason: z.string().min(1),

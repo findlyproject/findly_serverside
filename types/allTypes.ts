@@ -95,8 +95,7 @@ export interface IUser extends Document {
     link?: string;
   }[];
 
-  followers?: mongoose.Types.ObjectId[];
-  following?: mongoose.Types.ObjectId[];
+  connecting: mongoose.Types.ObjectId[],
 
   about?: string;
 
@@ -113,3 +112,11 @@ export interface IUser extends Document {
   isBlocked?: boolean;
   _id: string;
 }
+
+
+
+export interface IAdmin extends Document{
+  email:string;
+  password:string;
+}
+

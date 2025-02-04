@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, {Schema } from "mongoose";
 import { IUser } from "../types/allTypes";
 
 
@@ -41,9 +41,7 @@ const UserSchema = new Schema<IUser>(
     subscriptionEndDate:{ type: Date, default: null},
     subscriptionStartDate:{ type: Date, default: null },
    
-
-    followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    connecting: [],
 
     about: { type: String },
 

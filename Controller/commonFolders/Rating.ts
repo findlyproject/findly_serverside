@@ -5,7 +5,10 @@ import {  Request, Response } from "express";
  const createRating = async (req:Request,res:Response): Promise<void>=>{
 
   const userId=req.user?.id
+  console.log("userId",userId);
+  
   const { review, starsRating } = req.body;
+console.log("review, starsRating",review, starsRating);
 
   if (!review || !starsRating || !userId) {
      res.status(400).json({success:false, message: "All fields are required." });

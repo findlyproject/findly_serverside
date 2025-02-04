@@ -76,6 +76,7 @@ export interface IUser extends Document {
   phoneNumber?: string;
   dateOfBirth?: Date;
   location?: string;
+  gender?:string;
   profileImage?: string;
   banner?: string;
   skills?: string[];

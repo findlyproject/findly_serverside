@@ -489,12 +489,25 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
   res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
 };
 
+const AllUsers=async(req:Request,res:Response)=>{
+  const { email } = req.query;
+  const user = await User.findOne({ email });
 
+  if (user) {
+     res.json({ exists: true })
+     return
+  } else {
+     res.json({ exists: false })
+     return
+  }
+  
+}
 export{
   RegistrationUser,
   login,
   logout,
   findCurrentUserDetails,
   googleauthlogin,
+  AllUsers
   
 }

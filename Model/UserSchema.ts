@@ -1,7 +1,8 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, {Schema } from "mongoose";
 import { IUser } from "../types/allTypes";
-const profile = require("../Assets/profile.png");
-const banner = require("../Assets/banner.png");
+const profile = "../assets/profile.png"
+const banner = "../assets/banner.png"
+
 
 const UserSchema = new Schema<IUser>(
   {

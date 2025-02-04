@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Stripe from "stripe";
-import { SubscriptionPlan } from "../../../Model/SubscriptionSchama"; 
+import { SubscriptionPlan } from "../../../Model/SubscriptionSchema"; 
 import  User  from "../../../Model/UserSchema"; 
 import { Company } from "../../../Model/CompanySchema";
 import jwt, { JwtPayload } from "jsonwebtoken";import { string } from "zod";

@@ -13,6 +13,8 @@ const UserSchema = new Schema<IUser>(
     phoneNumber: { type: String },
     dateOfBirth: { type: Date },
     location: { type: String },
+    reports: [{ type: Schema.Types.ObjectId, ref: "Report" }],
+
     gender: { type: String, enum: ["Male", "Female", "Other"] },
     profileImage: {
       type: String,

@@ -50,7 +50,7 @@ const getUserRatings = async (req: Request, res: Response) => {
 
      const getAllRatings=async(req:Request,res:Response)=>{
 
-      const allratings=await Rating.find()
+      const allratings=await Rating.find().populate("userId")
       console.log("allratings",allratings)
       if(!allratings){
         res.status(404).json({success:false,message:" No review about findly"})

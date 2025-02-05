@@ -238,6 +238,7 @@ const logout = async (req: Request, res: Response): Promise<void> => {
 ////////////////////// GOOGLE AUTH LOGIN /////////////////////
 
 const googleauthlogin = async (req: Request, res: Response) => {
+  console.log("sarting goole auth")
   const { email,name } = req.body;
   if(!name && !email){
     res.status(404).json({status:false,message:"name or email is missing"})
@@ -350,11 +351,11 @@ const googleauthlogin = async (req: Request, res: Response) => {
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
-    res.status(200).json({status:true,message:"google auth Login successful"})
+    res.status(200).json({status:true,message:"google auth Login successful",finduser})
     return
   }else{
     const user =await new User({
-      email,
+      email,    
       firstName:name,
     });
     const savegoogleauth =await user.save()

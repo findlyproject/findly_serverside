@@ -102,7 +102,7 @@ export interface IUser extends Document {
     link?: string;
   }[];
 
-  connecting: mongoose.Types.ObjectId[],
+  connecting: mongoose.Types.ObjectId[];
 
   about?: string;
 

@@ -49,7 +49,7 @@ const UserSchema = new Schema<IUser>(
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },
 
-    connecting: [],
+    connecting: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
     about: { type: String },
 

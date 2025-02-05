@@ -1,5 +1,5 @@
 import express from "express";
-import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsers } from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers} from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
 import { errorCatch } from "../../middleware/tryCatch";
 import { userAuthMiddleware } from "../../middleware/userauthantication";
@@ -25,5 +25,6 @@ router
     ]),
     errorCatch(updateUserProfile) // Make sure errorCatch handles async properly
   )
-.get('/all',AllUsers)
+.get('/all',AllUsersEmailCheck)
+.get('/users',AllUsers)
 export {router}

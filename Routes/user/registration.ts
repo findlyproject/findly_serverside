@@ -1,5 +1,5 @@
 import express from "express";
-import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow } from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsers } from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
 import { errorCatch } from "../../middleware/tryCatch";
 import { userAuthMiddleware } from "../../middleware/userauthantication";
@@ -24,6 +24,6 @@ router
       { name: "banner", maxCount: 1 },
     ]),
     errorCatch(updateUserProfile) // Make sure errorCatch handles async properly
-  );
-
+  )
+.get('/all',AllUsers)
 export {router}

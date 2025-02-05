@@ -113,3 +113,11 @@ export interface IUser extends Document {
   isBlocked?: boolean;
   _id: string;
 }
+
+
+
+export interface IAdmin extends Document{
+  email:string;
+  password:string;
+}
+

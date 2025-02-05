@@ -1,10 +1,10 @@
 import express from "express";
-import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow, uploadResume } from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsers, uploadResume } from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
-import { errorCatch } from "../../Middleware/tryCatch";
-import { userAuthMiddleware } from "../../Middleware/userauthantication";
-import {upload} from '../../Middleware/upload'
-import uploadressume from "../../Middleware/ressumeUploading"
+import { errorCatch } from "../../middleware/tryCatch";
+import { userAuthMiddleware } from "../../middleware/userauthantication";
+import {upload} from '../../middleware/upload'
+import ressumeupload from '../../middleware/ressumeUploading'
 const router = express.Router()
 
 router
@@ -18,7 +18,7 @@ router
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
 .get("/people-you-might-know", userAuthMiddleware, errorCatch(getPeopleYouMightKnow))
 
-.post("/uploadressume",userAuthMiddleware,uploadressume,errorCatch(uploadResume))
+.post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
 
 .put(
     "/profile",
@@ -28,6 +28,6 @@ router
       { name: "banner", maxCount: 1 },
     ]),
     errorCatch(updateUserProfile) 
-  );
-
+  )
+.get('/all',AllUsers)
 export {router}

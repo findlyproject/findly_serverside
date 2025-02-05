@@ -555,12 +555,25 @@ export const uploadResume = async (req: Request, res: Response):Promise<void> =>
 };
 
 
+const AllUsers=async(req:Request,res:Response)=>{
+  const { email } = req.query;
+  const user = await User.findOne({ email });
 
+  if (user) {
+     res.json({ exists: true })
+     return
+  } else {
+     res.json({ exists: false })
+     return
+  }
+  
+}
 export{
   RegistrationUser,
   login,
   logout,
   findCurrentUserDetails,
   googleauthlogin,
+  AllUsers
   
 }

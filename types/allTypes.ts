@@ -6,12 +6,14 @@ export interface IReport extends Document {
     reportedBy: Types.ObjectId;
     reason: string;
     reportedAt: Date;
+    isDeleted:boolean;
   }
 
   export interface IReply extends Document {
     user: Types.ObjectId;
     reply: string;
     repliedAt: Date;
+    isDeleted:boolean;
   }
 
   export interface IComment extends Document {
@@ -19,6 +21,7 @@ export interface IReport extends Document {
     comment: string;
     commentedAt: Date;
     replies: Types.ObjectId[];  
+    isDeleted:boolean;
   }
 
 
@@ -31,6 +34,7 @@ export interface IPost extends Document {
     likedBy: Types.ObjectId[];
     reports: IReport[]; 
     comments: IComment[];
+    isDeleted:boolean;
   }
 
   export interface IRating extends Document{
@@ -38,6 +42,7 @@ export interface IPost extends Document {
     starsRating?:number,
     userId?:Types.ObjectId
     createdAt?:Date
+    isDeleted:boolean
   }
 
   export interface ISubscription extends Document{
@@ -66,6 +71,7 @@ export interface IPost extends Document {
     role?:"user"|"premium",
     subscriptionEndDate: Date | null,
       subscriptionStartDate: Date | null,
+      isDeleted:boolean
 }
   
 export interface IUser extends Document {
@@ -96,7 +102,7 @@ export interface IUser extends Document {
     link?: string;
   }[];
 
-  connecting: mongoose.Types.ObjectId[],
+  connecting: mongoose.Types.ObjectId[];
 
   about?: string;
 
@@ -111,6 +117,7 @@ export interface IUser extends Document {
 
   coverLetter?: string;
   isBlocked?: boolean;
+  isDeleted?:boolean;
   _id: string;
 }
 

@@ -1,7 +1,7 @@
 import mongoose, {Schema } from "mongoose";
 import { IUser } from "../types/allTypes";
-const profile = "../assets/profile.png"
-const banner = "../assets/banner.png"
+const profile = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735360/profile_jtwxaj.png"
+const banner = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735269/banner_ozuamb.png"
 
 
 const UserSchema = new Schema<IUser>(
@@ -49,7 +49,7 @@ const UserSchema = new Schema<IUser>(
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },
 
-    connecting: [],
+    connecting: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
     about: { type: String },
 
@@ -63,6 +63,7 @@ const UserSchema = new Schema<IUser>(
 
     coverLetter: { type: String },
     isBlocked: { type: Boolean, default: false },
+    isDeleted:{type:Boolean,default:false},
   },
   { timestamps: true }
 );

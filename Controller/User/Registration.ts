@@ -71,12 +71,11 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json({ message: "success", user });
 };
 
-// Login api 
+////////////////////// LOGIN API ////////////////////////
 
 const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   const logeduser = await User.findOne({ email });
-  console.log("logeduser", logeduser);
   if (!logeduser) {
     res.status(404).json({ status: false, message: "email id is wrong" });
     return;
@@ -133,11 +132,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
       ? new Date(logeduser.subscriptionEndDate)
       : null;
   
-    console.log("Subscription End Date:", subscriptionEndDate);
     
     if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
       const currentDate = new Date();
-      console.log("Current Date:", currentDate);
   
      
       const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
@@ -146,11 +143,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
       const normalizedCurrentDate = startOfDay(currentDate);
   
       const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
-      console.log("Time Difference:", differenceInTime);
   
       const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
   
-      console.log("Remaining Days:", remainingValidityDays);
 
 
       if (remainingValidityDays > 0) {
@@ -191,7 +186,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
     .json({ status: true, message: "Login successful", logeduser });
 };
 
-// Log out
+//////////////////////////////  LOGOUT //////////////////
 
 const logout = async (req: Request, res: Response): Promise<void> => {
 
@@ -244,7 +239,6 @@ const googleauthlogin = async (req: Request, res: Response) => {
     return
   }
   const finduser = await User.findOne({ email });
-  console.log("finduser",finduser);
   
   if (finduser) {
     const token = jwt.sign(
@@ -277,11 +271,9 @@ const googleauthlogin = async (req: Request, res: Response) => {
       ? new Date(finduser.subscriptionEndDate)
       : null;
   
-    console.log("Subscription End Date:", subscriptionEndDate);
     
     if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
       const currentDate = new Date();
-      console.log("Current Date:", currentDate);
   
      
       const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
@@ -290,11 +282,9 @@ const googleauthlogin = async (req: Request, res: Response) => {
       const normalizedCurrentDate = startOfDay(currentDate);
   
       const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
-      console.log("Time Difference:", differenceInTime);
   
       const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
   
-      console.log("Remaining Days:", remainingValidityDays);
 
 
       if (remainingValidityDays > 0) {
@@ -326,7 +316,6 @@ const googleauthlogin = async (req: Request, res: Response) => {
         return
     }
     } else {
-      console.error("Invalid subscription end date");
     }
   }
     res.cookie("token", token, {
@@ -350,11 +339,11 @@ const googleauthlogin = async (req: Request, res: Response) => {
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
-    res.status(200).json({status:true,message:"google auth Login successful"})
+    res.status(200).json({status:true,message:"google auth Login successful",finduser})
     return
   }else{
     const user =await new User({
-      email,
+      email,    
       firstName:name,
     });
     const savegoogleauth =await user.save()
@@ -372,7 +361,6 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
     return;
   }
 
-  console.log("User ID:", userId);
 
   const currentUserDetails = await User.findById(userId).select("-password");
 
@@ -489,7 +477,7 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
   res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
 };
 
-const AllUsers=async(req:Request,res:Response)=>{
+const AllUsersEmailCheck=async(req:Request,res:Response)=>{
   const { email } = req.query;
   const user = await User.findOne({ email });
 
@@ -502,12 +490,32 @@ const AllUsers=async(req:Request,res:Response)=>{
   }
   
 }
+
+
+const AllUsers=async(req:Request,res:Response)=>{
+  const users=await User.find()
+  const length=users.length
+  if(!users){
+    res.status(404).json({status:'failed',message:"cannot find users"})
+    return
+  }
+
+  res.status(200).json({status:"success",message:"all users detailes",users,length})
+  return
+}
+
+
+
+
+
+
 export{
   RegistrationUser,
   login,
   logout,
   findCurrentUserDetails,
   googleauthlogin,
+  AllUsersEmailCheck,
   AllUsers
   
 }

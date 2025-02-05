@@ -1,21 +1,18 @@
 import express from "express";
-import {getpostbyid,getPostsByOwner, ReportPost } from "../../Controller/commonFolders/postController/Post";
-import { upload } from "../../Middleware/upload";
-import {errorCatch} from '../../Middleware/tryCatch'
-// import { replyToPost } from "../../Controller/commonFolders/postController/Replay";
+import {getpostbyid,getPostsByOwner, ReportPost,addPost } from "../../Controller/commonFolders/postController/Post";
+import { upload } from "../../middleware/upload";
+import {errorCatch} from '../../middleware/tryCatch'
 import { getCommentById,addCommentToPost,editComment,deleteComment} from "../../Controller/commonFolders/postController/Comment";
-
-import { userAuthMiddleware } from "../../Middleware/userauthantication";
+import { userAuthMiddleware } from "../../middleware/userauthantication";
 import { deleteReplay, editReply, getRepliesForComment, replyToComment } from "../../Controller/commonFolders/postController/Replay";
 import { LikeOrDislike } from "../../Controller/commonFolders/postController/Post";
 const postRouter = express.Router();
 
 
 postRouter
-// .post("/post",upload.array("media", 5),errorCatch(addPost));
-// .post("/user/postreplay/:postId",userAuthMiddleware,errorCatch(replyToPost))
 .get('/:id',errorCatch(getpostbyid))
 .get("/owner/:ownerId",userAuthMiddleware,errorCatch( getPostsByOwner))
+.post("/upload",upload.fields([{ name: "media", maxCount: 5}]),userAuthMiddleware,errorCatch( addPost))
 
 //comment
 .get('/viewcomment/:id',userAuthMiddleware,errorCatch(getCommentById))  

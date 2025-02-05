@@ -1,5 +1,7 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, {Schema } from "mongoose";
 import { IUser } from "../types/allTypes";
+const profile = "../assets/profile.png"
+const banner = "../assets/banner.png"
 
 
 const UserSchema = new Schema<IUser>(
@@ -11,8 +13,15 @@ const UserSchema = new Schema<IUser>(
     phoneNumber: { type: String },
     dateOfBirth: { type: Date },
     location: { type: String },
-    profileImage: { type: String },
-    banner: { type: String },
+    gender: { type: String, enum: ["Male", "Female", "Other"] },
+    profileImage: {
+      type: String,
+      default: profile,
+    },
+    banner: {
+      type: String,
+      default: banner,
+    },
     skills: [{ type: String }],
     jobTitle: [{ type: String }],
     jobLocation: [{ type: String }],
@@ -33,15 +42,14 @@ const UserSchema = new Schema<IUser>(
     ],
     role: {
       type: String,
-      enum: ["user","premium"],
+      enum: ["user", "premium"],
       default: "user",
     },
 
+    subscriptionEndDate: { type: Date, default: null },
+    subscriptionStartDate: { type: Date, default: null },
 
-    subscriptionEndDate:{ type: Date, default: null},
-    subscriptionStartDate:{ type: Date, default: null },
-   
-    connecting: [],
+    connecting: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
     about: { type: String },
 

@@ -76,6 +76,7 @@ export interface IUser extends Document {
   phoneNumber?: string;
   dateOfBirth?: Date;
   location?: string;
+  gender?:string;
   profileImage?: string;
   banner?: string;
   skills?: string[];
@@ -95,7 +96,7 @@ export interface IUser extends Document {
     link?: string;
   }[];
 
-  connecting: mongoose.Types.ObjectId[],
+  connecting: mongoose.Types.ObjectId[];
 
   about?: string;
 
@@ -112,3 +113,11 @@ export interface IUser extends Document {
   isBlocked?: boolean;
   _id: string;
 }
+
+
+
+export interface IAdmin extends Document{
+  email:string;
+  password:string;
+}
+

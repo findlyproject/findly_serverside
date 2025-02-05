@@ -71,12 +71,11 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json({ message: "success", user });
 };
 
-////////////////////// Login api ////////////////////
+////////////////////// LOGIN API ////////////////////////
 
 const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   const logeduser = await User.findOne({ email });
-  console.log("logeduser", logeduser);
   if (!logeduser) {
     res.status(404).json({ status: false, message: "email id is wrong" });
     return;
@@ -133,11 +132,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
       ? new Date(logeduser.subscriptionEndDate)
       : null;
   
-    console.log("Subscription End Date:", subscriptionEndDate);
     
     if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
       const currentDate = new Date();
-      console.log("Current Date:", currentDate);
   
      
       const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
@@ -146,11 +143,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
       const normalizedCurrentDate = startOfDay(currentDate);
   
       const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
-      console.log("Time Difference:", differenceInTime);
   
       const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
   
-      console.log("Remaining Days:", remainingValidityDays);
 
 
       if (remainingValidityDays > 0) {
@@ -191,7 +186,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
     .json({ status: true, message: "Login successful", logeduser });
 };
 
-////////////////////////////// Log out //////////////////////
+//////////////////////////////  LOGOUT //////////////////
 
 const logout = async (req: Request, res: Response): Promise<void> => {
 
@@ -238,14 +233,12 @@ const logout = async (req: Request, res: Response): Promise<void> => {
 ////////////////////// GOOGLE AUTH LOGIN /////////////////////
 
 const googleauthlogin = async (req: Request, res: Response) => {
-  console.log("sarting goole auth")
   const { email,name } = req.body;
   if(!name && !email){
     res.status(404).json({status:false,message:"name or email is missing"})
     return
   }
   const finduser = await User.findOne({ email });
-  console.log("finduser",finduser);
   
   if (finduser) {
     const token = jwt.sign(
@@ -278,11 +271,9 @@ const googleauthlogin = async (req: Request, res: Response) => {
       ? new Date(finduser.subscriptionEndDate)
       : null;
   
-    console.log("Subscription End Date:", subscriptionEndDate);
     
     if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
       const currentDate = new Date();
-      console.log("Current Date:", currentDate);
   
      
       const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
@@ -291,11 +282,9 @@ const googleauthlogin = async (req: Request, res: Response) => {
       const normalizedCurrentDate = startOfDay(currentDate);
   
       const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
-      console.log("Time Difference:", differenceInTime);
   
       const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
   
-      console.log("Remaining Days:", remainingValidityDays);
 
 
       if (remainingValidityDays > 0) {
@@ -327,7 +316,6 @@ const googleauthlogin = async (req: Request, res: Response) => {
         return
     }
     } else {
-      console.error("Invalid subscription end date");
     }
   }
     res.cookie("token", token, {
@@ -373,7 +361,6 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
     return;
   }
 
-  console.log("User ID:", userId);
 
   const currentUserDetails = await User.findById(userId).select("-password");
 
@@ -386,64 +373,52 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
 
 }
 
-// Function to get People You Might Know based on followers and following
-//  const getPeopleYouMightKnow = async (req: Request, res: Response): Promise<void> => {
-  
-//     const userId = req.user?.id;  // Assuming authentication middleware attaches user ID
+//  get People You Might Know based on followers and following
+export const getPeopleYouMightKnow = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user?.id;
 
-//     // Validate that the user is authenticated
-//     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-//        res.status(400).json({ error: "Valid User ID is required" });
-//        return
-//     }
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      res.status(400).json({ error: "Valid User ID is required" });
+      return;
+    }
 
-//     // Fetch the authenticated user's details including their followers and following
-//     const user = await User.findById(userId).populate("followers following");
+    const user = await User.findById(userId).populate("connecting");
 
-//     if (!user) {
-//        res.status(404).json({ error: "User not found" });
-//        return
-//     }
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
 
-//     // Get the list of potential users who are NOT in the user's following or followers list
-//     const peopleYouMightKnow = await User.find({
-//       _id: { $ne: userId }, // Exclude the current user
-//       _id: { $nin: user.following?.map((follower) => follower._id) }, // Exclude users already followed
-//       _id: { $nin: user.followers?.map((follower) => follower._id) }, // Exclude users who are already followers
-//     }).populate("followers following");  // Optionally populate followers and following to find mutual connections
+    const potentialConnections = await User.find({
+      _id: { 
+        $ne: userId,
+        $nin: user.connecting?.map((conn) => conn._id) || [] 
+      }
+    }).populate("connecting"); 
 
-//     // Filter out users with mutual followers or following
-//     const suggestedPeople = peopleYouMightKnow.filter((person) => {
-//       // Find mutual followers
-//       const mutualFollowers = user.followers?.filter((follower) =>
-//         person.followers?.includes(follower._id)
-//       );
-//       // Find mutual followings
-//       const mutualFollowing = user.following?.filter((following) =>
-//         person.following?.includes(following._id)
-//       );
+    const suggestedPeople = potentialConnections.filter((person) => {
+      // Find mutual connections
+      const mutualConnections = user.connecting?.filter((conn) =>
+        person.connecting?.some((pConn) => pConn._id.equals(conn._id))
+      );
 
-//       // Suggest people with at least 1 mutual follower or mutual following
-//        mutualFollowers.length > 0 || mutualFollowing.length > 0;
-//     });
+      return mutualConnections.length > 0;
+    });
 
-//      res.status(200).json({ suggestedPeople });
-//      return
-  
-// };
+    res.status(200).json({ suggestedPeople });
+ 
+};
 
 
 
 export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.user?.id; // Assuming user ID comes from authentication middleware
+  const userId = req.user?.id; 
 
-  // Validate user ID
   if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
     res.status(400).json({ error: "Valid User ID is required" });
     return;
   }
 
-  // Find the user by their ID
   const user = await User.findById(userId);
   if (!user) {
     res.status(404).json({ error: "User not found" });
@@ -465,7 +440,6 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
     projects,
   } = req.body;
 
-  // Prepare the update object dynamically
   const updateData: { [key: string]: any } = {
     ...(firstName && { firstName }),
     ...(lastName && { lastName }),
@@ -477,27 +451,22 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
     ...(jobTitle && { jobTitle }),
     ...(jobLocation && { jobLocation }),
     ...(about && { about }),
-    ...(education && { education }), // Add education if provided
-    ...(projects && { projects }),   // Add projects if provided
+    ...(education && { education }), 
+    ...(projects && { projects }),   
   };
 
-  // Check and handle file uploads for profile image and cover image
   if (req.files && typeof req.files === "object") {
-    // Type assertion to assure TypeScript that `req.files` is an object
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-    // Handle profile image upload
     if (files["profileImage"] && Array.isArray(files["profileImage"])) {
       updateData.profileImage = files["profileImage"][0].path; 
     }
 
-    // Handle cover image (banner) upload
     if (files["banner"] && Array.isArray(files["banner"])) {
       updateData.banner = files["banner"][0].path; 
     }
   }
 
-  // Update the user profile in the database
   const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
 
   if (!updatedUser) {
@@ -508,12 +477,25 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
   res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
 };
 
+const AllUsers=async(req:Request,res:Response)=>{
+  const { email } = req.query;
+  const user = await User.findOne({ email });
 
+  if (user) {
+     res.json({ exists: true })
+     return
+  } else {
+     res.json({ exists: false })
+     return
+  }
+  
+}
 export{
   RegistrationUser,
   login,
   logout,
   findCurrentUserDetails,
   googleauthlogin,
+  AllUsers
   
 }

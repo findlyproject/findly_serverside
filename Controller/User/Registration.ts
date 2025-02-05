@@ -489,7 +489,7 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
   res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
 };
 
-const AllUsers=async(req:Request,res:Response)=>{
+const AllUsersEmailCheck=async(req:Request,res:Response)=>{
   const { email } = req.query;
   const user = await User.findOne({ email });
 
@@ -502,12 +502,32 @@ const AllUsers=async(req:Request,res:Response)=>{
   }
   
 }
+
+
+const AllUsers=async(req:Request,res:Response)=>{
+  const users=await User.find()
+  const length=users.length
+  if(!users){
+    res.status(404).json({status:'failed',message:"cannot find users"})
+    return
+  }
+
+  res.status(200).json({status:"success",message:"all users detailes",users,length})
+  return
+}
+
+
+
+
+
+
 export{
   RegistrationUser,
   login,
   logout,
   findCurrentUserDetails,
   googleauthlogin,
+  AllUsersEmailCheck,
   AllUsers
   
 }

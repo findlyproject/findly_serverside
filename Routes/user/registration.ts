@@ -1,9 +1,10 @@
 import express from "express";
-import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers} from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, allUsersprofile} from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
-import { errorCatch } from "../../middleware/tryCatch";
-import { userAuthMiddleware } from "../../middleware/userauthantication";
-import {upload} from '../../middleware/upload'
+import { errorCatch } from "../../Middleware/tryCatch";
+import { userAuthMiddleware } from "../../Middleware/userauthantication";
+import {upload} from '../../Middleware/upload'
+import { reportuser } from "../../Controller/User/getotheruserdetails";
 const router = express.Router()
 
 router
@@ -27,4 +28,7 @@ router
   )
 .get('/all',AllUsersEmailCheck)
 .get('/users',AllUsers)
+.post("/reportuser",userAuthMiddleware,errorCatch(reportuser))
+.get("/allUsersprofile", userAuthMiddleware, errorCatch(allUsersprofile))
+
 export {router}

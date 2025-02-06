@@ -88,6 +88,7 @@ export interface IUser extends Document {
   skills?: string[];
   jobTitle?: string[];
   jobLocation?: string[];
+  reports: mongoose.Types.ObjectId[]; 
 
   education: {
     qualification: string;
@@ -102,7 +103,11 @@ export interface IUser extends Document {
     link?: string;
   }[];
 
-  connecting: mongoose.Types.ObjectId[];
+  connecting: [{
+    connectionID:mongoose.Types.ObjectId;
+    status:boolean;
+  }],
+
 
   about?: string;
 

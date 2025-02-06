@@ -1,7 +1,6 @@
 import Express from "express";
-import { userAuthMiddleware } from "../../middleware/userauthantication";
-// import { errorCatch } from "../../Middleware/tryCatch";
-import { errorCatch } from "../../middleware/tryCatch";
+import { userAuthMiddleware } from "../../Middleware/userauthantication";
+import { errorCatch } from "../../Middleware/tryCatch";
 import { getconnection, removeConnection, userconnections } from "../../Controller/User/Connecting";
 
 const connectionrout = Express.Router()

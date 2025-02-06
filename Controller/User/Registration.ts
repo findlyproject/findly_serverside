@@ -510,7 +510,7 @@ const AllUsers=async(req:Request,res:Response)=>{
 
 const allUsersprofile = async (req:Request,res:Response):Promise<void>=>{
 
-  const finduserprofile = await User.find({isDeleted:false,isBlocked:true})
+  const finduserprofile = await User.find({isDeleted:false,isBlocked:false})
   if(!finduserprofile){
     res.status(404).json({status:'failed',message:"cannot find all profile"})
     return

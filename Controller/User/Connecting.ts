@@ -35,14 +35,7 @@ const userconnections = async (req:Request,res:Response):Promise<void>=>{
 
     const userid = new mongoose.Types.ObjectId(connectionid);
 
-    if (!finduser.connecting.some((id:mongoose.Types.ObjectId ) => id.toString() === connectionid)) {
-        finduser.connecting.push(new mongoose.Types.ObjectId(userid));   
-        await finduser.save(); 
-
-        res.status(200).json({status:true,message:"connecting successful",finduser})
-        return
     
-}
 res.status(200).json({status:true,message:"connecting successful",finduser})
 }
 

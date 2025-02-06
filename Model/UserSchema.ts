@@ -1,4 +1,4 @@
-import mongoose, {Schema } from "mongoose";
+import mongoose, {connection, Schema } from "mongoose";
 import { IUser } from "../types/allTypes";
 const profile = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735360/profile_jtwxaj.png"
 const banner = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735269/banner_ozuamb.png"
@@ -51,7 +51,10 @@ const UserSchema = new Schema<IUser>(
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },
 
-    connecting: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    connecting: [{
+      connectionID:{ type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      status: { type: Boolean, default: false },
+    }],
 
     about: { type: String },
 

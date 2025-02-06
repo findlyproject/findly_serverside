@@ -103,7 +103,11 @@ export interface IUser extends Document {
     link?: string;
   }[];
 
-  connecting: mongoose.Types.ObjectId[];
+  connecting: [{
+    connectionID:mongoose.Types.ObjectId;
+    status:boolean;
+  }],
+
 
   about?: string;
 

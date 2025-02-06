@@ -64,8 +64,9 @@ export interface IPost extends Document {
     contact: number;
     employees: string; 
     role?:"user"|"premium",
+    isVerified?:boolean,
     subscriptionEndDate: Date | null,
-      subscriptionStartDate: Date | null,
+    subscriptionStartDate: Date | null,
 }
   
 export interface IUser extends Document {
@@ -82,7 +83,7 @@ export interface IUser extends Document {
   skills?: string[];
   jobTitle?: string[];
   jobLocation?: string[];
-
+  isVerified?:boolean
   education: {
     qualification: string;
     startYear: string;

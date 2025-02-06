@@ -19,6 +19,8 @@ const CompanySchema = new Schema<ICompany>(
       enum: ["company", "premium"],
       default: "company",
     },
+    
+    isVerified:{type:Boolean,default:false},
 
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },

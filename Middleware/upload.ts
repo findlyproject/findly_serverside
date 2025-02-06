@@ -35,9 +35,9 @@ const storage = new CloudinaryStorage({
         allowed_formats: ["png", "jpg", "jpeg"],
       },
       media: {
-        folder: "posts/media", // For post media (images/videos)
-        resource_type: "auto", // Cloudinary will automatically determine if it's an image or video
-        allowed_formats: ["jpg", "jpeg", "png", "mp4", "mov"], // Supported image and video formats
+        folder: "posts/media", // Media can be images or videos
+        resource_type: "auto", // Auto-detects image or video
+        allowed_formats: ["png", "jpg", "jpeg", "mp4", "mov", "avi", "mkv"],
       },
     };
 

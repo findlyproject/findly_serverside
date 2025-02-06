@@ -3,6 +3,13 @@ import { Post } from "../../../Model/PostSchema";
 import { Report } from "../../../Model/ReportSchema";
 import mongoose from "mongoose";
 
+// Get all posts
+const getAllPosts = async (req: Request, res: Response): Promise<void> => {
+  const posts = await Post.find().populate("owner");
+  const totalPosts = await Post.countDocuments(); // Fetch posts without authentication checks
+  res.status(200).json({ posts, totalPosts });
+};
+
 // Function to Add a New Post
 export const addPost = async (req: Request, res: Response): Promise<void> => {
    const { description } = req.body;
@@ -150,4 +157,4 @@ const ReportPost = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json({ message: "reported successfully", report });
 };
 
-export { getPostsByOwner, getpostbyid, LikeOrDislike, ReportPost };
+export { getAllPosts, getPostsByOwner, getpostbyid, LikeOrDislike, ReportPost };

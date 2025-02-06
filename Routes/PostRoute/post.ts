@@ -1,5 +1,5 @@
 import express from "express";
-import {getpostbyid,getPostsByOwner, ReportPost,addPost } from "../../Controller/commonFolders/postController/Post";
+import {getAllPosts,getpostbyid,getPostsByOwner, ReportPost,addPost } from "../../Controller/commonFolders/postController/Post";
 import { upload } from "../../middleware/upload";
 import {errorCatch} from '../../middleware/tryCatch'
 import { getCommentById,addCommentToPost,editComment,deleteComment} from "../../Controller/commonFolders/postController/Comment";
@@ -10,6 +10,7 @@ const postRouter = express.Router();
 
 
 postRouter
+.get("/allposts", getAllPosts)
 .get('/:id',errorCatch(getpostbyid))
 .get("/owner/:ownerId",userAuthMiddleware,errorCatch( getPostsByOwner))
 .post("/upload",upload.fields([{ name: "media", maxCount: 5}]),userAuthMiddleware,errorCatch( addPost))

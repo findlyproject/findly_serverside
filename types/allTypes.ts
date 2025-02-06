@@ -29,7 +29,7 @@ export interface IPost extends Document {
     description?: string;
     owner: Types.ObjectId;
     images?: string[];  
-  video?: string; 
+    video?: string; 
     lists: Types.ObjectId[];
     likedBy: Types.ObjectId[];
     reports: IReport[]; 
@@ -127,4 +127,5 @@ export interface IAdmin extends Document{
   email:string;
   password:string;
 }
+
 

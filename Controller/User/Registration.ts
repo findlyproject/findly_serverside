@@ -11,9 +11,12 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
     firstName,
     lastName,
     education,
+    location,
     jobTitles,
     jobLocations,
   } = req.body;
+  console.log("gggggreq.bodyy",req.body);
+  
   const emailRegex = /\S+@\S+\.\S+/;
   if (!emailRegex.test(email)) {
     res.status(400).json({ message: "Invalid email format" });
@@ -25,12 +28,16 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+  
+  
+
   const user = new User({
     email,
     password: hashedPassword,
     firstName,
     lastName,
-    education,
+    education:education || [],
+    location,
     jobTitle: jobTitles,
     jobLocation: jobLocations,
   });
@@ -61,12 +68,8 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  res.cookie("user", user, {
-    httpOnly: false,
-    secure: false,
-    sameSite: "lax",
-    maxAge: 24 * 60 * 60 * 1000,
-  });
+console.log("user",user);
+
 
   res.status(200).json({ message: "success", user });
 };
@@ -491,7 +494,10 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
 
 const AllUsersEmailCheck=async(req:Request,res:Response)=>{
   const { email } = req.query;
+  console.log("email req.query",req.query);
+  
   const user = await User.findOne({ email });
+console.log("useremail",user);
 
   if (user) {
      res.json({ exists: true })

@@ -26,12 +26,13 @@ const UserSchema = new Schema<IUser>(
     jobTitle: [{ type: String }],
     jobLocation: [{ type: String }],
 
-    education: {
+    education: [{
       qualification: { type: String },
+      location:{type:String},
       startYear: { type: String },
       endYear: { type: String },
-      collage: { type: String },
-    },
+      college: { type: String },
+    }],
 
     projects: [
       {

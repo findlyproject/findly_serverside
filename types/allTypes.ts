@@ -94,7 +94,8 @@ export interface IUser extends Document {
     startYear: string;
     endYear: string;
     location: string;
-  };
+    college:string
+  }[];
 
   projects?: {
     title: string;

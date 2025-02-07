@@ -234,7 +234,11 @@ const logout = async (req: Request, res: Response): Promise<void> => {
 ////////////////////// GOOGLE AUTH LOGIN /////////////////////
 
 const googleauthlogin = async (req: Request, res: Response) => {
-  const { email,name } = req.body;
+
+  const { email,name,image } = req.body;
+
+  console.log("email:",email,"name:",name,"image:",image);
+  
   if(!name && !email){
     res.status(404).json({status:false,message:"name or email is missing"})
     return
@@ -346,6 +350,7 @@ const googleauthlogin = async (req: Request, res: Response) => {
     const user =await new User({
       email,    
       firstName:name,
+      profileImage:image,
     });
     const savegoogleauth =await user.save()
     res.status(200).json({status:true,message:"google auth registration and Login successful",savegoogleauth})
@@ -516,7 +521,7 @@ const allUsersprofile = async (req:Request,res:Response):Promise<void>=>{
     return
   }
 
-  res.status(200).json({status:true,message:"All profile finded",data:finduserprofile})
+  res.status(200).json({status:true,message:"All profile finded",finduserprofile})
 }
 
 

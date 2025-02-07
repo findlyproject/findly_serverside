@@ -516,11 +516,15 @@ const AllUsers=async(req:Request,res:Response)=>{
 const spacificuserdetails = async (req:Request,res:Response):Promise<void>=>{
  
   const userid = req.params.id;
+
+  if(!userid){
+    res.status(404).json({status:false,message:"cannot find id"})
+    return
+  }
   const finduserprofile = await User.find({_id:userid,isDeleted:false,isBlocked:false})
-  console.log(finduserprofile);
   
   if(!finduserprofile){
-    res.status(404).json({status:'failed',message:"cannot find all profile"})
+    res.status(404).json({status:false,message:"cannot find all profile"})
     return
   }
 

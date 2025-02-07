@@ -33,6 +33,21 @@ const login = async(req:Request,res:Response):Promise<void>=>{
     
 }
 
+/////////////////////// LOG OUT //////////////////
+
+const logout = async (req:Request,res:Response):Promise<void>=>{
+
+      res.clearCookie("adminToken",{
+        httpOnly:true,
+        secure:false,
+        sameSite:"lax",
+    }
+      )
+   
+    res.status(200).json({status:true,message:"admin logout sucssesfully"})
+
+}
 export {
-    login
+    login,
+    logout
 }

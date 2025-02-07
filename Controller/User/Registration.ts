@@ -513,9 +513,12 @@ const AllUsers=async(req:Request,res:Response)=>{
 
 ////////////////// ALL USER PROFILE ///////////////// 
 
-const allUsersprofile = async (req:Request,res:Response):Promise<void>=>{
-
-  const finduserprofile = await User.find({isDeleted:false,isBlocked:false})
+const spacificuserdetails = async (req:Request,res:Response):Promise<void>=>{
+ 
+  const userid = req.params.id;
+  const finduserprofile = await User.find({_id:userid,isDeleted:false,isBlocked:false})
+  console.log(finduserprofile);
+  
   if(!finduserprofile){
     res.status(404).json({status:'failed',message:"cannot find all profile"})
     return
@@ -534,6 +537,6 @@ export{
   googleauthlogin,
   AllUsersEmailCheck,
   AllUsers,
-  allUsersprofile
+  spacificuserdetails
   
 }

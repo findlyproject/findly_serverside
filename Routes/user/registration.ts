@@ -1,5 +1,5 @@
 import express from "express";
-import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, allUsersprofile} from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, spacificuserdetails} from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
 import { errorCatch } from "../../Middleware/tryCatch";
 import { userAuthMiddleware } from "../../Middleware/userauthantication";
@@ -29,6 +29,6 @@ router
 .get('/all',AllUsersEmailCheck)
 .get('/users',AllUsers)
 .post("/reportuser",userAuthMiddleware,errorCatch(reportuser))
-.get("/allUsersprofile", userAuthMiddleware, errorCatch(allUsersprofile))
+.get("/spacificuserdetails/:id", userAuthMiddleware, errorCatch(spacificuserdetails))
 
 export {router}

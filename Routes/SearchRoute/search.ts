@@ -1,6 +1,6 @@
 import express from 'express'
 import { UserSearch } from '../../Controller/commonFolders/searchController/userSearch'
-import { errorCatch } from '../../Middleware/tryCatch'
+import { errorCatch } from '../../middleware/tryCatch'
 const Searchrouter=express.Router()
 Searchrouter
 .get(`/usersearch`,errorCatch(UserSearch))

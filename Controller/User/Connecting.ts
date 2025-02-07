@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import mongoose from "mongoose";
-import User from "../../Model/UserSchema";
+import User from "../../model/UserSchema";
 import { IUser } from "../../types/allTypes";
 
 

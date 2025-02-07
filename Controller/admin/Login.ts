@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
-import { Admin } from "../../Model/AdminSchema";
+import { Admin } from "../../model/AdminSchema";
+import  jwt  from "jsonwebtoken";
 
 
 const login = async(req:Request,res:Response):Promise<void>=>{
@@ -9,9 +10,26 @@ const login = async(req:Request,res:Response):Promise<void>=>{
         res.status(404).json({status:false,message:"email and password is missing"})
         return
     }
-    const findadmin = await Admin.findOne({email,password})
-    console.log(findadmin);
-    res.send("djsfhdkjfhsdkj")
+    const findAdmin = await Admin.findOne({email,password})
+    if(!findAdmin){
+        res.status(404).json({status:false,message:"admin not fount login faild"})
+        return
+    }
+
+    const adminToken = jwt.sign(
+       
+            { id: findAdmin._id, email: findAdmin.email },
+            process.env.USER_SECRETKEY!,
+            { expiresIn: "2d" }
+          );
+          res.cookie("adminToken", adminToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            maxAge: 2*24 * 60 * 60 * 1000,
+          });
+
+          res.status(200).json({status:true,message:"Admin login successful"})
     
 }
 

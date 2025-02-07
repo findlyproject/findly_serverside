@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { Admin } from "../../model/AdminSchema";
 import  jwt  from "jsonwebtoken";
+import User from "../../model/UserSchema";
 
 
 const login = async(req:Request,res:Response):Promise<void>=>{
@@ -12,7 +13,7 @@ const login = async(req:Request,res:Response):Promise<void>=>{
     }
     const findAdmin = await Admin.findOne({email,password})
     if(!findAdmin){
-        res.status(404).json({status:false,message:"admin not fount login faild"})
+        res.status(404).json({status:false,message:"Admin not fount login faild"})
         return
     }
 
@@ -44,10 +45,35 @@ const logout = async (req:Request,res:Response):Promise<void>=>{
     }
       )
    
-    res.status(200).json({status:true,message:"admin logout sucssesfully"})
+    res.status(200).json({status:true,message:"Admin logout sucssesfully"})
 
 }
-export {
+
+///////////////////////  USER BLOCK ///////////////////
+
+const blocAndUnblock = async (req:Request,res:Response):Promise<void>=>{
+    const userId = req.params.id;
+    if(!userId){
+        res.status(404).json({status:false,message:"Blockin user id is missing"})
+        return
+    }
+    const findUser =await User.findOne({_id:userId});
+    console.log(findUser);
+
+    if(!findUser){
+        res.status(404).json({status:false,message:"Blockin user is not found"})
+        return
+    }
+
+    findUser.isBlocked = !findUser.isBlocked
+    await findUser.save()
+    
+    res.status(200).json({status:true,message:`User ${findUser.isBlocked ? "block" : "unblock"} is sucssesfully`,data:findUser })
+    
+  } 
+export = {
     login,
-    logout
+    logout,
+    blocAndUnblock
+
 }

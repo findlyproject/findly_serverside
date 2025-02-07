@@ -2,7 +2,6 @@ import { Request, Response } from "express"
 import mongoose from "mongoose";
 import User from "../../Model/UserSchema";
 import { IUser } from "../../types/allTypes";
-import { any } from "zod";
 
 
 const userconnections = async (req: Request, res: Response): Promise<void> => {
@@ -189,11 +188,9 @@ if (!filteredconnections) {
      return
 }
 
-// Optionally remove the connection from both users' arrays
 user.connecting = user.connecting.filter(item => !item.connectionID.equals(connectedIDobject)) as [{ connectionID: mongoose.Types.ObjectId; status: boolean }];
 findConnectedUser.connecting = findConnectedUser.connecting.filter(item => !item.connectionID.equals(userobjectid)) as [{ connectionID: mongoose.Types.ObjectId; status: boolean }];
 
-// Save both users after removing the connections
 await user.save();
 await findConnectedUser.save();
 

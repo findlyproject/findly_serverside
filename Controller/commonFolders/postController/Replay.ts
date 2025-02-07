@@ -2,9 +2,9 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 
-import { Comment } from "../../../Model/CommentSchema";
-import { Reply } from "../../../Model/CommentSchema";
-import { Post } from "../../../Model/PostSchema";
+import { Comment } from "../../../model/CommentSchema";
+import { Reply } from "../../../model/CommentSchema";
+import { Post } from "../../../model/PostSchema";
 
 
 const replyToComment = async (req: Request, res: Response): Promise<void> => {

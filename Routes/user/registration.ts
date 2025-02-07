@@ -1,9 +1,9 @@
 import express from "express";
 import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, spacificuserdetails} from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
-import { errorCatch } from "../../Middleware/tryCatch";
-import { userAuthMiddleware } from "../../Middleware/userauthantication";
-import {upload} from '../../Middleware/upload'
+import { errorCatch } from "../../middleware/tryCatch";
+import { userAuthMiddleware } from "../../middleware/userauthantication";
+import {upload} from '../../middleware/upload'
 import { reportuser } from "../../Controller/User/getotheruserdetails";
 const router = express.Router()
 

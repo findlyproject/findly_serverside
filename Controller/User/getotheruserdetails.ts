@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import User from "../../Model/UserSchema";
-import { Report } from "../../Model/ReportSchema";
+import User from "../../model/UserSchema";
+import { Report } from "../../model/ReportSchema";
 import { IUser } from "../../types/allTypes";
 
 const getauteruserdetails = async (req:Request,res:Response)=>{

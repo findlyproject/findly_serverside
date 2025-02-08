@@ -9,7 +9,7 @@ import postRouter from "./Routes/PostRoute/post";
 import { paymentRouter } from "./Routes/PaymentRoute/PaymentRoutes";
 import{Searchrouter} from'./Routes/SearchRoute/search';
 import { connectionrout } from "./Routes/user/connection";
-import { adminRoutes } from "./Routes/Admin/AdminRoutes";
+import { adminRoutes } from "./Routes/admin/AdminRoutes";
 
 dotenv.config();
 const app = express();

@@ -6,7 +6,9 @@ const ReportSchema = new Schema<IReport>(
     reportedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     reason: { type: String, required: true },
     reportedAt: { type: Date, default: Date.now },
+    isDeleted:{type:Boolean,default:false},
   },
+  
   { timestamps: true }
 );
 

@@ -1,6 +1,6 @@
 import  express from "express";
-import { userAuthMiddleware } from "../../middleware/userauthantication";
-import { errorCatch } from "../../middleware/tryCatch";
+import { userAuthMiddleware } from "../../Middleware/userauthantication";
+import { errorCatch } from "../../Middleware/tryCatch";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../../Controller/commonFolders/subscriptionControllers/createPaymentIntent";
 const paymentRouter=express.Router()
 

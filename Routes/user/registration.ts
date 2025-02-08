@@ -1,10 +1,11 @@
 import express from "express";
-import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsers, uploadResume } from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, allUsersprofile, uploadResume, removeResumeFile} from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
-import { errorCatch } from "../../middleware/tryCatch";
-import { userAuthMiddleware } from "../../middleware/userauthantication";
-import {upload} from '../../middleware/upload'
-import ressumeupload from '../../middleware/ressumeUploading'
+import { errorCatch } from "../../Middleware/tryCatch";
+import { userAuthMiddleware } from "../../Middleware/userauthantication";
+import {upload} from '../../Middleware/upload'
+import { reportuser } from "../../Controller/User/getotheruserdetails";
+import ressumeupload from '../../Middleware/ressumeUploading'
 const router = express.Router()
 
 router
@@ -12,15 +13,16 @@ router
 .post("/login",errorCatch(login))
 .post("/googleauthlogin",errorCatch(googleauthlogin))
 
-.post("/logout",userAuthMiddleware,errorCatch(logout))
+.post("/logout",errorCatch(logout))
 .post("/emailus",userAuthMiddleware,errorCatch(EmailUs))
 
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
 .get("/people-you-might-know", userAuthMiddleware, errorCatch(getPeopleYouMightKnow))
 
 .post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
+.delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
 
-.put(
+.put( 
     "/profile",
     userAuthMiddleware,
     upload.fields([
@@ -29,5 +31,9 @@ router
     ]),
     errorCatch(updateUserProfile) 
   )
-.get('/all',AllUsers)
+.get('/all',AllUsersEmailCheck)
+.get('/users',AllUsers)
+.post("/reportuser",userAuthMiddleware,errorCatch(reportuser))
+.get("/allUsersprofile", userAuthMiddleware, errorCatch(allUsersprofile))
+
 export {router}

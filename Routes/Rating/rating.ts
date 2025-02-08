@@ -1,7 +1,7 @@
 import express from "express";
 import  {createRating, deleteRating, getAllRatings, getUserRatings}  from "../../Controller/commonFolders/Rating";
-import { errorCatch } from "../../middleware/tryCatch";
-import { userAuthMiddleware } from "../../middleware/userauthantication";
+import { errorCatch } from "../../Middleware/tryCatch";
+import { userAuthMiddleware } from "../../Middleware/userauthantication";
 const rating = express.Router()
 
 rating

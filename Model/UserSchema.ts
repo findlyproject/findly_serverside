@@ -1,6 +1,5 @@
-import mongoose, {Schema } from "mongoose";
+import mongoose, {connection, Schema } from "mongoose";
 import { IUser } from "../types/allTypes";
-import { boolean } from "zod";
 const profile = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735360/profile_jtwxaj.png"
 const banner = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735269/banner_ozuamb.png"
 
@@ -14,6 +13,8 @@ const UserSchema = new Schema<IUser>(
     phoneNumber: { type: String },
     dateOfBirth: { type: Date },
     location: { type: String },
+    reports: [{ type: Schema.Types.ObjectId, ref: "Report" }],
+
     gender: { type: String, enum: ["Male", "Female", "Other"] },
     profileImage: {
       type: String,
@@ -52,28 +53,38 @@ const UserSchema = new Schema<IUser>(
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },
 
-    connecting: [],
+    connecting: [{
+      connectionID:{ type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      status: { type: Boolean, default: false },
+    }],
 
     about: { type: String },
 
-    resumePDF: {
-      fileUrl: { type: String },
-      fileName: { type: String },
-      uploadedAt: { type: Date, default: Date.now },
-    },
-    resumeVideo: {
-      fileUrl: { type: String },
-      fileName: { type: String },
-      uploadedAt: { type: Date, default: Date.now },
-    },
-    isVerified:{
+    resumePDF: [
+      {
+        fileUrl: { type: String },
+        fileName: { type: String },
+        uploadedAt: { type: Date, default: null },
+        isDeleted: { type: Boolean, default: false },
+      }
+    ],
+    resumeVideo: [
+      {
+        fileUrl: { type: String },
+        fileName: { type: String },
+        uploadedAt: { type: Date, default: null },
+        isDeleted: { type: Boolean, default: false },
+      }
+    ],
+    isVerified:{  
       type:Boolean,
       default:false
     },
    
     coverLetter: { type: String },
     isBlocked: { type: Boolean, default: false },
-  }, 
+    isDeleted:{type:Boolean,default:false},
+  },
   { timestamps: true }
 );
 

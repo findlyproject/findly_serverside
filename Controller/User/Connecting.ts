@@ -8,14 +8,14 @@ import { any } from "zod";
 const userconnections = async (req:Request,res:Response):Promise<void>=>{
     const _id = req.user?.id;
     if (!_id) {
-         res.status(400).json({ status: false, message: "User ID is missing" });
+         res.status(400).json({ status: false, message: "User ID is missing" });  
          return
     }
 
     const finduser = await User.findOne({ _id });
     
     if (!finduser) {
-         res.status(404).json({ status: false, message: "User not found" });
+         res.status(404).json({ status: false, message: "User not found" });       
          return
          
     }
@@ -23,7 +23,7 @@ const userconnections = async (req:Request,res:Response):Promise<void>=>{
     const connectionid = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(connectionid)) {
          res.status(400).json({ status: false, message: "Invalid connection ID format" });
-         return
+         return                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
          
     }
 
@@ -35,14 +35,7 @@ const userconnections = async (req:Request,res:Response):Promise<void>=>{
 
     const userid = new mongoose.Types.ObjectId(connectionid);
 
-    if (!finduser.connecting.some((id:mongoose.Types.ObjectId ) => id.toString() === connectionid)) {
-        finduser.connecting.push(new mongoose.Types.ObjectId(userid));   
-        await finduser.save(); 
-
-        res.status(200).json({status:true,message:"connecting successful",finduser})
-        return
     
-}
 res.status(200).json({status:true,message:"connecting successful",finduser})
 }
 

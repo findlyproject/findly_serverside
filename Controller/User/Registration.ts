@@ -5,6 +5,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { string } from "zod";
 import mongoose from "mongoose";
 import multer, { Multer } from "multer";
+import { promises } from "dns";
 const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   const {
     email,
@@ -376,37 +377,37 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
 
 //  get People You Might Know based on followers and following
 export const getPeopleYouMightKnow = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
+    // const userId = req.user?.id;
 
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      res.status(400).json({ error: "Valid User ID is required" });
-      return;
-    }
+    // if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    //   res.status(400).json({ error: "Valid User ID is required" });
+    //   return;
+    // }
 
-    const user = await User.findById(userId).populate("connecting");
+    // const user = await User.findById(userId).populate("connecting");
 
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
+    // if (!user) {
+    //   res.status(404).json({ error: "User not found" });
+    //   return;
+    // }
 
-    const potentialConnections = await User.find({
-      _id: { 
-        $ne: userId,
-        $nin: user.connecting?.map((conn) => conn._id) || [] 
-      }
-    }).populate("connecting"); 
+    // const potentialConnections = await User.find({
+    //   _id: { 
+    //     $ne: userId,
+    //     $nin: user.connecting?.map((conn) => conn._id) || [] 
+    //   }
+    // }).populate("connecting"); 
 
-    const suggestedPeople = potentialConnections.filter((person) => {
-      // Find mutual connections
-      const mutualConnections = user.connecting?.filter((conn) =>
-        person.connecting?.some((pConn) => pConn._id.equals(conn._id))
-      );
+    // const suggestedPeople = potentialConnections.filter((person) => {
+    //   // Find mutual connections
+    //   const mutualConnections = user.connecting?.filter((conn) =>
+    //     person.connecting?.some((pConn) => pConn._id.equals(conn._id))
+    //   );
 
-      return mutualConnections.length > 0;
-    });
+    //   return mutualConnections.length > 0;
+    // });
 
-    res.status(200).json({ suggestedPeople });
+    // res.status(200).json({ suggestedPeople });
  
 };
 
@@ -506,7 +507,18 @@ const AllUsers=async(req:Request,res:Response)=>{
 }
 
 
+////////////////// ALL USER PROFILE ///////////////// 
 
+const allUsersprofile = async (req:Request,res:Response):Promise<void>=>{
+
+  const finduserprofile = await User.find({isDeleted:false,isBlocked:true})
+  if(!finduserprofile){
+    res.status(404).json({status:'failed',message:"cannot find all profile"})
+    return
+  }
+
+  res.status(200).json({status:true,message:"All profile finded",data:finduserprofile})
+}
 
 
 
@@ -517,6 +529,7 @@ export{
   findCurrentUserDetails,
   googleauthlogin,
   AllUsersEmailCheck,
-  AllUsers
+  AllUsers,
+  allUsersprofile
   
 }

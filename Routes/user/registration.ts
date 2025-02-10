@@ -1,11 +1,11 @@
 import express from "express";
-import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, allUsersprofile, uploadResume, removeResumeFile} from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, spacificuserdetails} from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
-import { errorCatch } from "../../Middleware/tryCatch";
-import { userAuthMiddleware } from "../../Middleware/userauthantication";
-import {upload} from '../../Middleware/upload'
+import { errorCatch } from "../../middleware/tryCatch";
+import { userAuthMiddleware } from "../../middleware/userauthantication";
+import {upload} from '../../middleware/upload'
 import { reportuser } from "../../Controller/User/getotheruserdetails";
-import ressumeupload from '../../Middleware/ressumeUploading'
+import ressumeupload from '../../middleware/ressumeUploading'
 const router = express.Router()
 
 router
@@ -19,8 +19,8 @@ router
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
 .get("/people-you-might-know", userAuthMiddleware, errorCatch(getPeopleYouMightKnow))
 
-.post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
-.delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
+// .post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
+// .delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
 
 .put( 
     "/profile",
@@ -34,6 +34,6 @@ router
 .get('/all',AllUsersEmailCheck)
 .get('/users',AllUsers)
 .post("/reportuser",userAuthMiddleware,errorCatch(reportuser))
-.get("/allUsersprofile", userAuthMiddleware, errorCatch(allUsersprofile))
+.get("/spacificuserdetails/:id", userAuthMiddleware, errorCatch(spacificuserdetails))
 
 export {router}

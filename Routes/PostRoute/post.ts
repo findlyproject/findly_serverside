@@ -1,9 +1,9 @@
 import express from "express";
 import {getpostbyid,getPostsByOwner, ReportPost,addPost } from "../../Controller/commonFolders/postController/Post";
-import { upload } from "../../Middleware/upload";
-import {errorCatch} from '../../Middleware/tryCatch'
+import { upload } from "../../middleware/upload";
+import {errorCatch} from '../../middleware/tryCatch'
 import { getCommentById,addCommentToPost,editComment,deleteComment} from "../../Controller/commonFolders/postController/Comment";
-import { userAuthMiddleware } from "../../Middleware/userauthantication";
+import { userAuthMiddleware } from "../../middleware/userauthantication";
 import { deleteReplay, editReply, getRepliesForComment, replyToComment } from "../../Controller/commonFolders/postController/Replay";
 import { LikeOrDislike } from "../../Controller/commonFolders/postController/Post";
 const postRouter = express.Router();

@@ -94,10 +94,18 @@ export interface IUser extends Document {
 
   education: {
     qualification: string;
-    startYear: string;
-    endYear: string;
+    startYear: string
+    endYear:string
     location: string;
   };
+  experience: 
+    {
+      jobRole:string      
+      companyName:string  
+      startYear:string 
+      endYear:string        
+    }[]
+  
   resumePDF?: {
     fileUrl: string;
     fileName: string;
@@ -146,5 +154,8 @@ export interface IUser extends Document {
 export interface IAdmin extends Document{
   email:string;
   password:string;
+  role:"user"|"admin",
+  isBlocked?: boolean;
+  isDeleted?:boolean;
 }
 

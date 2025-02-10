@@ -1,13 +1,11 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-
 import { IComment } from "../types/allTypes";
 import { IReply } from "../types/allTypes";
 
 const ReplySchema = new Schema<IReply>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "Users", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     reply: { type: String, required: true },
-    repliedAt: { type: Date, default: Date.now },
     isDeleted:{type:Boolean,default:false},
   },
   { timestamps: true }
@@ -15,9 +13,8 @@ const ReplySchema = new Schema<IReply>(
 
 const CommentSchema = new Schema<IComment>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "Users", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     comment: { type: String, required: true },
-    commentedAt: { type: Date, default: Date.now },
     replies: [{ type: Schema.Types.ObjectId, ref: "Reply" }],
     isDeleted:{type:Boolean,default:false},
   },

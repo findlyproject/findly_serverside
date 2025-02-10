@@ -8,23 +8,38 @@ import { deleteReplay, editReply, getRepliesForComment, replyToComment } from ".
 import { LikeOrDislike } from "../../Controller/commonFolders/postController/Post";
 const postRouter = express.Router();
 
-
 postRouter
-.get('/:id',errorCatch(getpostbyid))
+
+//post
+.get("/allposts", getAllPosts)
+.get('/post/:id',errorCatch(getpostbyid))
 .get("/owner/:ownerId",userAuthMiddleware,errorCatch( getPostsByOwner))
-.post("/upload",upload.fields([{ name: "media", maxCount: 5}]),userAuthMiddleware,errorCatch( addPost))
+.post(
+    "/upload",
+    userAuthMiddleware, // ✅ Ensure user authentication happens first
+    uploadMedia, // ✅ Accept multiple files
+    addPost
+  )
+  
+
+//like & unlike
+.post("/user/likepost/:postid",userAuthMiddleware,errorCatch(LikeOrDislike))
 
 //comment
+.get("/allcomments",errorCatch(getAllComments))  
 .get('/viewcomment/:id',userAuthMiddleware,errorCatch(getCommentById))  
 .post("/comment",userAuthMiddleware,errorCatch(addCommentToPost))
-.put("/edit-comment",userAuthMiddleware,errorCatch(editComment))
-.delete("/delete-comment", userAuthMiddleware,errorCatch(deleteComment))
+.put("/edit-comment/:commentId",userAuthMiddleware,errorCatch(editComment))
+.post("/delete-comment/:commentId", userAuthMiddleware,errorCatch(deleteComment))
 
+//reply
 .post("/user/postreplay",userAuthMiddleware,errorCatch(replyToComment))
 .get("/user/findreply/:commentId",userAuthMiddleware,errorCatch(getRepliesForComment))
 .get("/user/editreplay",userAuthMiddleware,errorCatch(editReply))
 .delete("/user/deletereplay",userAuthMiddleware,errorCatch(deleteReplay))
-.post("/user/likepost/:postid",userAuthMiddleware,errorCatch(LikeOrDislike))
+
+//report
 .post("/user/reportpost",userAuthMiddleware,errorCatch(ReportPost))
+
 export default postRouter;
  

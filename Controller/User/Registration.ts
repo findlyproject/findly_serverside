@@ -1,7 +1,8 @@
 import User from "../../Model/UserSchema";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import jwt, { JwtPayload } from "jsonwebtoken";import { string } from "zod";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { string } from "zod";
 import mongoose from "mongoose";
 import multer, { Multer } from "multer";
 import { IUser } from "../../types/allTypes";

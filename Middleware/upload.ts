@@ -22,6 +22,7 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: async (_req, file) => {
     console.log(`Uploading: ${file.originalname} - Field: ${file.fieldname}`);
+console.log("files,files",file);
 
     const uploadConfig: Record<string, { folder: string; resource_type: string; allowed_formats: string[] }> = {
       profileImage: {
@@ -35,19 +36,27 @@ const storage = new CloudinaryStorage({
         allowed_formats: ["png", "jpg", "jpeg"],
       },
       media: {
+<<<<<<< HEAD
         folder: "posts/media", 
         resource_type: "auto", 
         allowed_formats: ["jpg", "jpeg", "png", "mp4", "mov"], 
       },
+=======
+        folder: "posts/media",
+        resource_type: "auto",
+        allowed_formats: ["png", "jpg", "jpeg", "mp4", "mov", "avi", "mkv"],
+      }, // ✅ Fix: Properly closed media object
+>>>>>>> 395ba2e99b77ecccc0467c8e41a019f1fd592094
     };
-
+    console.log("upload multer",uploadConfig[file.fieldname])
     if (!uploadConfig[file.fieldname]) {
-      throw new Error("Invalid file field name");
+      throw new Error(`Invalid file field name: ${file.fieldname}`);
     }
 
-    return uploadConfig[file.fieldname];
+    return uploadConfig[file.fieldname]; // ✅ Returns correct upload settings
   },
 });
+
 
 const multerInstance: Multer = multer({ storage });
 

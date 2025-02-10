@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { Admin } from "../../Model/AdminSchema";
+import { Admin } from "../../model/AdminSchema";
 import  jwt  from "jsonwebtoken";
-import User from "../../Model/UserSchema";
+import User from "../../model/UserSchema";
 
 
 const login = async(req:Request,res:Response):Promise<void>=>{

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { Post } from "../../../Model/PostSchema";
-import { Report } from "../../../Model/ReportSchema";
+import { Post } from "../../../model/PostSchema";
+import { Report } from "../../../model/ReportSchema";
 import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 

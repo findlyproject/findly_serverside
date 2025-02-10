@@ -1,5 +1,5 @@
 import {Request,Response} from "express";
-import User from "../../../Model/UserSchema"; 
+import User from "../../../model/UserSchema"; 
 
 
 const UserSearch=async(req:Request, res:Response):Promise<void> => {

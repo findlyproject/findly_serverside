@@ -21,7 +21,7 @@ postRouter
     addPost
   )
   
-
+     
 //like & unlike
 .post("/user/likepost/:postid",userAuthMiddleware,errorCatch(LikeOrDislike))
 

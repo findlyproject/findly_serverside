@@ -20,7 +20,7 @@ postRouter
     upload.fields([{ name: "media", maxCount: 5 },]), // ✅ Accept multiple files
     addPost
   )
-  
+                             
 
 //like & unlike
 .post("/user/likepost/:postid",userAuthMiddleware,errorCatch(LikeOrDislike))

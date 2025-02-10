@@ -10,7 +10,7 @@ export const getAllComments = async (req: Request, res: Response): Promise<void>
   const totalComments = await Comment.countDocuments(); 
   res.status(200).json({ comments, totalComments });  
 };
-
+//gggggggggggggggggggggggggg
 // Comment on a Post
 export const addCommentToPost = async (req: Request, res: Response): Promise<void> => {
   const { postId, comment } = req.body;

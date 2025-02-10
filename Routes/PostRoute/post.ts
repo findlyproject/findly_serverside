@@ -1,8 +1,8 @@
 import express from "express";
-import {getpostbyid,getPostsByOwner, ReportPost,addPost } from "../../Controller/commonFolders/postController/Post";
+import {getpostbyid,getPostsByOwner, ReportPost,addPost,getAllPosts } from "../../Controller/commonFolders/postController/Post";
 import { upload } from "../../middleware/upload";
 import {errorCatch} from '../../middleware/tryCatch'
-import { getCommentById,addCommentToPost,editComment,deleteComment} from "../../Controller/commonFolders/postController/Comment";
+import { getCommentById,addCommentToPost,editComment,deleteComment,getAllComments} from "../../Controller/commonFolders/postController/Comment";
 import { userAuthMiddleware } from "../../middleware/userauthantication";
 import { deleteReplay, editReply, getRepliesForComment, replyToComment } from "../../Controller/commonFolders/postController/Replay";
 import { LikeOrDislike } from "../../Controller/commonFolders/postController/Post";
@@ -17,10 +17,10 @@ postRouter
 .post(
     "/upload",
     userAuthMiddleware, // ✅ Ensure user authentication happens first
-    uploadMedia, // ✅ Accept multiple files
+    upload.fields([{ name: "media", maxCount: 5 },]), // ✅ Accept multiple files
     addPost
   )
-  
+                             
 
 //like & unlike
 .post("/user/likepost/:postid",userAuthMiddleware,errorCatch(LikeOrDislike))

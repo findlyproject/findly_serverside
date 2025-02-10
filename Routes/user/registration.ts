@@ -1,5 +1,5 @@
 import express from "express";
-import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, spacificuserdetails} from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, spacificuserdetails, uploadResume, removeResumeFile, getUploadedFiles} from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
 import { errorCatch } from "../../middleware/tryCatch";
 import { userAuthMiddleware } from "../../middleware/userauthantication";
@@ -19,8 +19,9 @@ router
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
 .get("/people-you-might-know", userAuthMiddleware, errorCatch(getPeopleYouMightKnow))
 
-// .post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
-// .delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
+.post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
+.get("/getuploadedfiles",userAuthMiddleware,errorCatch(getUploadedFiles))
+.delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
 
 .put( 
     "/profile",

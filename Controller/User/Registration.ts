@@ -485,224 +485,180 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
 };
 
 
-export const uploadResume = async (req: Request, res: Response):Promise<void> => {
 
- 
-    const files = req.files as { resume: Express.Multer.File[] }; 
-    const file = files?.resume ? files.resume[0] : null;  
-    console.log("files",files)
+export const uploadResume = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const files = req.files as { resume?: Express.Multer.File[]; video?: Express.Multer.File[] };
+    const pdfFile = files?.resume ? files.resume[0] : null;
+    const videoFile = files?.video ? files.video[0] : null;
 
-    if (!file) {
-       res.status(400).json({ success:false,message: "No file uploaded" });
-       return
+    console.log("pdfFile", pdfFile);
+    console.log("videoFile", videoFile);
+    console.log("Uploaded Files:", files);
+
+    if (!pdfFile && !videoFile) {
+      res.status(400).json({ success: false, message: "No files uploaded" });
+      return;
     }
 
-    const fileUrl = file.path; 
-    const fileName = file.originalname;
-    const fileType = file.mimetype.startsWith("video") ? "Video" : "PDF";
-
-    
-    const userId = req.user?.id; 
+    const userId = req.user?.id;
     const user = await User.findById(userId);
 
     if (!user) {
-       res.status(404).json({success:false, message: "User not found" });
-       return
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
     }
 
+    if (!user.resumePDF) user.resumePDF = [];
+    if (!user.resumeVideo) user.resumeVideo = [];
 
-    if (!user.resumePDF) {
-      user.resumePDF = []; 
-    }
-  
-    if (!user.resumeVideo) {
-      user.resumeVideo = []; 
-    }
-  
-    // Push the file into the correct array based on file type
-    if (fileType === "PDF") {
-      user.resumePDF.push({
-        fileUrl,
-        fileName,
-        uploadedAt: new Date(),
-        isDeleted: false, // Add a default value for `isDeleted`
-      });
-    } else if (fileType === "Video") {
-      user.resumeVideo.push({
-        fileUrl,
-        fileName,
-        uploadedAt: new Date(),
-        isDeleted: false, // Add a default value for `isDeleted`
-      });
+   
+    if (pdfFile) {
+      const existingActivePDF = user.resumePDF.some((pdf) => !pdf.isDeleted);
+      if (!existingActivePDF) {
+        user.resumePDF.push({
+          fileUrl: pdfFile.path,
+          fileName: pdfFile.originalname,
+          uploadedAt: new Date(),
+          isDeleted: false,
+        });
+      } else {
+        res.status(400).json({ success: false, message: "A resume PDF already exists." });
+        return;
+      }
     }
 
-    await user.save(); 
+    if (videoFile) {
+      const existingActiveVideo = user.resumeVideo.some((video) => !video.isDeleted);
+      if (!existingActiveVideo) {
+        user.resumeVideo.push({
+          fileUrl: videoFile.path,
+          fileName: videoFile.originalname,
+          uploadedAt: new Date(),
+          isDeleted: false,
+        });
+      } else {
+        res.status(400).json({ success: false, message: "A resume video already exists." });
+        return;
+      }
+    }
 
-     res.status(200).json({ message: "Resume uploaded successfully", user });
+    await user.save();
 
+   
+    res.status(200).json({
+      success: true,
+      message: "Resume uploaded successfully",
+      user: {
+        ...user.toObject(),
+        resumePDF: user.resumePDF.filter((pdf) => !pdf.isDeleted), 
+        resumeVideo: user.resumeVideo.filter((video) => !video.isDeleted), 
+      },
+    });
+
+  } catch (error) {
+    console.error("Error uploading resume:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
 };
 
 
 
-// interface ResumeFile {
-//   fileUrl: string;
-//   fileName: string;
-//   uploadedAt: Date;
-//   isDeleted?: boolean;
-// }
 
-// export const uploadResume = async (req: Request, res: Response): Promise<void> => {
-//   // Extract uploaded files
-//   const files = req.files as { resume?: Express.Multer.File[]; introductionVideo?: Express.Multer.File[] };
-//   console.log("Uploaded files:", files);
+export const getUploadedFiles = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id; 
+console.log("user",userId);
 
-//   // Get individual files
-//   const resumeFile = files?.resume?.[0] || null;
-//   const videoFile = files?.introductionVideo?.[0] || null;
+    if (!userId) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
 
-//   // If no files were uploaded, return an error
-//   if (!resumeFile && !videoFile) {
-//     return res.status(400).json({ success: false, message: "No files uploaded" });
-//   }
+    const user = await User.findById(userId);
 
-//   const userId = req.user?.id;
-//   // Find the user by ID
-//   const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
+    }
 
-//   // If user is not found, return an error
-//   if (!user) {
-//     return res.status(404).json({ success: false, message: "User not found" });
-//   }
+  
+    const activeResumePDFs = user.resumePDF?.filter((pdf) => !pdf.isDeleted);
+    const activeResumeVideos = user.resumeVideo?.filter((video) => !video.isDeleted);
 
-//   // Initialize resume arrays if they don't exist
-//   if (!user.resumePDF) user.resumePDF = [];
-//   if (!user.resumeVideo) user.resumeVideo = [];
+    res.status(200).json({
+      success: true,
+      message: "Uploaded files retrieved successfully",
+      uploadedFiles: {
+        resumePDFs: activeResumePDFs,
+        resumeVideos: activeResumeVideos,
+      },
+    });
 
-//   // Process resume file if present
-//   if (resumeFile) {
-//     user.resumePDF.push({
-//       fileUrl: resumeFile.path,
-//       fileName: resumeFile.originalname,
-//       uploadedAt: new Date(),
-//     });
-//     console.log("PDF Resume Uploaded:", user.resumePDF);
-//   }
-
-//   // Process video file if present
-//   if (videoFile) {
-//     user.resumeVideo.push({
-//       fileUrl: videoFile.path,
-//       fileName: videoFile.originalname,
-//       uploadedAt: new Date(),
-//     });
-//     console.log("Video Resume Uploaded:", user.resumeVideo);
-//   }
-
-//   // Save the user with updated resume arrays
-//   try {
-//     await user.save();
-//     // Respond with success message
-//     res.status(200).json({ success: true, message: "Files uploaded successfully", user });
-//   } catch (error) {
-//     console.error("Error saving user:", error);
-//     res.status(500).json({ success: false, message: "Failed to save user data" });
-//   }
-// };
+  } catch (error) {
+    console.error("Error retrieving uploaded files:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 
 
 
-//  const removeResumeFile = async (req: Request, res: Response): Promise<void> => {
-//     try {
-//         const userId: string | undefined = req.user?.id
-//         const fileType: "pdf" | "video" | undefined = req.query.fileType as "pdf" | "video";
-// console.log("fileType",fileType)
-//         if (!userId) {
-//             res.status(401).json({ success: false, message: "Unauthorized access" });
-//             return;
-//         }
-
-//         if (!fileType || (fileType !== "pdf" && fileType !== "video")) {
-//             res.status(400).json({ success: false, message: "Invalid file type. Use 'pdf' or 'video'." });
-//             return;
-//         }
-
-//         const user: IUser | null = await User.findById(userId);
-//         if (!user) {
-//             res.status(404).json({ success: false, message: "User not found" });
-//             return;
-//         }
-
-        
-//         let fileUrl: string | undefined = "";
-//         if (fileType === "pdf" && user.resumePDF?.fileUrl) {
-//             fileUrl = user.resumePDF.fileUrl;
-//             user.resumePDF = { fileUrl: "", fileName: "", uploadedAt:null};
-//         } else if (fileType === "video" && user.resumeVideo?.fileUrl) {
-//             fileUrl = user.resumeVideo.fileUrl;
-//             user.resumeVideo = { fileUrl: "", fileName: "", uploadedAt: null };
-//         } else {
-//             res.status(400).json({ success: false, message: `No ${fileType} file found to remove` });
-//             return;
-//         }
-
-        
-        
-
-//         await user.save();
-//         res.status(200).json({ success: true, message: `${fileType} removed successfully`, user });
-//     } catch (error) {
-//         console.error("Error removing file:", error);
-//         res.status(500).json({ success: false, message: "Internal server error" });
-//     }
-// };
-
-
- const removeResumeFile = async (req: Request, res: Response): Promise<void> => {
-  const userId: string | undefined = req.user?.id; // Assuming `req.user?.id` contains the logged-in user's ID
-  const fileType: "pdf" | "video" | undefined = req.query.fileType as "pdf" | "video";  // Extract fileType
+const removeResumeFile = async (req: Request, res: Response): Promise<void> => {
+  const userId: string | undefined = req.user?.id;
+  const fileType: "resume" | "introductionVideo" | undefined = req.query.fileType as "resume" | "introductionVideo";
+  console.log("fileType",fileType);
+  
 
   if (!userId) {
     res.status(401).json({ success: false, message: "Unauthorized access" });
     return;
   }
 
-  // Validate the fileType
-  if (!fileType || (fileType !== "pdf" && fileType !== "video")) {
+  if (!fileType || (fileType !== "resume" && fileType !== "introductionVideo")) {
     res.status(400).json({ success: false, message: "Invalid file type. Use 'pdf' or 'video'." });
     return;
   }
 
-  // Fetch the user from the database
   const user = await User.findById(userId);
   if (!user) {
     res.status(404).json({ success: false, message: "User not found" });
     return;
   }
 
-  // Check if the resume fields exist and mark them as deleted
-  if (fileType === "pdf" && Array.isArray(user.resumePDF)) {
+  let updatedFiles = [];
+  if (fileType === "resume" && Array.isArray(user.resumePDF)) {
     user.resumePDF.forEach((resume) => {
-      resume.isDeleted = true; // Mark all PDFs as deleted
+      resume.isDeleted = true;
     });
-  } else if (fileType === "video" && Array.isArray(user.resumeVideo)) {
+
+   
+    updatedFiles = user.resumePDF.filter((resume) => !resume.isDeleted);
+  } else if (fileType === "introductionVideo" && Array.isArray(user.resumeVideo)) {
     user.resumeVideo.forEach((resume) => {
-      resume.isDeleted = true; // Mark all videos as deleted
+      resume.isDeleted = true;
     });
+
+ 
+    updatedFiles = user.resumeVideo.filter((resume) => !resume.isDeleted);
   } else {
     res.status(404).json({ success: false, message: `No ${fileType} files found to mark as deleted` });
     return;
   }
 
   try {
-    await user.save(); // Save the updated user document
-
-    res.status(200).json({ success: true, message: `${fileType} files marked as deleted.`,user });
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: `${fileType} files marked as deleted.`,
+      files: updatedFiles, 
+    });
   } catch (error) {
     console.error("Error updating user:", error);
     res.status(500).json({ success: false, message: "Failed to update user data" });
   }
 };
+
 
 
 

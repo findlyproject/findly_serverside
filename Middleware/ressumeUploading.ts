@@ -17,8 +17,8 @@ const uploadConfig: Record<string, { folder: string; resource_type: string; allo
     resource_type: "auto",
     allowed_formats: ["pdf"],
   },
-  introductionVideo: {
-    folder: "users/introduction_video",
+  video: {
+    folder: "users/video",
     resource_type: "video",
     allowed_formats: ["mp4", "avi", "mov"],
   },
@@ -36,7 +36,7 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage }).fields([
   { name: "resume", maxCount: 1 },
-  { name: "introductionVideo", maxCount: 1 },
+  { name: "video", maxCount: 1 },
 ]);
 
 export default upload;

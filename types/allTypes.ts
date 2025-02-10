@@ -131,6 +131,9 @@ export interface IUser extends Document {
 export interface IAdmin extends Document{
   email:string;
   password:string;
+  role:"user"|"admin",
+  isBlocked?: boolean;
+  isDeleted?:boolean;
 }
 
 

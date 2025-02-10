@@ -9,6 +9,7 @@ import postRouter from "./Routes/PostRoute/post";
 import { paymentRouter } from "./Routes/PaymentRoute/PaymentRoutes";
 import{Searchrouter} from'./Routes/SearchRoute/search';
 import { connectionrout } from "./Routes/user/connection";
+import { adminRoutes } from "./Routes/Admin/AdminRoutes";
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,8 @@ app.use(cors({
   app.use("/api/payment",paymentRouter)
   app.use("/api/user",Searchrouter)
   app.use("/api/connecting",connectionrout)
+  app.use("/api/admin",adminRoutes)
+
 
 
 

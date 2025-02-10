@@ -1,4 +1,4 @@
-import User from "../../Model/UserSchema";
+import User from "../../model/UserSchema";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -235,7 +235,11 @@ const logout = async (req: Request, res: Response): Promise<void> => {
 ////////////////////// GOOGLE AUTH LOGIN /////////////////////
 
 const googleauthlogin = async (req: Request, res: Response) => {
-  const { email,name } = req.body;
+
+  const { email,name,image } = req.body;
+
+  console.log("email:",email,"name:",name,"image:",image);
+  
   if(!name && !email){
     res.status(404).json({status:false,message:"name or email is missing"})
     return
@@ -347,6 +351,7 @@ const googleauthlogin = async (req: Request, res: Response) => {
     const user =await new User({
       email,    
       firstName:name,
+      profileImage:image,
     });
     const savegoogleauth =await user.save()
     res.status(200).json({status:true,message:"google auth registration and Login successful",savegoogleauth})
@@ -509,15 +514,22 @@ const AllUsers=async(req:Request,res:Response)=>{
 
 ////////////////// ALL USER PROFILE ///////////////// 
 
-const allUsersprofile = async (req:Request,res:Response):Promise<void>=>{
+const spacificuserdetails = async (req:Request,res:Response):Promise<void>=>{
+ 
+  const userid = req.params.id;
 
-  const finduserprofile = await User.find({isDeleted:false,isBlocked:true})
+  if(!userid){
+    res.status(404).json({status:false,message:"cannot find id"})
+    return
+  }
+  const finduserprofile = await User.find({_id:userid,isDeleted:false,isBlocked:false})
+  
   if(!finduserprofile){
-    res.status(404).json({status:'failed',message:"cannot find all profile"})
+    res.status(404).json({status:false,message:"cannot find all profile"})
     return
   }
 
-  res.status(200).json({status:true,message:"All profile finded",data:finduserprofile})
+  res.status(200).json({status:true,message:"All profile finded",finduserprofile})
 }
 
 
@@ -530,6 +542,6 @@ export{
   googleauthlogin,
   AllUsersEmailCheck,
   AllUsers,
-  allUsersprofile
+  spacificuserdetails
   
 }

@@ -1,9 +1,9 @@
 import express from "express";
-import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, allUsersprofile} from "../../Controller/User/Registration";
+import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUser,updateUserProfile,getPeopleYouMightKnow,AllUsersEmailCheck ,AllUsers, spacificuserdetails} from "../../Controller/User/Registration";
 import { EmailUs } from "../../Controller/User/ContactUs";
-import { errorCatch } from "../../Middleware/tryCatch";
-import { userAuthMiddleware } from "../../Middleware/userauthantication";
-// import {upload} from '../../Middleware/upload'
+import { errorCatch } from "../../middleware/tryCatch";
+import { userAuthMiddleware } from "../../middleware/userauthantication";
+import {upload} from '../../middleware/upload'
 import { reportuser } from "../../Controller/User/getotheruserdetails";
 const router = express.Router()
 
@@ -17,18 +17,18 @@ router
 
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
 .get("/people-you-might-know", userAuthMiddleware, errorCatch(getPeopleYouMightKnow))
-// .put(
-//     "/profile",
-//     userAuthMiddleware,
-//     upload.fields([
-//       { name: "profileImage", maxCount: 1 },   
-//       { name: "banner", maxCount: 1 },
-//     ]),
-//     errorCatch(updateUserProfile) // Make sure errorCatch handles async properly
-//   )
+.put(
+    "/profile",
+    userAuthMiddleware,
+    upload.fields([
+      { name: "profileImage", maxCount: 1 },   
+      { name: "banner", maxCount: 1 },
+    ]),
+    errorCatch(updateUserProfile) // Make sure errorCatch handles async properly
+  )
 .get('/all',AllUsersEmailCheck)
 .get('/users',AllUsers)
 .post("/reportuser",userAuthMiddleware,errorCatch(reportuser))
-.get("/allUsersprofile", userAuthMiddleware, errorCatch(allUsersprofile))
+.get("/spacificuserdetails/:id", userAuthMiddleware, errorCatch(spacificuserdetails))
 
 export {router}

@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";import { string } from "zod";
 import mongoose from "mongoose";
 import multer, { Multer } from "multer";
+import { promises } from "dns";
 const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   const {
     email,
@@ -74,12 +75,11 @@ console.log("user",user);
   res.status(200).json({ message: "success", user });
 };
 
-// Login api 
+////////////////////// LOGIN API ////////////////////////
 
 const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   const logeduser = await User.findOne({ email });
-  console.log("logeduser", logeduser);
   if (!logeduser) {
     res.status(404).json({ status: false, message: "email id is wrong" });
     return;
@@ -136,11 +136,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
       ? new Date(logeduser.subscriptionEndDate)
       : null;
   
-    console.log("Subscription End Date:", subscriptionEndDate);
     
     if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
       const currentDate = new Date();
-      console.log("Current Date:", currentDate);
   
      
       const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
@@ -149,11 +147,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
       const normalizedCurrentDate = startOfDay(currentDate);
   
       const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
-      console.log("Time Difference:", differenceInTime);
   
       const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
   
-      console.log("Remaining Days:", remainingValidityDays);
 
 
       if (remainingValidityDays > 0) {
@@ -194,7 +190,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
     .json({ status: true, message: "Login successful", logeduser });
 };
 
-// Log out
+//////////////////////////////  LOGOUT //////////////////
 
 const logout = async (req: Request, res: Response): Promise<void> => {
 
@@ -241,13 +237,16 @@ const logout = async (req: Request, res: Response): Promise<void> => {
 ////////////////////// GOOGLE AUTH LOGIN /////////////////////
 
 const googleauthlogin = async (req: Request, res: Response) => {
-  const { email,name } = req.body;
+
+  const { email,name,image } = req.body;
+
+  console.log("email:",email,"name:",name,"image:",image);
+  
   if(!name && !email){
     res.status(404).json({status:false,message:"name or email is missing"})
     return
   }
   const finduser = await User.findOne({ email });
-  console.log("finduser",finduser);
   
   if (finduser) {
     const token = jwt.sign(
@@ -280,11 +279,9 @@ const googleauthlogin = async (req: Request, res: Response) => {
       ? new Date(finduser.subscriptionEndDate)
       : null;
   
-    console.log("Subscription End Date:", subscriptionEndDate);
     
     if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
       const currentDate = new Date();
-      console.log("Current Date:", currentDate);
   
      
       const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
@@ -293,11 +290,9 @@ const googleauthlogin = async (req: Request, res: Response) => {
       const normalizedCurrentDate = startOfDay(currentDate);
   
       const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
-      console.log("Time Difference:", differenceInTime);
   
       const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
   
-      console.log("Remaining Days:", remainingValidityDays);
 
 
       if (remainingValidityDays > 0) {
@@ -329,7 +324,6 @@ const googleauthlogin = async (req: Request, res: Response) => {
         return
     }
     } else {
-      console.error("Invalid subscription end date");
     }
   }
     res.cookie("token", token, {
@@ -353,12 +347,13 @@ const googleauthlogin = async (req: Request, res: Response) => {
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
-    res.status(200).json({status:true,message:"google auth Login successful"})
+    res.status(200).json({status:true,message:"google auth Login successful",finduser})
     return
   }else{
     const user =await new User({
-      email,
+      email,    
       firstName:name,
+      profileImage:image,
     });
     const savegoogleauth =await user.save()
     res.status(200).json({status:true,message:"google auth registration and Login successful",savegoogleauth})
@@ -375,7 +370,6 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
     return;
   }
 
-  console.log("User ID:", userId);
 
   const currentUserDetails = await User.findById(userId).select("-password");
 
@@ -390,37 +384,37 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
 
 //  get People You Might Know based on followers and following
 export const getPeopleYouMightKnow = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
+    // const userId = req.user?.id;
 
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      res.status(400).json({ error: "Valid User ID is required" });
-      return;
-    }
+    // if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    //   res.status(400).json({ error: "Valid User ID is required" });
+    //   return;
+    // }
 
-    const user = await User.findById(userId).populate("connecting");
+    // const user = await User.findById(userId).populate("connecting");
 
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
+    // if (!user) {
+    //   res.status(404).json({ error: "User not found" });
+    //   return;
+    // }
 
-    const potentialConnections = await User.find({
-      _id: { 
-        $ne: userId,
-        $nin: user.connecting?.map((conn) => conn._id) || [] 
-      }
-    }).populate("connecting"); 
+    // const potentialConnections = await User.find({
+    //   _id: { 
+    //     $ne: userId,
+    //     $nin: user.connecting?.map((conn) => conn._id) || [] 
+    //   }
+    // }).populate("connecting"); 
 
-    const suggestedPeople = potentialConnections.filter((person) => {
-      // Find mutual connections
-      const mutualConnections = user.connecting?.filter((conn) =>
-        person.connecting?.some((pConn) => pConn._id.equals(conn._id))
-      );
+    // const suggestedPeople = potentialConnections.filter((person) => {
+    //   // Find mutual connections
+    //   const mutualConnections = user.connecting?.filter((conn) =>
+    //     person.connecting?.some((pConn) => pConn._id.equals(conn._id))
+    //   );
 
-      return mutualConnections.length > 0;
-    });
+    //   return mutualConnections.length > 0;
+    // });
 
-    res.status(200).json({ suggestedPeople });
+    // res.status(200).json({ suggestedPeople });
  
 };
 
@@ -523,7 +517,27 @@ const AllUsers=async(req:Request,res:Response)=>{
 }
 
 
+////////////////// ALL USER PROFILE ///////////////// 
 
+const spacificuserdetails = async (req:Request,res:Response):Promise<void>=>{
+ 
+  const userid = req.params.id;
+console.log("userid",userid);
+
+  if(!userid){
+    res.status(404).json({status:false,message:"cannot find id"})
+    return
+  }
+  const finduserprofile = await User.findOne({_id:userid,isDeleted:false,isBlocked:false}).populate('connecting.connectionID')
+  console.log("finduserprofile",finduserprofile);
+  
+  if(!finduserprofile){
+    res.status(404).json({status:false,message:"cannot find all profile"})
+    return
+  }
+
+  res.status(200).json({status:true,message:"All profile finded",finduserprofile})
+}
 
 
 
@@ -534,6 +548,7 @@ export{
   findCurrentUserDetails,
   googleauthlogin,
   AllUsersEmailCheck,
-  AllUsers
+  AllUsers,
+  spacificuserdetails
   
 }

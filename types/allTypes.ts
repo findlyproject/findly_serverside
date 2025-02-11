@@ -88,6 +88,7 @@ export interface IUser extends Document {
   skills?: string[];
   jobTitle?: string[];
   jobLocation?: string[];
+  reports: mongoose.Types.ObjectId[]; 
 
   education: {
     qualification: string;
@@ -97,13 +98,28 @@ export interface IUser extends Document {
     college:string
   }[];
 
+  experience:{
+    jobRole:string
+      companyName:string,
+      companyLogo:string,
+      startYear:string,
+      endYear:string
+  }[]
+
   projects?: {
     title: string;
     description: string;
     link?: string;
   }[];
 
-  connecting: mongoose.Types.ObjectId[],
+  connecting: {
+    connectionID: mongoose.Types.ObjectId;
+    status: boolean;
+    createdAt:Date,
+    
+  }[];
+  
+  
 
   about?: string;
 
@@ -127,5 +143,8 @@ export interface IUser extends Document {
 export interface IAdmin extends Document{
   email:string;
   password:string;
+  role:"user"|"admin",
+  isBlocked?: boolean;
+  isDeleted?:boolean;
 }
 

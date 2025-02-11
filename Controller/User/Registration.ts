@@ -350,7 +350,7 @@ const googleauthlogin = async (req: Request, res: Response) => {
     const user =await new User({
       email,    
       firstName:name,
-      profileImage:image,
+      profileImage:image, 
     });
     const savegoogleauth =await user.save()
     res.status(200).json({status:true,message:"google auth registration and Login successful",savegoogleauth})
@@ -419,6 +419,9 @@ export const getPeopleYouMightKnow = async (req: Request, res: Response): Promis
 
 export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id; 
+  const data = req.body;
+  console.log("data",data);``
+  
 
   if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
     res.status(400).json({ error: "Valid User ID is required" });
@@ -461,17 +464,17 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
     ...(projects && { projects }),   
   };
 
-  if (req.files && typeof req.files === "object") {
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+  // if (req.files && typeof req.files === "object") {
+  //   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-    if (files["profileImage"] && Array.isArray(files["profileImage"])) {
-      updateData.profileImage = files["profileImage"][0].path; 
-    }
+  //   if (files["profileImage"] && Array.isArray(files["profileImage"])) {
+  //     updateData.profileImage = files["profileImage"][0].path; 
+  //   }
 
-    if (files["banner"] && Array.isArray(files["banner"])) {
-      updateData.banner = files["banner"][0].path; 
-    }
-  }
+  //   if (files["banner"] && Array.isArray(files["banner"])) {
+  //     updateData.banner = files["banner"][0].path; 
+  //   }
+  // }
 
   const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
 

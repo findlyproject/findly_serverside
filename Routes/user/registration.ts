@@ -12,7 +12,7 @@ router
 .post("/login",errorCatch(login))
 .post("/googleauthlogin",errorCatch(googleauthlogin))
 
-.post("/logout",userAuthMiddleware,errorCatch(logout))
+.post("/logout",errorCatch(logout))
 .post("/emailus",userAuthMiddleware,errorCatch(EmailUs))
 
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))

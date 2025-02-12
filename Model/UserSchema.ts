@@ -28,6 +28,7 @@ const UserSchema = new Schema<IUser>(
     jobTitle: [{ type: String }],
     jobLocation: [{ type: String }],
 
+<<<<<<< HEAD
     education: [{
       qualification: { type: String },
       location:{type:String},
@@ -44,6 +45,22 @@ const UserSchema = new Schema<IUser>(
 
 
 
+=======
+    education: [
+      {
+        qualification: { type: String },
+        startYear: { type: String },
+        endYear: { type: String },
+        college: { type: String },  
+      }
+    ], 
+    experience:[{
+      jobRole:{type:String},
+      companyName:{type:String},
+      startYear:{type:String},
+      endYear:{type:String}
+
+>>>>>>> 2feeae8abef2485a182dfc1fcc4b130b4986963a
     }],
 
     projects: [
@@ -73,14 +90,27 @@ const UserSchema = new Schema<IUser>(
 
     about: { type: String },
 
-    resume: [
+    resumePDF: [
       {
         fileUrl: { type: String },
-        type: { type: String, enum: ["PDF", "Video"] },
-        uploadedAt: { type: Date, default: Date.now },
-      },
+        fileName: { type: String },
+        uploadedAt: { type: Date, default: null },
+        isDeleted: { type: Boolean, default: false },
+      }
     ],
-
+    resumeVideo: [
+      {
+        fileUrl: { type: String },
+        fileName: { type: String },
+        uploadedAt: { type: Date, default: null },
+        isDeleted: { type: Boolean, default: false },
+      }
+    ],
+    isVerified:{  
+      type:Boolean,
+      default:false
+    },
+   
     coverLetter: { type: String },
     isBlocked: { type: Boolean, default: false },
     isDeleted:{type:Boolean,default:false},

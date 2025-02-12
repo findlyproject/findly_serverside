@@ -28,24 +28,6 @@ const UserSchema = new Schema<IUser>(
     jobTitle: [{ type: String }],
     jobLocation: [{ type: String }],
 
-<<<<<<< HEAD
-    education: [{
-      qualification: { type: String },
-      location:{type:String},
-      startYear: { type: String },
-      endYear: { type: String },
-      college: { type: String },
-    }],
-    experience:[{
-      jobRole:{type:String},
-      companyName:{type:String},
-      companyLogo:{type:String,default:companyLogo},
-      startYear:{type:String},
-      endYear:{type:String}
-
-
-
-=======
     education: [
       {
         qualification: { type: String },
@@ -60,7 +42,6 @@ const UserSchema = new Schema<IUser>(
       startYear:{type:String},
       endYear:{type:String}
 
->>>>>>> 2feeae8abef2485a182dfc1fcc4b130b4986963a
     }],
 
     projects: [

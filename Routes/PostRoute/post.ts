@@ -4,11 +4,11 @@ import { upload } from "../../middleware/upload";
 import {errorCatch} from '../../middleware/tryCatch'
 import { getCommentById,addCommentToPost,editComment,deleteComment,getAllComments} from "../../Controller/commonFolders/postController/Comment";
 import { userAuthMiddleware } from "../../middleware/userauthantication";
-import { deleteReplay, editReply, getRepliesForComment, replyToComment } from "../../Controller/commonFolders/postController/Replay";
+import {  deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../../Controller/commonFolders/postController/Replay";
 import { LikeOrDislike } from "../../Controller/commonFolders/postController/Post";
 const postRouter = express.Router();
 
-postRouter
+postRouter    
 
 //post
 .get("/allposts", getAllPosts)
@@ -24,7 +24,7 @@ postRouter
 
 //like & unlike
 .post("/user/likepost/:postid",userAuthMiddleware,errorCatch(LikeOrDislike))
-
+           
 //comment
 .get("/allcomments",errorCatch(getAllComments))  
 .get('/viewcomment/:id',userAuthMiddleware,errorCatch(getCommentById))  
@@ -35,11 +35,13 @@ postRouter
 //reply
 .post("/user/postreplay",userAuthMiddleware,errorCatch(replyToComment))
 .get("/user/findreply/:commentId",userAuthMiddleware,errorCatch(getRepliesForComment))
-.get("/user/editreplay",userAuthMiddleware,errorCatch(editReply))
-.delete("/user/deletereplay",userAuthMiddleware,errorCatch(deleteReplay))
+.put("/user/editreplay",userAuthMiddleware,errorCatch(editReply))
+.delete("/user/deletereplay",userAuthMiddleware,errorCatch(deleteReply))
+.get("/user/getcommentswithreplies",userAuthMiddleware,errorCatch(getCommentsWithReplies))
 
 //report
-.post("/user/reportpost",userAuthMiddleware,errorCatch(ReportPost))
+.post("/user/reportpost",userAuthMiddleware,errorCatch(ReportPost)) 
 
 export default postRouter;
+ 
  

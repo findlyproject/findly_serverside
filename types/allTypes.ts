@@ -14,6 +14,7 @@ export interface IReport extends Document {
     reply: string;
     repliedAt: Date;
     isDeleted:boolean;
+    updatedAt: Date;
   }
 
   export interface IComment extends Document {
@@ -69,6 +70,7 @@ export interface IPost extends Document {
     contact: number;
     employees: string; 
     role?:"user"|"premium",
+    isVerified?:boolean,
     subscriptionEndDate: Date | null,
       subscriptionStartDate: Date | null,
       isDeleted:boolean
@@ -78,6 +80,7 @@ export interface IUser extends Document {
   firstName: string;
   lastName: string;
   email: string;
+  isVerified?:boolean,
   password: string;
   phoneNumber?: string;
   dateOfBirth?: Date;
@@ -92,10 +95,34 @@ export interface IUser extends Document {
 
   education: {
     qualification: string;
-    startYear: string;
-    endYear: string;
+    startYear: string
+    endYear:string
     location: string;
-  };
+    college:string
+  }[];
+
+ 
+  experience: 
+    {
+      jobRole:string      
+      companyName:string  
+      startYear:string 
+      endYear:string        
+    }[]
+  
+  resumePDF?: {
+    fileUrl: string;
+    fileName: string;
+    uploadedAt:  Date|null;
+    isDeleted:boolean;
+  }[];
+
+  resumeVideo?: {
+    fileUrl?: string;
+    fileName: string;
+    uploadedAt?:  Date|null;
+    isDeleted?:boolean;
+  }[];
 
   projects?: {
     title: string;
@@ -103,18 +130,21 @@ export interface IUser extends Document {
     link?: string;
   }[];
 
-  connecting: [{
-    connectionID:mongoose.Types.ObjectId;
-    status:boolean;
-  }],
-
+  connecting: {
+    connectionID: mongoose.Types.ObjectId;
+    status: boolean;
+    createdAt:Date,
+    
+  }[];
+  
+  
 
   about?: string;
 
   resume?: {
     fileUrl: string;
     type: "PDF" | "Video";
-    uploadedAt?: Date;
+    uploadedAt: Date|null;
   }[];
   role:"user"|"premium",
   subscriptionEndDate: Date | null,

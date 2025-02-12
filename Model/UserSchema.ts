@@ -12,7 +12,13 @@ const UserSchema = new Schema<IUser>(
     password: { type: String },
     phoneNumber: { type: String },
     dateOfBirth: { type: Date },
-    location: { type: String },
+    location: {
+      country: String,
+      countryName: String,
+      state: String,
+      stateName: String,
+      city: String
+    },
     reports: [{ type: Schema.Types.ObjectId, ref: "Report" }],
 
     gender: { type: String, enum: ["Male", "Female", "Other"] },
@@ -26,7 +32,15 @@ const UserSchema = new Schema<IUser>(
     },
     skills: [{ type: String }],
     jobTitle: [{ type: String }],
-    jobLocation: [{ type: String }],
+    jobLocation: [
+      {
+        country: String,
+        countryName: String,
+        state: String,
+        stateName: String,
+        city: String
+      }
+    ],
 
     education: [
       {

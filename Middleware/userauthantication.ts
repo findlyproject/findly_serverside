@@ -30,7 +30,7 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
              return
         }
 
-       const a = jwt.verify(token, secretKey, (error, user) => {
+        await jwt.verify(token, secretKey, (error, user) => {
             if (error) {
                  res.status(401).json({ status: false, message: "Invalid token", response: error });
                  return

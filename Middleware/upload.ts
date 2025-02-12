@@ -50,8 +50,9 @@ console.log("files,files",file);
   },
 });
 
-
 const multerInstance: Multer = multer({ storage });
+
+
 
 export const upload = multerInstance;
 

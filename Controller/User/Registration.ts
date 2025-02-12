@@ -2,10 +2,8 @@ import User from "../../model/UserSchema";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { string } from "zod";
 import mongoose from "mongoose";
-import multer, { Multer } from "multer";
-import { promises } from "dns";
+
 const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   const {
     email,
@@ -46,7 +44,7 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   const refreshToken = jwt.sign(
     { id: user._id, email: user.email },
     process.env.USER_SECRETKEY!,
-    { expiresIn: "1d" }
+    { expiresIn: "7d" }
   );
 
   res.cookie("token", token, {
@@ -60,7 +58,7 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   res.cookie("user", user, {
@@ -116,13 +114,13 @@ const login = async (req: Request, res: Response): Promise<void> => {
     const refreshToken = jwt.sign(
       { id: logeduser._id, email: logeduser.email },
       process.env.USER_SECRETKEY!,
-      { expiresIn: "1d" }
+      { expiresIn: "7d" }
     );
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
   }
 
@@ -419,72 +417,68 @@ export const getPeopleYouMightKnow = async (req: Request, res: Response): Promis
 
 
 export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.user?.id; 
-  const data = req.body;
-  console.log("data",data);``
+
+    console.log(req.body);
+    const userId = req.user?.id; // Assuming `req.user` is set from authentication middleware
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      res.status(400).json({ error: "Valid User ID is required" });
+      return;
+    }
+
+    // Find user
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    // Extract text fields from req.body
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      dateOfBirth,
+      location,
+      skills,
+      jobTitle,
+      jobLocation,
+      about,
+      education,
+      projects,
+      profileImage,
+      banner
+    } = req.body;
+
+    // Prepare update data
+    const updateData: { [key: string]: any } = {
+      ...(firstName && { firstName }),
+      ...(lastName && { lastName }),
+      ...(email && { email }),
+      ...(phoneNumber && { phoneNumber }),
+      ...(dateOfBirth && { dateOfBirth }),
+      ...(location && { location }),
+      ...(skills && { skills }),
+      ...(jobTitle && { jobTitle }),
+      ...(jobLocation && { jobLocation }),
+      ...(about && { about }),
+      ...(education && { education }),
+      ...(projects && { projects }),
+      ...(profileImage && { profileImage }),
+      ...(banner && { banner }),
+
+    };
+
+    
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+    if (!updatedUser) {
+      res.status(500).json({ error: "Error updating user profile" });
+      return;
+    }
+
+    res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
   
-
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-    res.status(400).json({ error: "Valid User ID is required" });
-    return;
-  }
-
-  const user = await User.findById(userId);
-  if (!user) {
-    res.status(404).json({ error: "User not found" });
-    return;
-  }
-
-  const {
-    firstName,
-    lastName,
-    email,
-    phoneNumber,
-    dateOfBirth,
-    location,
-    skills,
-    jobTitle,
-    jobLocation,
-    about,
-    education,
-    projects,
-  } = req.body;
-
-  const updateData: { [key: string]: any } = {
-    ...(firstName && { firstName }),
-    ...(lastName && { lastName }),
-    ...(email && { email }),
-    ...(phoneNumber && { phoneNumber }),
-    ...(dateOfBirth && { dateOfBirth }),
-    ...(location && { location }),
-    ...(skills && { skills }),
-    ...(jobTitle && { jobTitle }),
-    ...(jobLocation && { jobLocation }),
-    ...(about && { about }),
-    ...(education && { education }), 
-    ...(projects && { projects }),   
-  };
-
-  // if (req.files && typeof req.files === "object") {
-  //   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-
-  //   if (files["profileImage"] && Array.isArray(files["profileImage"])) {
-  //     updateData.profileImage = files["profileImage"][0].path; 
-  //   }
-
-  //   if (files["banner"] && Array.isArray(files["banner"])) {
-  //     updateData.banner = files["banner"][0].path; 
-  //   }
-  // }
-
-  const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
-
-  if (!updatedUser) {
-    res.status(500).json({ error: "Error updating user profile" });
-    return;
-  }
-
-  res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
 };
 
 const AllUsersEmailCheck=async(req:Request,res:Response)=>{

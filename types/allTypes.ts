@@ -14,6 +14,7 @@ export interface IReport extends Document {
     reply: string;
     repliedAt: Date;
     isDeleted:boolean;
+    updatedAt: Date;
   }
 
   export interface IComment extends Document {

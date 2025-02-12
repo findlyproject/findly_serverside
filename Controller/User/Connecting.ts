@@ -1,32 +1,9 @@
 import { Request, Response } from "express"
 import mongoose from "mongoose";
-import User from "../../model/UserSchema";
+import User from "../../Model/UserSchema";
 import { IUser } from "../../types/allTypes";
 
 
-<<<<<<< HEAD
-const userconnections = async (req:Request,res:Response):Promise<void>=>{
-    const _id = req.user?.id;
-    if (!_id) {
-         res.status(400).json({ status: false, message: "User ID is missing" });  
-         return
-    }
-
-    const finduser = await User.findOne({ _id });
-    
-    if (!finduser) {
-         res.status(404).json({ status: false, message: "User not found" });       
-         return
-         
-    }
-
-    const connectionid = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(connectionid)) {
-         res.status(400).json({ status: false, message: "Invalid connection ID format" });
-         return                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-         
-    }
-=======
 const userconnections = async (req: Request, res: Response): Promise<void> => {
      const _id = req.user?.id;
      if (!_id) {
@@ -34,12 +11,11 @@ const userconnections = async (req: Request, res: Response): Promise<void> => {
           return
      }
 
-     const finduser = await User.findOne({ _id });
+     const finduser = await User.findOne({ _id });         
 
      if (!finduser) {
           res.status(404).json({ status: false, message: "User not found" });
           return
->>>>>>> 6b2b549399dc288af33296a07098bad60cfd37ad
 
      }
 

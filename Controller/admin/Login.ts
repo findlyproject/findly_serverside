@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { Admin } from "../../model/AdminSchema";
+import { Admin } from "../../Model/AdminSchema";
 import  jwt  from "jsonwebtoken";
-import User from "../../model/UserSchema";
+import User from "../../Model/UserSchema";
 
 
 const login = async(req:Request,res:Response):Promise<void>=>{
@@ -49,31 +49,9 @@ const logout = async (req:Request,res:Response):Promise<void>=>{
 
 }
 
-///////////////////////  USER BLOCK ///////////////////
-
-const blocAndUnblock = async (req:Request,res:Response):Promise<void>=>{
-    const userId = req.params.id;
-    if(!userId){
-        res.status(404).json({status:false,message:"Blockin user id is missing"})
-        return
-    }
-    const findUser =await User.findOne({_id:userId});
-    console.log(findUser);
-
-    if(!findUser){
-        res.status(404).json({status:false,message:"Blockin user is not found"})
-        return
-    }
-
-    findUser.isBlocked = !findUser.isBlocked
-    await findUser.save()
-    
-    res.status(200).json({status:true,message:`User ${findUser.isBlocked ? "block" : "unblock"} is sucssesfully`,data:findUser })
-    
-  } 
 export = {
     login,
     logout,
-    blocAndUnblock
+    
 
 }

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import Stripe from "stripe";
-import { SubscriptionPlan } from "../../../model/SubscriptionSchema"; 
-import  User  from "../../../model/UserSchema"; 
-import { Company } from "../../../model/CompanySchema";
+import { SubscriptionPlan } from "../../../Model/SubscriptionSchema"; 
+import  User  from "../../../Model/UserSchema"; 
+import { Company } from "../../../Model/CompanySchema";
 import jwt, { JwtPayload } from "jsonwebtoken";import { string } from "zod";
 
  const createSubscription = async (req: Request, res: Response):Promise<void> => {

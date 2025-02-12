@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import Stripe from "stripe";
-import { SubscriptionPlan } from "../../../Model/SubscriptionSchema"; 
-import  User  from "../../../Model/UserSchema"; 
-import { Company } from "../../../Model/CompanySchema";
+import { SubscriptionPlan } from "../../../model/SubscriptionSchema"; 
+import  User  from "../../../model/UserSchema"; 
+import { Company } from "../../../model/CompanySchema";
 import jwt, { JwtPayload } from "jsonwebtoken";import { string } from "zod";
+import { subscribe } from "diagnostics_channel";
 
  const createSubscription = async (req: Request, res: Response):Promise<void> => {
     console.log("hellos",process.env.STRIPE_KEY)
@@ -13,6 +14,10 @@ import jwt, { JwtPayload } from "jsonwebtoken";import { string } from "zod";
   let userId=req.user?.id
 //   const companyId=req.company?.id
 console.log("userId",userId);
+if(!features){
+    res.status(404).json({success:false,message:"not found features"})
+    return
+}
 
 
   const companyId=null
@@ -25,14 +30,14 @@ console.log("userId",userId);
     return
   }
   if (userId && companyId) {
-     res.status(400).json({ message: "Only one of userId or companyId should be provided." });
+     res.status(400).json({ success:false,message: "Only one of userId or companyId should be provided." });
      return
   }
 
 
   const amountInINR=price*100
   
-    const featuresString=features.join(",")
+    const featuresString=features?.join(",")
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -51,7 +56,7 @@ console.log("userId",userId);
             },
         ],
 
-        return_url: `${process.env.CLIENT_URL}/success/?session_id={CHECKOUT_SESSION_ID}`,
+        return_url: `${process.env.CLIENT_URL}/premium/verification/?session_id={CHECKOUT_SESSION_ID}`,
        
            metadata: {
         userId: userId || "",
@@ -85,6 +90,9 @@ if(!session.id){
         });
     
 
+    await subscription.save();
+
+    subscription.features = featuresString;
     await subscription.save();
 
  
@@ -149,6 +157,7 @@ const verifySubscription = async (req: Request, res: Response) => {
     accountInfo.subscriptionStartDate = startDate;
     accountInfo.subscriptionEndDate = endDate;
     accountInfo.role = "premium"; 
+    accountInfo.isVerified=true
 
     await accountInfo.save();
 
@@ -178,4 +187,30 @@ const verifySubscription = async (req: Request, res: Response) => {
 
 
 
-export {createSubscription,verifySubscription} 
+
+const findSubscriptionById = async (req: Request, res: Response) => {
+ 
+    const { sessionId } = req.params;
+    console.log("sessionId:", sessionId);
+
+    if (!sessionId) {
+         res.status(404).json({ success: false, message: "sessionId not found" });
+         return
+    }
+
+       
+        const subscription = await SubscriptionPlan.findOne({ sessionId: sessionId });
+
+        if (!subscription) {
+             res.status(404).json({ success: false, message: "Subscription plan not found" });
+             return
+        }
+
+        console.log("Subscription:", subscription);
+        res.status(200).json({ success: true, message: "Completed", subscription });
+   
+};
+
+
+
+export {createSubscription,verifySubscription,findSubscriptionById} 

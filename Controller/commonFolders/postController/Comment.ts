@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { Comment } from "../../../Model/CommentSchema";
-import { Post } from "../../../Model/PostSchema";
+import { Comment } from "../../../model/CommentSchema";
+import { Post } from "../../../model/PostSchema";
 import { IComment } from "../../../types/allTypes";
 import mongoose from "mongoose";
 

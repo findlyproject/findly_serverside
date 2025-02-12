@@ -1,9 +1,9 @@
 import { json, Request, Response } from "express"
-import { Admin } from "../../Model/AdminSchema";
+import { Admin } from "../../model/AdminSchema";
 import  jwt  from "jsonwebtoken";
-import User from "../../Model/UserSchema";
-import { Report } from "../../Model/ReportSchema";
-import { Post } from "../../Model/PostSchema";
+import User from "../../model/UserSchema";
+import { Report } from "../../model/ReportSchema";
+import { Post } from "../../model/PostSchema";
 
 
 //user block and unblock

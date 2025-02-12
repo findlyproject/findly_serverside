@@ -8,7 +8,7 @@ import { rating } from "./Routes/Rating/rating";
 import postRouter from "./Routes/PostRoute/post";
 import { paymentRouter } from "./Routes/PaymentRoute/PaymentRoutes";
 import{Searchrouter} from'./Routes/SearchRoute/search';
-import { connectionrout } from "./Routes/user/connection";
+import { connectionrout } from "./Routes/user/connection";   
 import { adminRoutes } from "./Routes/Admin/AdminRoutes";
 
 dotenv.config();
@@ -21,7 +21,7 @@ app.use(cors({
     credentials: true,
   }));
   app.use("/api/user",router)
-  app.use("/api/rating",rating)
+  app.use("/api/rating",rating) 
   app.use("/api/post",postRouter)
   app.use("/api/payment",paymentRouter)
   app.use("/api/user",Searchrouter)
@@ -31,7 +31,7 @@ app.use(cors({
 
 
 
-
+  
 
 connectMongodb()
 

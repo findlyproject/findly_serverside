@@ -5,7 +5,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { string } from "zod";
 import mongoose from "mongoose";
 import multer, { Multer } from "multer";
-import { promises } from "dns";
+import { IUser } from "../../types/allTypes";
+
 const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   const {
     email,
@@ -380,7 +381,6 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
 
 }
 
-//  get People You Might Know based on followers and following
 export const getPeopleYouMightKnow = async (req: Request, res: Response): Promise<void> => {
     // const userId = req.user?.id;
 
@@ -481,8 +481,188 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
     return;
   }
 
-  res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
+  res.status(200).json({success:false, message: "Profile updated successfully", user: updatedUser });
 };
+
+
+
+export const uploadResume = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const files = req.files as { resume?: Express.Multer.File[]; video?: Express.Multer.File[] };
+    const pdfFile = files?.resume ? files.resume[0] : null;
+    const videoFile = files?.video ? files.video[0] : null;
+
+    console.log("pdfFile", pdfFile);
+    console.log("videoFile", videoFile);
+    console.log("Uploaded Files:", files);
+
+    if (!pdfFile && !videoFile) {
+      res.status(400).json({ success: false, message: "No files uploaded" });
+      return;
+    }
+
+    const userId = req.user?.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
+    }
+
+    if (!user.resumePDF) user.resumePDF = [];
+    if (!user.resumeVideo) user.resumeVideo = [];
+
+   
+    if (pdfFile) {
+      const existingActivePDF = user.resumePDF.some((pdf) => !pdf.isDeleted);
+      if (!existingActivePDF) {
+        user.resumePDF.push({
+          fileUrl: pdfFile.path,
+          fileName: pdfFile.originalname,
+          uploadedAt: new Date(),
+          isDeleted: false,
+        });
+      } else {
+        res.status(400).json({ success: false, message: "A resume PDF already exists." });
+        return;
+      }
+    }
+
+    if (videoFile) {
+      const existingActiveVideo = user.resumeVideo.some((video) => !video.isDeleted);
+      if (!existingActiveVideo) {
+        user.resumeVideo.push({
+          fileUrl: videoFile.path,
+          fileName: videoFile.originalname,
+          uploadedAt: new Date(),
+          isDeleted: false,
+        });
+      } else {
+        res.status(400).json({ success: false, message: "A resume video already exists." });
+        return;
+      }
+    }
+
+    await user.save();
+
+   
+    res.status(200).json({
+      success: true,
+      message: "Resume uploaded successfully",
+      user: {
+        ...user.toObject(),
+        resumePDF: user.resumePDF.filter((pdf) => !pdf.isDeleted), 
+        resumeVideo: user.resumeVideo.filter((video) => !video.isDeleted), 
+      },
+    });
+
+  } catch (error) {
+    console.error("Error uploading resume:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
+
+export const getUploadedFiles = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id; 
+console.log("user",userId);
+
+    if (!userId) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
+    }
+
+  
+    const activeResumePDFs = user.resumePDF?.filter((pdf) => !pdf.isDeleted);
+    const activeResumeVideos = user.resumeVideo?.filter((video) => !video.isDeleted);
+
+    res.status(200).json({
+      success: true,
+      message: "Uploaded files retrieved successfully",
+      uploadedFiles: {
+        resumePDFs: activeResumePDFs,
+        resumeVideos: activeResumeVideos,
+      },
+    });
+
+  } catch (error) {
+    console.error("Error retrieving uploaded files:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
+
+const removeResumeFile = async (req: Request, res: Response): Promise<void> => {
+  const userId: string | undefined = req.user?.id;
+  const fileType: "resume" | "introductionVideo" | undefined = req.query.fileType as "resume" | "introductionVideo";
+  console.log("fileType",fileType);
+  
+
+  if (!userId) {
+    res.status(401).json({ success: false, message: "Unauthorized access" });
+    return;
+  }
+
+  if (!fileType || (fileType !== "resume" && fileType !== "introductionVideo")) {
+    res.status(400).json({ success: false, message: "Invalid file type. Use 'pdf' or 'video'." });
+    return;
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    res.status(404).json({ success: false, message: "User not found" });
+    return;
+  }
+
+  let updatedFiles = [];
+  if (fileType === "resume" && Array.isArray(user.resumePDF)) {
+    user.resumePDF.forEach((resume) => {
+      resume.isDeleted = true;
+    });
+
+   
+    updatedFiles = user.resumePDF.filter((resume) => !resume.isDeleted);
+  } else if (fileType === "introductionVideo" && Array.isArray(user.resumeVideo)) {
+    user.resumeVideo.forEach((resume) => {
+      resume.isDeleted = true;
+    });
+
+ 
+    updatedFiles = user.resumeVideo.filter((resume) => !resume.isDeleted);
+  } else {
+    res.status(404).json({ success: false, message: `No ${fileType} files found to mark as deleted` });
+    return;
+  }
+
+  try {
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: `${fileType} files marked as deleted.`,
+      files: updatedFiles, 
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ success: false, message: "Failed to update user data" });
+  }
+};
+
+
+
+
+ 
 
 const AllUsersEmailCheck=async(req:Request,res:Response)=>{
   const { email } = req.query;
@@ -542,6 +722,7 @@ export{
   googleauthlogin,
   AllUsersEmailCheck,
   AllUsers,
-  spacificuserdetails
+  spacificuserdetails,
+  removeResumeFile
   
 }

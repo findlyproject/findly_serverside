@@ -21,7 +21,7 @@ app.use(cors({
     credentials: true,
   }));
   app.use("/api/user",router)
-  app.use("/api/rating",rating)
+  app.use("/api/rating",rating) 
   app.use("/api/post",postRouter)
   app.use("/api/payment",paymentRouter)
   app.use("/api/user",Searchrouter)
@@ -31,7 +31,7 @@ app.use(cors({
 
 
 
-
+  
 
 connectMongodb()
 

@@ -1,4 +1,4 @@
-import Rating from "../../Model/RatingSchema";
+import Rating from "../../model/RatingSchema";
 import {  Request, Response } from "express";
 
 

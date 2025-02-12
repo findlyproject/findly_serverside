@@ -1,48 +1,90 @@
 import { Request, Response } from "express";
-import { Post } from "../../../Model/PostSchema";
-import { Report } from "../../../Model/ReportSchema";
+import { Post } from "../../../model/PostSchema";
+import { Report } from "../../../model/ReportSchema";
 import mongoose from "mongoose";
+import { v2 as cloudinary } from "cloudinary";
 
-// Function to Add a New Post
+// Get all posts
+const getAllPosts = async (req: Request, res: Response): Promise<void> => {
+  const posts = await Post.find().populate("owner")
+  .populate("reports", "reportedBy reason") 
+  .populate("likedBy", "firstName lastName profileImage")
+  .populate({
+    path: "comments",  
+    match: { isDeleted: false },// only get comments.isDeleted=false
+    populate: {
+      path: "user",
+      select: "firstName lastName profileImage ", // Only fetch required fields
+    },
+  });
+  const totalPosts = await Post.countDocuments(); // Fetch posts without authentication checks
+  res.status(200).json({ posts, totalPosts });  
+};
+
+
+
 export const addPost = async (req: Request, res: Response): Promise<void> => {
-   const { description } = req.body;
- 
-   // Validate description and owner fields
-   if (!description || !req.user?.id) {
+  try {
+    console.log("Received Files:", req.files);
+    const { description } = req.body;
+    console.log(req.body)
+    const media = req.files;
+
+    console.log("media files",req.files);
+    
+
+    if (!description || !req.user?.id) {
       res.status(400).json({ message: "Description and owner are required" });
-   }
- 
-   // Type assertion to specify the structure of req.files
-   const postMedia = (req.files as { [fieldname: string]: Express.Multer.File[] }).media;
- 
-   // Ensure media exists (either image or video)
-   let mediaUrl: string | null = null;
-   if (postMedia && postMedia.length > 0) {
-     const file = postMedia[0]; // Retrieve the uploaded media  
-     mediaUrl = file.path;
-     console.log(mediaUrl) // URL of the uploaded media (image or video)
-   } else {
+      return;
+    }
+
+    if (!req.files) {
       res.status(400).json({ message: "No media uploaded" });
-   }
- 
-   
-     // Create the new post with description, owner, and media
-     const newPost = new Post({
-       description,
-       owner:req.user?.id,
-       media: mediaUrl, // Add media URL to the post
-     });
- 
-     // Save the post to the database
-     await newPost.save();
- 
-     // Send success response with the created post details
-     res.status(201).json({
-       message: "Post uploaded successfully",
-       post: newPost,
-     });
-  
- };
+      return;
+    }
+
+    // ✅ `req.files` is an object when using `upload.fields()`
+    const uploadedImages: string[] = [];
+    let uploadedVideo: string | null = null;
+
+    // ✅ Process images
+    if ("media" in req.files) {
+      const mediaFiles = req.files["media"] as Express.Multer.File[];
+
+      for (const file of mediaFiles) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          resource_type: "auto",
+          folder: "posts/media",
+        });
+
+        // ✅ Categorize as image or video
+        if (file.mimetype.startsWith("image/")) {
+          uploadedImages.push(result.secure_url);
+        } else if (file.mimetype.startsWith("video/")) {
+          uploadedVideo = result.secure_url;
+        }
+      }
+    }
+
+    // ✅ Create new post
+    const newPost = new Post({
+      description,
+      owner: req.user.id,
+      images: uploadedImages, // Store image URLs
+      video: uploadedVideo, // Store video URL
+    });
+
+    await newPost.save();
+
+    res.status(201).json({
+      message: "Post uploaded successfully",
+      post: newPost,
+    });
+  } catch (error) {
+    console.error("Upload error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 //  Get Posts by user
 const getPostsByOwner = async (req: Request, res: Response): Promise<void> => {
@@ -150,4 +192,4 @@ const ReportPost = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json({ message: "reported successfully", report });
 };
 
-export { getPostsByOwner, getpostbyid, LikeOrDislike, ReportPost };
+export { getAllPosts, getPostsByOwner, getpostbyid, LikeOrDislike, ReportPost };

@@ -1,11 +1,18 @@
 import { Request, Response } from "express";
-import { Comment } from "../../../Model/CommentSchema";
-import { Post } from "../../../Model/PostSchema";
+import { Comment } from "../../../model/CommentSchema";
+import { Post } from "../../../model/PostSchema";
 import { IComment } from "../../../types/allTypes";
 import mongoose from "mongoose";
 
+// Get all comments
+export const getAllComments = async (req: Request, res: Response): Promise<void> => {
+  const comments = await Comment.find().populate("user");
+  const totalComments = await Comment.countDocuments(); 
+  res.status(200).json({ comments, totalComments });  
+};
+
 // Comment on a Post
-const addCommentToPost = async (req: Request, res: Response): Promise<void> => {
+export const addCommentToPost = async (req: Request, res: Response): Promise<void> => {
   const { postId, comment } = req.body;
   if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
     res.status(400).json({ error: "Valid Post ID is required" });
@@ -46,8 +53,11 @@ const addCommentToPost = async (req: Request, res: Response): Promise<void> => {
 };
 
 // update a comment by id
-const editComment = async (req: Request, res: Response): Promise<void> => {
-  const { commentId, newComment } = req.body;
+export const editComment = async (req: Request, res: Response): Promise<void> => {
+  const {  newComment } = req.body;
+  const {  commentId } = req.params;
+
+  
 
   if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
     res.status(400).json({ error: "Valid Comment ID is required" });
@@ -79,60 +89,46 @@ const editComment = async (req: Request, res: Response): Promise<void> => {
 
   res
     .status(200)
-    .json({ message: "Comment updated successfully", updatedComment: comment });
+    .json({ message: "Comment updated successfully", comment });
   return;
 };
 
 // Function to Delete a Comment
- const deleteComment = async (req: Request, res: Response): Promise<void> => {
-   
-      const {postId, commentId } = req.body;
-  
-      // Validate commentId and userId
-      if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
-         res.status(400).json({ error: "Valid Comment ID is required" });
-         return
-      }
-      if (!req.user?.id || !mongoose.Types.ObjectId.isValid(req.user?.id)) {
-         res.status(400).json({ error: "Valid User ID is required" });
-         return
-      }
-  
-      // Find the comment
-      const comment = await Comment.findById(commentId);
-      
-      if (!comment) {
-         res.status(404).json({ error: "Comment not found" });
-         return
-      }
-  
-      // Ensure the user owns the comment before deleting
-      if (comment.user.toString() !== req.user?.id) {
-         res.status(403).json({ error: "Unauthorized: You can only delete your own comments" });
-         return
-      }
-  
-      // Find the associated post
-      const post = await Post.findById(postId);
-      if (!post) {
-         res.status(404).json({ error: "Post not found" });
-         return
-      }
-  
-      // Remove the comment reference from the post
-      post.comments = post.comments.filter((id) => !id.equals(commentId));
-      await post.save()
-  
-      // Delete the comment
-      await comment.deleteOne();
-  
-       res.status(200).json({ message: "Comment deleted successfully" });
-      return
-   
-  };
+export const deleteComment = async (req: Request, res: Response): Promise<void> => {
+  const {commentId } = req.params;
+
+  // Validate commentId and userId
+  if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
+      res.status(400).json({ error: "Valid Comment ID is required" });
+      return;
+  }
+  if (!req.user?.id || !mongoose.Types.ObjectId.isValid(req.user?.id)) {
+      res.status(400).json({ error: "Valid User ID is required" });
+      return;
+  }
+
+  // Find the comment
+  const comment = await Comment.findById(commentId);
+  if (!comment) {
+      res.status(404).json({ error: "Comment not found" });
+      return;
+  }
+
+  // Ensure the user owns the comment before marking as deleted
+  if (comment.user.toString() !== req.user?.id) {
+      res.status(403).json({ error: "Unauthorized: You can only delete your own comments" });
+      return;
+  }
+
+  // Update the comment's isDeleted field instead of removing it
+  comment.isDeleted = true;
+  await comment.save(); // ✅ Soft delete
+
+  res.status(200).json({ message: "Comment marked as deleted successfully" ,comment});
+};
 
 // get a comment by ID
-const getCommentById = async (req: Request, res: Response): Promise<void> => {
+export const getCommentById = async (req: Request, res: Response): Promise<void> => {
   const comment = await Comment.findById(req.params.id);
 
   if (!comment) {
@@ -147,13 +143,8 @@ const getCommentById = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  res.status(200).json({ message: "Comment found", commented });
+  res.status(200).json({ message: "Comment found",comment: commented });
   return;
 };
 
-export {
-  addCommentToPost,
-  editComment,
-  deleteComment,
-  getCommentById,
-};
+

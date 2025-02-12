@@ -29,13 +29,13 @@ export interface IPost extends Document {
     description?: string;
     owner: Types.ObjectId;
     images?: string[];  
-  video?: string; 
+    video?: string; 
     lists: Types.ObjectId[];
     likedBy: Types.ObjectId[];
     reports: IReport[]; 
     comments: IComment[];
     isDeleted:boolean;
-  }
+  }   
 
   export interface IRating extends Document{
     review?:string,
@@ -147,4 +147,5 @@ export interface IAdmin extends Document{
   isBlocked?: boolean;
   isDeleted?:boolean;
 }
+
 

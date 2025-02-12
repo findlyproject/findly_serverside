@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import User from "../../Model/UserSchema";
+import User from "../../model/UserSchema";
 import { IUser } from "../../types/allTypes";
 
 const userconnections = async (req: Request, res: Response): Promise<void> => {
@@ -50,10 +50,16 @@ const userconnections = async (req: Request, res: Response): Promise<void> => {
 
   await targetUser.save();
 
+ 
+  const populatedTargetUser = await User.findById(connectionId).populate(
+    "connecting.connectionID",
+    "name email profilePic" 
+  );
+
   res.status(200).json({
     status: true,
     message: "Connection request sent successfully",
-    targetUser,
+    targetUser: populatedTargetUser, 
   });
 };
 

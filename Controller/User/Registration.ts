@@ -14,9 +14,12 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
     firstName,
     lastName,
     education,
+    location,
     jobTitles,
     jobLocations,
   } = req.body;
+  console.log("gggggreq.bodyy",req.body);
+  
   const emailRegex = /\S+@\S+\.\S+/;
   if (!emailRegex.test(email)) {
     res.status(400).json({ message: "Invalid email format" });
@@ -28,12 +31,16 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+  
+  
+
   const user = new User({
     email,
     password: hashedPassword,
     firstName,
     lastName,
-    education,
+    education:education || [],
+    location,
     jobTitle: jobTitles,
     jobLocation: jobLocations,
   });
@@ -64,12 +71,8 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  res.cookie("user", user, {
-    httpOnly: false,
-    secure: false,
-    sameSite: "lax",
-    maxAge: 24 * 60 * 60 * 1000,
-  });
+console.log("user",user);
+
 
   res.status(200).json({ message: "success", user });
 };
@@ -666,7 +669,10 @@ const removeResumeFile = async (req: Request, res: Response): Promise<void> => {
 
 const AllUsersEmailCheck=async(req:Request,res:Response)=>{
   const { email } = req.query;
+  console.log("email req.query",req.query);
+  
   const user = await User.findOne({ email });
+console.log("useremail",user);
 
   if (user) {
      res.json({ exists: true })
@@ -697,12 +703,14 @@ const AllUsers=async(req:Request,res:Response)=>{
 const spacificuserdetails = async (req:Request,res:Response):Promise<void>=>{
  
   const userid = req.params.id;
+console.log("userid",userid);
 
   if(!userid){
     res.status(404).json({status:false,message:"cannot find id"})
     return
   }
-  const finduserprofile = await User.find({_id:userid,isDeleted:false,isBlocked:false})
+  const finduserprofile = await User.findOne({_id:userid,isDeleted:false,isBlocked:false}).populate('connecting.connectionID')
+  console.log("finduserprofile",finduserprofile);
   
   if(!finduserprofile){
     res.status(404).json({status:false,message:"cannot find all profile"})

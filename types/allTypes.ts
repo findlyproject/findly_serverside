@@ -98,7 +98,10 @@ export interface IUser extends Document {
     startYear: string
     endYear:string
     location: string;
-  };
+    college:string
+  }[];
+
+ 
   experience: 
     {
       jobRole:string      
@@ -127,11 +130,14 @@ export interface IUser extends Document {
     link?: string;
   }[];
 
-  connecting: [{
-    connectionID:mongoose.Types.ObjectId;
-    status:boolean;
-  }],
-
+  connecting: {
+    connectionID: mongoose.Types.ObjectId;
+    status: boolean;
+    createdAt:Date,
+    
+  }[];
+  
+  
 
   about?: string;
 

@@ -8,7 +8,7 @@ import { rating } from "./Routes/Rating/rating";
 import postRouter from "./Routes/PostRoute/post";
 import { paymentRouter } from "./Routes/PaymentRoute/PaymentRoutes";
 import{Searchrouter} from'./Routes/SearchRoute/search';
-import { connectionrout } from "./Routes/user/connection";
+import { connectionrout } from "./Routes/user/connection";   
 import { adminRoutes } from "./Routes/Admin/AdminRoutes";
 
 dotenv.config();

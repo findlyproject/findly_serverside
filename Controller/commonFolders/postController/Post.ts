@@ -7,7 +7,7 @@ import { v2 as cloudinary } from "cloudinary";
 // Get all posts
 const getAllPosts = async (req: Request, res: Response): Promise<void> => {
   const posts = await Post.find().populate("owner")
-  .populate("reports", "reportedBy reason") 
+  .populate("reports") 
   .populate("likedBy", "firstName lastName profileImage")
   .populate({
     path: "comments",  
@@ -111,7 +111,7 @@ const getPostsByOwner = async (req: Request, res: Response): Promise<void> => {
 };
 
 const getpostbyid = async (req: Request, res: Response): Promise<void> => {
-  const onepost = await Post.findById(req.params.id).populate("comments");
+  const onepost = await Post.findById(req.params.id).populate("comments owner");
   console.log(onepost);
 
   res.json({ onepost });

@@ -24,7 +24,7 @@ postRouter
 
 //like & unlike
 .post("/user/likepost/:postid",userAuthMiddleware,errorCatch(LikeOrDislike))
-
+           
 //comment
 .get("/allcomments",errorCatch(getAllComments))  
 .get('/viewcomment/:id',userAuthMiddleware,errorCatch(getCommentById))  

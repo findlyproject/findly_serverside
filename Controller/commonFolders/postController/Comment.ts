@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Comment } from "../../../model/CommentSchema";
 import { Post } from "../../../model/PostSchema";
-import { IComment } from "../../../types/allTypes";
 import mongoose from "mongoose";
 
 // Get all comments
@@ -10,6 +9,7 @@ export const getAllComments = async (req: Request, res: Response): Promise<void>
   const totalComments = await Comment.countDocuments(); 
   res.status(200).json({ comments, totalComments });  
 };
+
 // Comment on a Post
 export const addCommentToPost = async (req: Request, res: Response): Promise<void> => {
   const { postId, comment } = req.body;
@@ -45,10 +45,13 @@ export const addCommentToPost = async (req: Request, res: Response): Promise<voi
   post.comments.push(newComment.id);
 
   await post.save();
+  const populatedComment = await Comment.findById(newComment._id)
+      .populate("user", "firstName lastName email profileImage") // Populating user details
+      .exec();
 
   res
     .status(201)
-    .json({ message: "Comment added successfully", comment: newComment });
+    .json({ message: "Comment added successfully", comment: populatedComment });
 };
 
 // update a comment by id
@@ -141,8 +144,8 @@ export const getCommentById = async (req: Request, res: Response): Promise<void>
     res.status(404).json({ message: "Comment not found" });
     return;
   }
-
-  res.status(200).json({ message: "Comment found",comment: commented });
+console.log("comment",comment)
+  res.status(200).json({ message: "Comment found", comment });
   return;
 };
 

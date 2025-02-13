@@ -490,6 +490,8 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
 
 
 export const uploadResume = async (req: Request, res: Response): Promise<void> => {
+  console.log("hey");
+  
   try {
     const files = req.files as { resume?: Express.Multer.File[]; video?: Express.Multer.File[] };
     const pdfFile = files?.resume ? files.resume[0] : null;
@@ -518,6 +520,10 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
    
     if (pdfFile) {
       const existingActivePDF = user.resumePDF.some((pdf) => !pdf.isDeleted);
+      console.log("pdfFile",pdfFile);
+      console.log("existingActivePDF",existingActivePDF);
+      
+      
       if (!existingActivePDF) {
         user.resumePDF.push({
           fileUrl: pdfFile.path,

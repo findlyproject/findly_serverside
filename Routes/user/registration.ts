@@ -15,7 +15,7 @@ router
 .post("/registration", errorCatch(RegistrationUser))
 .post("/login",errorCatch(login))
 .post("/googleauthlogin",errorCatch(googleauthlogin))
-
+   
 .post("/logout",errorCatch(logout))
 .post("/emailus",userAuthMiddleware,errorCatch(EmailUs))
 

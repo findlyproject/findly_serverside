@@ -30,10 +30,6 @@ app.use(cors({
   app.use("/api/admin",adminRoutes)
 
 
-
-
-  
-
 connectMongodb()
 
 const PORT = process.env.PORT || 4000;

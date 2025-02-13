@@ -2,7 +2,7 @@ import mongoose, {connection, Schema } from "mongoose";
 import { IUser } from "../types/allTypes";
 const profile = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735360/profile_jtwxaj.png"
 const banner = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735269/banner_ozuamb.png"
-
+const companyLogo="https://img.freepik.com/free-vector/diamond-square-puzzle_78370-8329.jpg?t=st=1738926443~exp=1738930043~hmac=07611684498f289e765ee3efbe528e97e27d9d41e4b518014740c7b3fb07acae&w=740"
 
 const UserSchema = new Schema<IUser>(
   {
@@ -42,12 +42,21 @@ const UserSchema = new Schema<IUser>(
       }
     ],
 
-    education: {
-      qualification: { type: String },
-      startYear: { type: String },
-      endYear: { type: String },
-      collage: { type: String },
-    },
+    education: [
+      {
+        qualification: { type: String },
+        startYear: { type: String },
+        endYear: { type: String },
+        college: { type: String },  
+      }
+    ], 
+    experience:[{
+      jobRole:{type:String},
+      companyName:{type:String},
+      startYear:{type:String},
+      endYear:{type:String}
+
+    }],
 
     projects: [
       {
@@ -65,21 +74,38 @@ const UserSchema = new Schema<IUser>(
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },
 
-    connecting: [{
+    connecting:[{
       connectionID:{ type: mongoose.Schema.Types.ObjectId, ref: "User" },
       status: { type: Boolean, default: false },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      }
     }],
 
     about: { type: String },
 
-    resume: [
+    resumePDF: [
       {
         fileUrl: { type: String },
-        type: { type: String, enum: ["PDF", "Video"] },
-        uploadedAt: { type: Date, default: Date.now },
-      },
+        fileName: { type: String },
+        uploadedAt: { type: Date, default: null },
+        isDeleted: { type: Boolean, default: false },
+      }
     ],
-
+    resumeVideo: [
+      {
+        fileUrl: { type: String },
+        fileName: { type: String },
+        uploadedAt: { type: Date, default: null },
+        isDeleted: { type: Boolean, default: false },
+      }
+    ],
+    isVerified:{  
+      type:Boolean,
+      default:false
+    },
+   
     coverLetter: { type: String },
     isBlocked: { type: Boolean, default: false },
     isDeleted:{type:Boolean,default:false},

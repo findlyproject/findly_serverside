@@ -2,21 +2,27 @@ import { Request, Response } from "express"
 import { Admin } from "../../model/AdminSchema";
 import  jwt  from "jsonwebtoken";
 import User from "../../model/UserSchema";
+import bcrypt from "bcrypt"
 
 
 const login = async(req:Request,res:Response):Promise<void>=>{
-    const {email,password} = req.body;
+    const { email, password } = req.body;
+    
 
     if(!email || !password ){
         res.status(404).json({status:false,message:"email and password is missing"})
         return
     }
-    const findAdmin = await Admin.findOne({email,password})
+    const findAdmin = await Admin.findOne({email})
     if(!findAdmin){
-        res.status(404).json({status:false,message:"Admin not fount login faild"})
+        res.status(404).json({status:false,message:"Admin not found"})
         return
     }
-
+    const isMatch = await bcrypt.compare(password, findAdmin.password);
+    if (!isMatch) {
+      res.status(401).json({ status: false, message: "password not match" });
+      return;
+    }
     const adminToken = jwt.sign(
        
             { id: findAdmin._id, email: findAdmin.email },
@@ -49,31 +55,9 @@ const logout = async (req:Request,res:Response):Promise<void>=>{
 
 }
 
-///////////////////////  USER BLOCK ///////////////////
-
-const blocAndUnblock = async (req:Request,res:Response):Promise<void>=>{
-    const userId = req.params.id;
-    if(!userId){
-        res.status(404).json({status:false,message:"Blockin user id is missing"})
-        return
-    }
-    const findUser =await User.findOne({_id:userId});
-    console.log(findUser);
-
-    if(!findUser){
-        res.status(404).json({status:false,message:"Blockin user is not found"})
-        return
-    }
-
-    findUser.isBlocked = !findUser.isBlocked
-    await findUser.save()
-    
-    res.status(200).json({status:true,message:`User ${findUser.isBlocked ? "block" : "unblock"} is sucssesfully`,data:findUser })
-    
-  } 
 export = {
     login,
     logout,
-    blocAndUnblock
+    
 
 }

@@ -3,7 +3,6 @@ import { findCurrentUserDetails, googleauthlogin, login, logout, RegistrationUse
 import { EmailUs } from "../../Controller/User/ContactUs";
 import { errorCatch } from "../../middleware/tryCatch";
 import { userAuthMiddleware } from "../../middleware/userauthantication";
-import {upload} from '../../middleware/upload'
 import { reportuser } from "../../Controller/User/getotheruserdetails";
 import { refreshAccessToken } from "../../Controller/User/refreshToken";
 import { generateSignedUrl } from "../../Utils/fileUpload";

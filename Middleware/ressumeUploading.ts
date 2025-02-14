@@ -24,13 +24,12 @@ const uploadConfig: Record<string, { folder: string; resource_type: string; allo
     allowed_formats: ["mp4", "avi", "mov"],
   },
 };
-console.log("uploadConfig",uploadConfig);
+
 
 
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (_req, file) => {
-  console.log("file On multer",file);
   
     if (!uploadConfig[file.fieldname]) {
       throw new Error("Invalid file field name");

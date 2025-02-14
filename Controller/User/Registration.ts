@@ -710,14 +710,12 @@ const AllUsers=async(req:Request,res:Response)=>{
 const spacificuserdetails = async (req:Request,res:Response):Promise<void>=>{
  
   const userid = req.params.id;
-console.log("userid",userid);
-
   if(!userid){
     res.status(404).json({status:false,message:"cannot find id"})
     return
   }
   const finduserprofile = await User.findOne({_id:userid,isDeleted:false,isBlocked:false}).populate('connecting.connectionID')
-  console.log("finduserprofile",finduserprofile);
+
   
   if(!finduserprofile){
     res.status(404).json({status:false,message:"cannot find all profile"})

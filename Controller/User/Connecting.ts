@@ -2,33 +2,30 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 import User from "../../model/UserSchema";
 import { IUser } from "../../types/allTypes";
+import { CustomError} from "../../Utils/customError";
+
 
 const userconnections = async (req: Request, res: Response): Promise<void> => {
   const _id = req.user?.id;
   const connectionId = req.params.id;
 
   if (!_id) {
-    res.status(400).json({ status: "failed", message: "User ID is missing" });
-    return;
+    throw new CustomError("User ID is missing",404);
   }
 
   if (!mongoose.Types.ObjectId.isValid(connectionId)) {
-    res
-      .status(400)
-      .json({ status: "failed", message: "Invalid connection ID format" });
-    return;
+    throw new CustomError("Invalid connection ID format",404);
+    
   }
 
   const currentUser = await User.findById(_id);
   if (!currentUser) {
-    res.status(404).json({ status: "failed", message: "Current user not found" });
-    return;
+    throw new CustomError("Current user not found",404);
   }
 
   const targetUser = await User.findById(connectionId);
   if (!targetUser) {
-    res.status(404).json({ status: "failed", message: "Target user not found" });
-    return;
+    throw new CustomError("Target user not found",404);
   }
 
   const isDuplicate = targetUser.connecting.some(
@@ -36,10 +33,7 @@ const userconnections = async (req: Request, res: Response): Promise<void> => {
   );
 
   if (isDuplicate) {
-    res
-      .status(400)
-      .json({ status: "failed", message: "Connection request already sent" });
-    return;
+    throw new CustomError("Connection request already sent",404);
   }
 
   targetUser.connecting.push({

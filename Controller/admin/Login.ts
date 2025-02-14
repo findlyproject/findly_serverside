@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { Admin } from "../../model/AdminSchema";
 import  jwt  from "jsonwebtoken";
 import bcrypt from "bcrypt"
+import { CustomError} from "../../Utils/customError";
 
 //login
 export const login = async(req:Request,res:Response):Promise<void>=>{
@@ -9,18 +10,16 @@ export const login = async(req:Request,res:Response):Promise<void>=>{
     
 
     if(!email || !password ){
-        res.status(404).json({status:false,message:"email and password is missing"})
-        return
+      throw new CustomError("email and password is missing",404)
+      
     }
     const findAdmin = await Admin.findOne({email})
     if(!findAdmin){
-        res.status(404).json({status:false,message:"Admin not found"})
-        return
-    }
+      throw new CustomError("Admin not found",404)
+      }
     const isMatch = await bcrypt.compare(password, findAdmin.password);
     if (!isMatch) {
-      res.status(401).json({ status: false, message: "password not match" });
-      return;
+      throw new CustomError("password not match",404)
     }
     const adminToken = jwt.sign(
        

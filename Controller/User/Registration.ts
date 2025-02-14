@@ -22,12 +22,12 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
 
   const emailRegex = /\S+@\S+\.\S+/;
   if (!emailRegex.test(email)) {
-    res.status(400).json({ status: "failed", message: "Invalid email format" });
+    throw new CustomError('Invalid email format',400)
   }
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    res.status(400).json({ status: "failed", message: "User already exists" });
+    throw new CustomError('User already exists',400)
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -71,7 +71,7 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
 
   res
     .status(200)
-    .json({ status: "success", message: "Registration successful", user });
+    .json({ status: true, message: "Registration successful", user });
 };
 
 ////////////////////// LOGIN API ////////////////////////
@@ -650,13 +650,12 @@ const AllUsers = async (req: Request, res: Response) => {
   const users = await User.find();
   const length = users.length;
   if (!users) {
-    res.status(404).json({ status: "failed", message: "cannot find users" });
-    return;
+    throw new CustomError("users not found",404)
   }
 
   res
     .status(200)
-    .json({ status: "success", message: "all users detailes", users, length });
+    .json({ status: true, message: "all users detailes", users, length });
   return;
 };
 

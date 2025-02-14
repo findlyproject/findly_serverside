@@ -140,7 +140,7 @@ const verifySubscription = async (req: Request, res: Response) => {
     accountInfo.subscriptionStartDate = startDate;
     accountInfo.subscriptionEndDate = endDate;
     accountInfo.role = "premium";
-    accountInfo.isVerified = true
+   
 
     await accountInfo.save();
 

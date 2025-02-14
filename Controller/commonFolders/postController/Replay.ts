@@ -6,9 +6,11 @@ import { Comment } from "../../../model/CommentSchema";
 import { Reply } from "../../../model/CommentSchema";
 import { Post } from "../../../model/PostSchema";
 import User from "../../../model/UserSchema"
+import { CustomError } from "../../../Utils/CustomError";
 
 const replyToComment = async (req: Request, res: Response): Promise<void> => {
     if(!req.user){
+      throw new CustomError("Unauthorized")
         res.status(404).json({success:false,message:"Unauthorized"})
         return
     }

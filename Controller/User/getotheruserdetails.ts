@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import User from "../../model/UserSchema";
 import { Report } from "../../model/ReportSchema";
 import { IUser } from "../../types/allTypes";
+import { CustomError } from "../../Utils/CustomError";
 
 const getauteruserdetails = async (req:Request,res:Response)=>{
     const userid = req.params.id;
@@ -18,6 +19,7 @@ const reportuser = async(req:Request,res:Response):Promise<void>=>{
         res.status(400).json({ status: false, message: "User ID is missing" });
         return;
     }
+    
 
     const finduser = await User.findOne({ _id: userid });
     if (!finduser) {

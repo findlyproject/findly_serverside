@@ -5,10 +5,8 @@ import {  Request, Response } from "express";
  const createRating = async (req:Request,res:Response): Promise<void>=>{
 
   const userId=req.user?.id
-  console.log("userId",userId);
   
   const { review, starsRating } = req.body;
-console.log("review, starsRating",review, starsRating);
 
   if (!review || !starsRating || !userId) {
      res.status(400).json({success:false, message: "All fields are required." });
@@ -35,7 +33,6 @@ const getUserRatings = async (req: Request, res: Response) => {
     if(!userId){
       res.status(404).json({success:false,message:"Unauthorized"})
     }
-  console.log("Fasfd")
       const userRatings = await Rating.find({ userId });
 
       if (userRatings.length === 0) {
@@ -51,7 +48,6 @@ const getUserRatings = async (req: Request, res: Response) => {
      const getAllRatings=async(req:Request,res:Response)=>{
 
       const allratings=await Rating.find().populate("userId")
-      console.log("allratings",allratings)
       if(!allratings){
         res.status(404).json({success:false,message:" No review about findly"})
         return

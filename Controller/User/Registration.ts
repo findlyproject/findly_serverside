@@ -240,7 +240,6 @@ const googleauthlogin = async (req: Request, res: Response) => {
 
   const { email,name,image } = req.body;
 
-  console.log("email:",email,"name:",name,"image:",image);
   
   if(!name && !email){
     res.status(404).json({status:false,message:"name or email is missing"})
@@ -421,21 +420,18 @@ export const getPeopleYouMightKnow = async (req: Request, res: Response): Promis
 
 export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
 
-    console.log(req.body);
-    const userId = req.user?.id; // Assuming `req.user` is set from authentication middleware
+    const userId = req.user?.id; 
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
       res.status(400).json({ error: "Valid User ID is required" });
       return;
     }
 
-    // Find user
     const user = await User.findById(userId);
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
     }
 
-    // Extract text fields from req.body
     const {
       firstName,
       lastName,
@@ -453,7 +449,6 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
       banner
     } = req.body;
 
-    // Prepare update data
     const updateData: { [key: string]: any } = {
       ...(firstName && { firstName }),
       ...(lastName && { lastName }),
@@ -704,14 +699,12 @@ const AllUsers=async(req:Request,res:Response)=>{
 const spacificuserdetails = async (req:Request,res:Response):Promise<void>=>{
  
   const userid = req.params.id;
-console.log("userid",userid);
 
   if(!userid){
     res.status(404).json({status:false,message:"cannot find id"})
     return
   }
   const finduserprofile = await User.findOne({_id:userid,isDeleted:false,isBlocked:false}).populate('connecting.connectionID')
-  console.log("finduserprofile",finduserprofile);
   
   if(!finduserprofile){
     res.status(404).json({status:false,message:"cannot find all profile"})

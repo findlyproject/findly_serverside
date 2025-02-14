@@ -1,26 +1,18 @@
 import { Request, Response } from "express";
 import { Comment } from "../../../model/CommentSchema";
 import { Post } from "../../../model/PostSchema";
-import mongoose from "mongoose";
 
 // Get all comments
 export const getAllComments = async (req: Request, res: Response): Promise<void> => {
   const comments = await Comment.find().populate("user");
   const totalComments = await Comment.countDocuments(); 
-  res.status(200).json({ comments, totalComments });  
+  res.status(200).json({status:"success",message:"Got all the comments", comments, totalComments });  
 };
 
 // Comment on a Post
 export const addCommentToPost = async (req: Request, res: Response): Promise<void> => {
   const { postId, comment } = req.body;
-  if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
-    res.status(400).json({ error: "Valid Post ID is required" });
-    return;
-  }
-  if (!req.user?.id || !mongoose.Types.ObjectId.isValid(req.user?.id)) {
-    res.status(400).json({ error: "Valid User ID is required" });
-    return;
-  }
+ 
   if (!comment || comment.trim() === "") {
     res.status(400).json({ error: "Comment cannot be empty" });
     return;
@@ -46,12 +38,12 @@ export const addCommentToPost = async (req: Request, res: Response): Promise<voi
 
   await post.save();
   const populatedComment = await Comment.findById(newComment._id)
-      .populate("user", "firstName lastName email profileImage") // Populating user details
+      .populate("user", "firstName lastName email profileImage") 
       .exec();
 
   res
     .status(201)
-    .json({ message: "Comment added successfully", comment: populatedComment });
+    .json({status:"success", message: "Comment added successfully", comment: populatedComment });
 };
 
 // update a comment by id
@@ -61,14 +53,7 @@ export const editComment = async (req: Request, res: Response): Promise<void> =>
 
   
 
-  if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
-    res.status(400).json({ error: "Valid Comment ID is required" });
-    return;
-  }
-  if (!req.user?.id || !mongoose.Types.ObjectId.isValid(req.user?.id)) {
-    res.status(400).json({ error: "Valid User ID is required" });
-    return;
-  }
+  
   if (!newComment || newComment.trim() === "") {
     res.status(400).json({ error: "Comment cannot be empty" });
     return;
@@ -91,7 +76,7 @@ export const editComment = async (req: Request, res: Response): Promise<void> =>
 
   res
     .status(200)
-    .json({ message: "Comment updated successfully", comment });
+    .json({status:"success", message: "Comment updated successfully", comment });
   return;
 };
 
@@ -99,15 +84,6 @@ export const editComment = async (req: Request, res: Response): Promise<void> =>
 export const deleteComment = async (req: Request, res: Response): Promise<void> => {
   const {commentId } = req.params;
 
-  // Validate commentId and userId
-  if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
-      res.status(400).json({ error: "Valid Comment ID is required" });
-      return;
-  }
-  if (!req.user?.id || !mongoose.Types.ObjectId.isValid(req.user?.id)) {
-      res.status(400).json({ error: "Valid User ID is required" });
-      return;
-  }
 
   // Find the comment
   const comment = await Comment.findById(commentId);
@@ -122,11 +98,10 @@ export const deleteComment = async (req: Request, res: Response): Promise<void> 
       return;
   }
 
-  // Update the comment's isDeleted field instead of removing it
   comment.isDeleted = true;
-  await comment.save(); // ✅ Soft delete
+  await comment.save(); 
 
-  res.status(200).json({ message: "Comment marked as deleted successfully" ,comment});
+  res.status(200).json({status:"success", message: "Comment marked as deleted successfully" ,comment});
 };
 
 // get a comment by ID
@@ -144,8 +119,7 @@ export const getCommentById = async (req: Request, res: Response): Promise<void>
     res.status(404).json({ message: "Comment not found" });
     return;
   }
-console.log("comment",comment)
-  res.status(200).json({ message: "Comment found", comment });
+  res.status(200).json({status:"success", message: "Comment found", comment });
   return;
 };
 

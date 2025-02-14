@@ -25,26 +25,12 @@ export type IdType = z.infer<typeof IdSchema>;
   
 // User Schema Components
 const educationSchema = z.object({
-  qualification: z.string().optional(),
+  qualification: z.string(),
   startYear: z.string(),
   endYear: z.string(),
-  subject: z.string().optional(),
+  location: z.string(),
   college: z.string(),
 });
-const locationSchema=z.object({
-  country:z.string(),
-      countryName:z.string(),
-      state: z.string(),
-      stateName: z.string(),
-      city: z.string()
-})
-const joblocationSchema=z.object({
-  country:z.string(),
-      countryName:z.string(),
-      state: z.string(),
-      stateName: z.string(),
-      city: z.string()
-})
 
 const experienceSchema = z.object({
   jobRole: z.string(),
@@ -66,14 +52,11 @@ const projectSchema = z.object({
   link: z.string().url().optional(),
 });
 
- export const connectingSchema = z.object({
-
-  connectionID: ObjectIdSchema.optional(),
+const connectingSchema = z.object({
+  connectionID: ObjectIdSchema,
   status: z.boolean().default(false),
-  createdAt: z.date().optional(),
+  createdAt: z.date(),
 });
-export type ConnectionType = z.infer<typeof connectingSchema>;
-
 
 const resumeFileSchema = z.object({
   fileUrl: z.string().url(),
@@ -83,32 +66,33 @@ const resumeFileSchema = z.object({
 
 // User Schema
 export const UserSchema = z.object({
-  _id: ObjectIdSchema.optional(),
+  _id: ObjectIdSchema,
   firstName: z.string(),
   lastName: z.string(),
   email: z.string().email(),
+  isVerified: z.boolean().optional(),
   password: z.string(),
   phoneNumber: z.string().optional(),
   dateOfBirth: z.date().optional(),
-  location: locationSchema,
+  location: z.string().optional(),
   gender: z.string().optional(),
   profileImage: z.string().url().optional(),
   banner: z.string().url().optional(),
   skills: z.array(z.string()).optional(),
-  jobTitle: z.array(z.string()),
-  jobLocation: z.array(joblocationSchema),
-  reports: z.array(ObjectIdSchema).optional(), 
-  education: z.array(educationSchema).optional(),
-  experience: z.array(experienceSchema).optional(),
+  jobTitle: z.array(z.string()).optional(),
+  jobLocation: z.array(z.string()).optional(),
+  reports: z.array(ObjectIdSchema),  // Fixed here
+  education: z.array(educationSchema),
+  experience: z.array(experienceSchema),
   resumePDF: z.array(resumeSchema).optional(),
   resumeVideo: z.array(resumeSchema).optional(),
   projects: z.array(projectSchema).optional(),
-  connecting: z.array(connectingSchema).optional(),
+  connecting: z.array(connectingSchema),
   about: z.string().optional(),
   resume: z.array(resumeFileSchema).optional(),
-  role: z.enum(["user", "premium"]).optional(),
-  subscriptionEndDate: z.date().nullable().optional(),
-  subscriptionStartDate: z.date().nullable().optional(),
+  role: z.enum(["user", "premium"]),
+  subscriptionEndDate: z.date().nullable(),
+  subscriptionStartDate: z.date().nullable(),
   coverLetter: z.string().optional(),
   isBlocked: z.boolean().default(false),
   isDeleted: z.boolean().default(false),
@@ -148,28 +132,10 @@ const PostSchema = z.object({
 });
 export type PostType = z.infer<typeof PostSchema>;
 
-//report
-export const ReportSchema = z.object({
-  reportedBy: z.string().min(24, "Invalid user ID").max(24, "Invalid user ID"), // MongoDB ObjectId (24 characters)
-  reason: z.string().min(5, "Reason must be at least 5 characters").max(500, "Reason must be at most 500 characters"),
-  reportedAt: z.date().optional(), // Automatically set in Mongoose schema
-  isDeleted: z.boolean().optional().default(false),
-  status: z.enum(["pending", "reviewed", "resolved"]).optional().default("pending"),
-});
-
-export type ReportType = z.infer<typeof ReportSchema>;
-
-//rating
-export const ratingSchema = z.object({
-  review: z.string().min(3, "Review must be at least 3 characters long."),
-  starsRating: z.number().min(1, "Rating must be at least 1").max(5, "Rating must not exceed 5"),
-})
-
-export type RatingType = z.infer<typeof ratingSchema>;
 
 
  export const SubscriptionSchema = z.object({
-  
+  userId: ObjectIdSchema,
   companyId: ObjectIdSchema.optional(),
   price: z.number().min(0, { message: "Price must be a positive number" }),
   features: z.array(z.string()).min(1, { message: "At least one feature is required" }),

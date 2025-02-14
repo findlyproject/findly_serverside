@@ -6,14 +6,16 @@ import { getCommentById,addCommentToPost,editComment,deleteComment,getAllComment
 import { userAuthMiddleware } from "../../middleware/userauthantication";
 import {  deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../../Controller/commonFolders/postController/Replay";
 import { LikeOrDislike } from "../../Controller/commonFolders/postController/Post";
+import { validateData } from "../../middleware/zodValidation";
+import { IdSchema } from "../../Utils/zodSchema";
 const postRouter = express.Router();
 
 postRouter    
 
 //post
 .get("/allposts", getAllPosts)
-.get('/post/:id',errorCatch(getpostbyid))
-.get("/owner/:ownerId",userAuthMiddleware,errorCatch( getPostsByOwner))
+.get('/post/:id',validateData(IdSchema),errorCatch(getpostbyid))
+.get("/owner/:ownerId",userAuthMiddleware,validateData(IdSchema),errorCatch( getPostsByOwner))
 .post(
     "/upload",
     userAuthMiddleware, // ✅ Ensure user authentication happens first
@@ -23,14 +25,14 @@ postRouter
                              
 
 //like & unlike
-.post("/user/likepost/:postid",userAuthMiddleware,errorCatch(LikeOrDislike))
+.post("/user/likepost/:postid",userAuthMiddleware,validateData(IdSchema),errorCatch(LikeOrDislike))
            
 //comment
 .get("/allcomments",errorCatch(getAllComments))  
-.get('/viewcomment/:id',userAuthMiddleware,errorCatch(getCommentById))  
+.get('/viewcomment/:id',userAuthMiddleware,validateData(IdSchema),errorCatch(getCommentById))  
 .post("/comment",userAuthMiddleware,errorCatch(addCommentToPost))
 .put("/edit-comment/:commentId",userAuthMiddleware,errorCatch(editComment))
-.post("/delete-comment/:commentId", userAuthMiddleware,errorCatch(deleteComment))
+.post("/delete-comment/:commentId", userAuthMiddleware,validateData(IdSchema),errorCatch(deleteComment))
 
 //reply
 .post("/user/postreplay",userAuthMiddleware,errorCatch(replyToComment))

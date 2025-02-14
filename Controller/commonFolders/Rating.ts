@@ -1,5 +1,6 @@
 import Rating from "../../model/RatingSchema";
 import { Request, Response } from "express";
+import { CustomError } from "../../Utils/errorHandler";
 
 
 const createRating = async (req: Request, res: Response): Promise<void> => {
@@ -8,8 +9,8 @@ const createRating = async (req: Request, res: Response): Promise<void> => {
   const { review, starsRating } = req.body;
 
   if (!review || !starsRating || !userId) {
-    res.status(400).json({ success: false, message: "All fields are required." });
-    return
+    throw new CustomError("All fields are required.",400)
+
   }
 
   const newRating = new Rating({
@@ -27,14 +28,11 @@ const createRating = async (req: Request, res: Response): Promise<void> => {
 const getUserRatings = async (req: Request, res: Response) => {
   const userId = req.user?.id
   if (!userId) {
-    res.status(404).json({ success: false, message: "Unauthorized" })
+    throw new CustomError("Unauthorized",404)
   }
   const userRatings = await Rating.find({ userId });
 
-  if (userRatings.length === 0) {
-    res.status(404).json({ success: false, message: "No ratings found for this user." });
-    return;
-  }
+
 
   res.status(200).json({ success: true, message: "recived rating", userRatings });
 
@@ -45,8 +43,8 @@ const getAllRatings = async (req: Request, res: Response) => {
 
   const allratings = await Rating.find().populate("userId")
   if (!allratings) {
-    res.status(404).json({ success: false, message: " No review about findly" })
-    return
+    throw new CustomError(" No review about findly",404)
+
   }
   res.status(200).json({ success: true, message: "found it ", allratings })
 }
@@ -55,22 +53,24 @@ const deleteRating = async (req: Request, res: Response) => {
 
   const userId = req.user?.id
   if (!userId) {
-    res.status(404).json({ success: false, message: "Unauthorized" })
-    return
+    throw new CustomError("Unauthorized",404)
+
   }
 
   const { ratingId } = req.params;
 
   if (!ratingId) {
-    res.status(400).json({ message: "Rating ID is required." });
-    return;
+
+    throw new CustomError("Rating ID is required.",400)
+
   }
 
   const deletedRating = await Rating.findByIdAndDelete(ratingId);
 
   if (!deletedRating) {
-    res.status(404).json({ message: "Rating not found." });
-    return;
+    
+    throw new CustomError("Rating not found.",404)
+
   }
 
   res.status(200).json({ message: "Rating deleted successfully." });

@@ -9,6 +9,7 @@ const userconnections = async (req: Request, res: Response): Promise<void> => {
   const _id = req.user?.id;
 
   const connectionId = req.params.id;
+console.log("connectionId",connectionId);
 
   if (!_id) {
     throw new CustomError("User ID is missing", 404);
@@ -115,6 +116,7 @@ const acceptconnectionrequest = async (
 
 const getconnection = async (req: Request, res: Response): Promise<void> => {
   const _id = req.user?.id;
+console.log("----id",_id);
 
   if (!_id) {
     throw new CustomError("User ID is missing", 404);

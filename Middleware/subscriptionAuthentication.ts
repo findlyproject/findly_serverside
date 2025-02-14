@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { CustomError } from "../Utils/errorHandler";
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -20,20 +21,20 @@ const subscriptionAuthentication = async (req: Request, res: Response, next: Nex
     try {
         const token: string | undefined = req.cookies?.subscriptionToken;
         if (!token) {
-             res.status(401).json({ message: "subscriptionToken token missing" });
-             return
+            throw new CustomError("subscriptionToken token missing",401)
+
         }
 
         const secretKey = process.env.USER_SECRETKEY;
         if (!secretKey) {
-             res.status(500).json({ message: "Server error: subscription Secret key is missing" });
-             return
+            throw new CustomError(" subscription Secret key is missing",500)
+ 
         }
 
        const a = jwt.verify(token, secretKey, (error, user) => {
             if (error) {
-                 res.status(401).json({ status: false, message: "Invalid token", response: error });
-                 return
+                throw new CustomError(`Invalid token ${error}`,401)
+
             }
 
             req.user = user as JwtDecoded; 

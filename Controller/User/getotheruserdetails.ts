@@ -15,6 +15,7 @@ const reportuser = async(req:Request,res:Response):Promise<void>=>{
         res.status(400).json({ status: false, message: "User ID is missing" });
         return;
     }
+    
 
     const finduser = await User.findOne({ _id: userid });
     if (!finduser) {

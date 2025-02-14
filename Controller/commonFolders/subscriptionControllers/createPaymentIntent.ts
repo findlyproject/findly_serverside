@@ -5,6 +5,7 @@ import User from "../../../model/UserSchema";
 import { Company } from "../../../model/CompanySchema";
 import jwt, { JwtPayload } from "jsonwebtoken"; import { string } from "zod";
 import { subscribe } from "diagnostics_channel";
+import { CustomError } from "../../../Utils/errorHandler";
 
 
 
@@ -13,7 +14,7 @@ import { subscribe } from "diagnostics_channel";
 const createSubscription = async (req: Request, res: Response): Promise<void> => {
 
     const stripe = new Stripe(process.env.STRIPE_KEY || "");
-    const { planName, price, features, type } = req.body;
+    const { plan, price, features, type } = req.body;
     let userId = req.user?.id
     if (!features) {
         res.status(404).json({ success: false, message: "not found features" })
@@ -21,12 +22,11 @@ const createSubscription = async (req: Request, res: Response): Promise<void> =>
     }
     const companyId = null
     if (!userId && !companyId) {
-        res.status(400).json({ success: false, message: "Either userId or companyId must be provided." });
-        return
+        throw new CustomError("Either userId or companyId must be provided.",401)
     }
     if (userId && companyId) {
-        res.status(400).json({ success: false, message: "Only one of userId or companyId should be provided." });
-        return
+        throw new CustomError("Only one of userId or companyId should be provided.",400)
+      
     }
 
 
@@ -43,7 +43,7 @@ const createSubscription = async (req: Request, res: Response): Promise<void> =>
             {
                 price_data: {
                     currency: 'usd',
-                    product_data: { name: planName, description: `Features: ${featuresString}`, },
+                    product_data: { name: plan, description: `Features: ${featuresString}`, },
                     unit_amount: amountInINR,
 
                 },
@@ -61,8 +61,8 @@ const createSubscription = async (req: Request, res: Response): Promise<void> =>
         }
     })
     if (!session.id) {
-        res.status(404).json({ success: true, message: "session id not found" })
-        return
+        throw new CustomError("session id not found",404)
+       
     }
     let setType: "UserSubscription" | "CompanySubscription" = userId ? "UserSubscription" : "CompanySubscription";
 
@@ -70,7 +70,7 @@ const createSubscription = async (req: Request, res: Response): Promise<void> =>
     subscription = new SubscriptionPlan({
         userId: userId || null,
         companyId: companyId || null,
-        plan: planName,
+        plan: plan,
         price: price,
         active: true,
         paymentStatus: "pending",
@@ -98,8 +98,7 @@ const verifySubscription = async (req: Request, res: Response) => {
     const { sessionId } = req.params;
     const subscription = await SubscriptionPlan.findOne({ sessionId });
     if (!subscription) {
-        res.status(404).json({ success: false, message: "Payment not found" });
-        return;
+        throw new CustomError("Payment not found",404)
     }
     let accountInfo = null;
 
@@ -110,13 +109,12 @@ const verifySubscription = async (req: Request, res: Response) => {
     }
 
     if (!accountInfo) {
-        res.status(404).json({ success: false, message: "User or Company not found" });
-        return;
+        throw new CustomError("User or Company not found",404)
     }
 
     if (subscription.paymentStatus === "completed") {
-        res.status(400).json({ success: false, message: "Payment has already been processed" });
-        return;
+        throw new CustomError("Payment has already been processed",404)
+
     }
 
 
@@ -156,8 +154,7 @@ const verifySubscription = async (req: Request, res: Response) => {
     const subscriptionToken = jwt.sign(payload, secretKey, { expiresIn: `${durationDays}d` });
 
     if (!subscriptionToken) {
-        res.status(400).json({ success: false, message: "Error creating subscription token" });
-        return;
+        throw new CustomError("Error creating subscription token",400)
     }
 
     res.cookie('subscriptionToken', subscriptionToken, {
@@ -183,8 +180,8 @@ const findSubscriptionById = async (req: Request, res: Response) => {
     const subscription = await SubscriptionPlan.findOne({ sessionId: sessionId });
 
     if (!subscription) {
-        res.status(404).json({ success: false, message: "Subscription plan not found" });
-        return
+        throw new CustomError("Subscription plan not found",404)
+
     }
 
     res.status(200).json({ success: true, message: "Completed", subscription });

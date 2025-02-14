@@ -6,28 +6,30 @@ import { Comment } from "../../../model/CommentSchema";
 import { Reply } from "../../../model/CommentSchema";
 import { Post } from "../../../model/PostSchema";
 import User from "../../../model/UserSchema"
+import { CustomError } from "../../../Utils/errorHandler";
+
 
 const replyToComment = async (req: Request, res: Response): Promise<void> => {
     if(!req.user){
-        res.status(404).json({success:false,message:"Unauthorized"})
-        return
-    }
+      throw new CustomError("Unauthorized",404)
+      
+    } 
 
 const userId =req.user?.id
     const { postId, commentId,  replyText } = req.body;
     if (!postId || !commentId || !userId || !replyText) {
-        res.status(400).json({ error: "All fields are required" });
-        return
+      throw new CustomError("All fields are required",400)
+      
     }
     const post = await Post.findById(postId);
     if (!post) {
-        res.status(404).json({ error: "Post not found" });
-        return
+      throw new CustomError("Post not found",404)
+        
     }
     const comment = await Comment.findById(commentId);
     if (!comment) {
-        res.status(404).json({ error: "Comment not found" });
-        return
+      throw new CustomError("Comment not found",404)
+        
     }
     const reply = new Reply({
         user: userId,
@@ -49,8 +51,8 @@ const getRepliesForComment = async (req: Request, res: Response): Promise<void> 
         const { commentId } = req.params;
 
         if (!commentId) {
-            res.status(400).json({ error: "Comment ID is required" });
-            return;
+          throw new CustomError("Comment ID is required",400)
+       
         }
 
 
@@ -65,8 +67,8 @@ const getRepliesForComment = async (req: Request, res: Response): Promise<void> 
         });
 
         if (!comment) {
-            res.status(404).json({ error: "Comment not found" });
-            return;
+          throw new CustomError("Comment not found",404)
+           
         }
 
         res.status(200).json({ success: true, replies: comment.replies });
@@ -81,28 +83,27 @@ const editReply = async (req: Request, res: Response): Promise<void> => {
         const { newReplyText,commentId,replayedId } = req.body;
 
         if (!commentId || !replayedId || !newReplyText) {
-            res.status(400).json({success:false, error: "Comment ID, Reply ID, and new reply text are required" });
-            return;
+          throw new CustomError("Comment ID, Reply ID, and new reply text are required",400)
+         
         }
 
    
         const comment = await Comment.findById(commentId);
         if (!comment) {
-            res.status(404).json({success:false, error: "Comment not found" });
-            return;
+          throw new CustomError("Comment not found",404)
         }
 
         const replyIndex = comment.replies.findIndex((replyId) => replyId.toString() === replayedId);
         if (replyIndex === -1) {
-            res.status(404).json({success:false, error: "Reply not found in the comment" });
-            return;
+          throw new CustomError("Reply not found in the comment",404)
+          
         }
 
         
         const reply = await Reply.findById(replayedId);
         if (!reply) {
-            res.status(404).json({success:false, error: "Reply not found" });
-            return;
+          throw new CustomError("Reply not found",404)
+          
         }
 
         reply.reply = newReplyText;
@@ -117,38 +118,38 @@ const editReply = async (req: Request, res: Response): Promise<void> => {
 const deleteReply = async (req: Request, res: Response): Promise<void> => {
       const userId = req.user?.id;
       if (!req.user) {
-        res.status(401).json({ success: false, message: "Unauthorized" });
-        return;
+        throw new CustomError("Unauthorized",401)
+        
       }
   
       const { commentId, replayId } = req.body;
 
       if (!commentId) {
-        res.status(400).json({ success: false, message: "Comment ID not found" });
-        return;
+        throw new CustomError("Comment ID not found",400)
+     
       }
       if (!replayId) {
-        res.status(400).json({ success: false, message: "Reply ID not found" });
-        return;
+        throw new CustomError("Reply ID not found",400)
+        
       }
       const comment = await Comment.findById(commentId);
       if (!comment) {
-        res.status(404).json({ success: false, message: "Comment not found" });
-        return;
+        throw new CustomError("Comment not found",401)
+     
       }
       if (!comment.replies.includes(replayId)) {
-        res.status(404).json({ success: false, message: "Reply ID not found in replies" });
-        return;
+        throw new CustomError("Reply ID not found in replies",401)
+      
       }
       const reply = await Reply.findById(replayId);
       if (!reply) {
-        res.status(404).json({ success: false, message: "Reply not found" });
-        return;
+        throw new CustomError("Reply not found",404)
+     
       }
   
       if (reply.user.toString() !== userId) {
-        res.status(403).json({ success: false, message: "You can only delete your own replies" });
-        return;
+        throw new CustomError("You can only delete your own replies",403)
+     
       }
       const deletedReply = await Reply.findByIdAndUpdate(
         replayId,

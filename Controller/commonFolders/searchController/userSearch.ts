@@ -1,22 +1,19 @@
-import {Request,Response} from "express";
-import User from "../../../model/UserSchema"; 
+import { Request, Response } from "express";
+import User from "../../../model/UserSchema";
+import { CustomError } from "../../../Utils/errorHandler";
 
+const UserSearch = async (req: Request, res: Response): Promise<void> => {
+  const { firstName } = req.query;
 
-const UserSearch=async(req:Request, res:Response):Promise<void> => {
+  if (!firstName) {
+    throw new CustomError("Search term is required", 400);
+  }
 
+  const users = await User.find({
+    firstName: { $regex: `^${firstName}`, $options: "i" },
+  });
 
-    const { firstName } = req.query; 
+  res.status(200).json({ status: true, message: "search results", users });
+};
 
-    if (!firstName) {
-       res.status(400).json({ message: "Search term is required" });
-    }
-
-    const users = await User.find({
-      firstName: { $regex: `^${firstName}`, $options: "i" }, 
-    });
-
-    res.status(200).json(users);
- 
-}
-
-export{UserSearch}
+export { UserSearch };

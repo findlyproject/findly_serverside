@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import mongoose from "mongoose";
+import { CustomError } from "../../Utils/customError";
 
 
 
@@ -21,12 +22,12 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
 
   const emailRegex = /\S+@\S+\.\S+/;
   if (!emailRegex.test(email)) {
-    res.status(400).json({ status: "failed", message: "Invalid email format" });
+    throw new CustomError('Invalid email format',400)
   }
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    res.status(400).json({ status: "failed", message: "User already exists" });
+    throw new CustomError('User already exists',400)
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);

@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import mongoose from "mongoose";
+import { CustomError } from "../../Utils/errorHandler";
 
 
 
@@ -470,9 +471,7 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
 
 
 export const uploadResume = async (req: Request, res: Response): Promise<void> => {
-  console.log("hey");
-  
-  try {
+
     const files = req.files as {
       resume?: Express.Multer.File[];
       video?: Express.Multer.File[];
@@ -480,21 +479,18 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
     const pdfFile = files?.resume ? files.resume[0] : null;
     const videoFile = files?.video ? files.video[0] : null;
 
-    console.log("pdfFile", pdfFile);
-    console.log("videoFile", videoFile);
-    console.log("Uploaded Files:", files);
 
     if (!pdfFile && !videoFile) {
-      res.status(400).json({ success: false, message: "No files uploaded" });
-      return;
+      throw new CustomError("No files uploaded",400)
+
     }
 
     const userId = req.user?.id;
     const user = await User.findById(userId);
 
     if (!user) {
-      res.status(404).json({ success: false, message: "User not found" });
-      return;
+      throw new CustomError("User not found",400)
+
     }
 
     if (!user.resumePDF) user.resumePDF = [];
@@ -502,9 +498,6 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
 
     if (pdfFile) {
       const existingActivePDF = user.resumePDF.some((pdf) => !pdf.isDeleted);
-      console.log("pdfFile",pdfFile);
-      console.log("existingActivePDF",existingActivePDF);
-      
       
       if (!existingActivePDF) {
         user.resumePDF.push({
@@ -514,10 +507,8 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
           isDeleted: false,
         });
       } else {
-        res
-          .status(400)
-          .json({ success: false, message: "A resume PDF already exists." });
-        return;
+        throw new CustomError("A resume PDF already exists.",400)
+    
       }
     }
 
@@ -533,10 +524,8 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
           isDeleted: false,
         });
       } else {
-        res
-          .status(400)
-          .json({ success: false, message: "A resume video already exists." });
-        return;
+        throw new CustomError("A resume video already exists.",400)
+   
       }
     }
 
@@ -551,30 +540,27 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
         resumeVideo: user.resumeVideo.filter((video) => !video.isDeleted),
       },
     });
-  } catch (error) {
-    console.error("Error uploading resume:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+
 };
 
 export const getUploadedFiles = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  try {
+
     const userId = req.user?.id;
     console.log("user", userId);
 
     if (!userId) {
-      res.status(401).json({ success: false, message: "Unauthorized" });
-      return;
+      throw new CustomError("Unauthorized",401)
+
     }
 
     const user = await User.findById(userId);
 
     if (!user) {
-      res.status(404).json({ success: false, message: "User not found" });
-      return;
+      throw new CustomError("User not found",401)
+ 
     }
 
     const activeResumePDFs = user.resumePDF?.filter((pdf) => !pdf.isDeleted);
@@ -590,38 +576,32 @@ export const getUploadedFiles = async (
         resumeVideos: activeResumeVideos,
       },
     });
-  } catch (error) {
-    console.error("Error retrieving uploaded files:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+
 };
 
 const removeResumeFile = async (req: Request, res: Response): Promise<void> => {
   const userId: string | undefined = req.user?.id;
   const fileType: "resume" | "introductionVideo" | undefined = req.query
     .fileType as "resume" | "introductionVideo";
-  console.log("fileType", fileType);
+
 
   if (!userId) {
-    res.status(401).json({ success: false, message: "Unauthorized access" });
-    return;
+    throw new CustomError("Unauthorized",401)
+
   }
 
   if (
     !fileType ||
     (fileType !== "resume" && fileType !== "introductionVideo")
   ) {
-    res.status(400).json({
-      success: false,
-      message: "Invalid file type. Use 'pdf' or 'video'.",
-    });
-    return;
+    throw new CustomError("Invalid file type. Use 'pdf' or 'video'.",400)
+
   }
 
   const user = await User.findById(userId);
   if (!user) {
-    res.status(404).json({ success: false, message: "User not found" });
-    return;
+    throw new CustomError("User not found",401)
+
   }
 
   let updatedFiles = [];
@@ -641,26 +621,17 @@ const removeResumeFile = async (req: Request, res: Response): Promise<void> => {
 
     updatedFiles = user.resumeVideo.filter((resume) => !resume.isDeleted);
   } else {
-    res.status(404).json({
-      success: false,
-      message: `No ${fileType} files found to mark as deleted`,
-    });
-    return;
+    throw new CustomError(`No ${fileType} files found to mark as deleted`,404)
+
   }
 
-  try {
     await user.save();
     res.status(200).json({
       success: true,
       message: `${fileType} files marked as deleted.`,
       files: updatedFiles,
     });
-  } catch (error) {
-    console.error("Error updating user:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to update user data" });
-  }
+
 };
 
 

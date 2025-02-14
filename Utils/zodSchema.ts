@@ -130,7 +130,36 @@ const PostSchema = z.object({
     })
   ),
 });
-
 export type PostType = z.infer<typeof PostSchema>;
 
 
+
+ export const SubscriptionSchema = z.object({
+  
+  companyId: ObjectIdSchema.optional(),
+  price: z.number().min(0, { message: "Price must be a positive number" }),
+  features: z.array(z.string()).min(1, { message: "At least one feature is required" }),
+  popular: z.boolean().default(false),
+  sessionId: z.string().min(1, { message: "Session ID is required" }).optional(),
+  plan: z.enum(["free", "one year", "six month","one month"]).default("free"),
+  active: z.boolean().default(false),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  type: z.enum(["UserSubscription", "CompanySubscription"]),
+  paymentStatus: z.enum(["pending", "completed"]).default("pending"),
+});
+
+export type SubscriptionType = z.infer<typeof SubscriptionSchema>;
+
+export const VerificationSchema = z.object({
+  sessionId: z.string().min(1, { message: "Session ID is required" })
+});
+
+
+export const resumeSchma=z.object({
+
+})
+
+
+
+export type VerificationType = z.infer<typeof VerificationSchema>;

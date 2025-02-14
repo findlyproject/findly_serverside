@@ -2,12 +2,14 @@ import Express from "express";
 import { userAuthMiddleware } from "../../middleware/userauthantication";
 import { errorCatch } from "../../middleware/tryCatch";
 import { acceptconnectionrequest, getconnection, removeConnection, userconnections,GetConnectionRequest,ignoreConnectionRequest } from "../../Controller/User/Connecting";
+import { validateData } from "../../middleware/zodValidation";
+import { UserSchema } from "../../Utils/zodSchema";
 
 const connectionrout = Express.Router()
 
 connectionrout
 
-    .post("/request/:id",userAuthMiddleware,errorCatch(userconnections))  
+    .post("/request/:id",userAuthMiddleware,validateData(undefined,UserSchema), errorCatch(userconnections))  
     .post("/accept/:id",userAuthMiddleware,errorCatch(acceptconnectionrequest))
     .get("/getconnection",userAuthMiddleware,errorCatch(getconnection))
     .post("/removeconnection/:id",userAuthMiddleware,errorCatch(removeConnection))

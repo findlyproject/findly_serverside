@@ -13,7 +13,7 @@ const userconnections = async (req: Request, res: Response): Promise<void> => {
   if (!_id) {
     throw new CustomError("User ID is missing",404);
   }
-
+userconnections;''
   if (!mongoose.Types.ObjectId.isValid(connectionId)) {
     throw new CustomError("Invalid connection ID format",404);
     

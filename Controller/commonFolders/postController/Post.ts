@@ -17,7 +17,7 @@ const getAllPosts = async (req: Request, res: Response): Promise<void> => {
       select: "firstName lastName profileImage ", 
     },
   });
-  const totalPosts = await Post.countDocuments(); /
+  const totalPosts = await Post.countDocuments(); 
   res.status(200).json({ posts, totalPosts });  
 };
 

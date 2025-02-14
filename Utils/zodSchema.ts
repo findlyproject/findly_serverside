@@ -184,7 +184,7 @@ export type RatingType = z.infer<typeof RatingSchema>;
 
 
  export const SubscriptionSchema = z.object({
-  
+  userId:ObjectIdSchema,
   companyId: ObjectIdSchema.optional(),
   price: z.number().min(0, { message: "Price must be a positive number" }),
   features: z.array(z.string()).min(1, { message: "At least one feature is required" }),

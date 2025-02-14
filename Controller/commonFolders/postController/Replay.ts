@@ -1,6 +1,5 @@
 
-import { Request, response, Response } from "express";
-import mongoose from "mongoose";
+import { Request, Response } from "express";
 
 import { Comment } from "../../../model/CommentSchema";
 import { Reply } from "../../../model/CommentSchema";
@@ -10,10 +9,7 @@ import { CustomError } from "../../../Utils/errorHandler";
 
 
 const replyToComment = async (req: Request, res: Response): Promise<void> => {
-    if(!req.user){
-      throw new CustomError("Unauthorized",404)
-      
-    } 
+  
 
 const userId =req.user?.id
     const { postId, commentId,  replyText } = req.body;
@@ -117,10 +113,7 @@ const editReply = async (req: Request, res: Response): Promise<void> => {
 
 const deleteReply = async (req: Request, res: Response): Promise<void> => {
       const userId = req.user?.id;
-      if (!req.user) {
-        throw new CustomError("Unauthorized",401)
-        
-      }
+     
   
       const { commentId, replayId } = req.body;
 

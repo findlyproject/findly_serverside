@@ -7,7 +7,7 @@ import { userAuthMiddleware } from "../../middleware/userauthantication";
 import {  deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../../Controller/commonFolders/postController/Replay";
 import { LikeOrDislike } from "../../Controller/commonFolders/postController/Post";
 import { validateData } from "../../middleware/zodValidation";
-import { IdSchema } from "../../Utils/zodSchema";
+import { CommentSchema, IdSchema, ReplySchema } from "../../Utils/zodSchema";
 const postRouter = express.Router();
 
 postRouter    
@@ -30,12 +30,12 @@ postRouter
 //comment
 .get("/allcomments",errorCatch(getAllComments))  
 .get('/viewcomment/:id',userAuthMiddleware,validateData(IdSchema),errorCatch(getCommentById))  
-.post("/comment",userAuthMiddleware,errorCatch(addCommentToPost))
-.put("/edit-comment/:commentId",userAuthMiddleware,errorCatch(editComment))
+.post("/comment",userAuthMiddleware,validateData(CommentSchema),errorCatch(addCommentToPost))
+.put("/edit-comment/:commentId",userAuthMiddleware,validateData(CommentSchema,IdSchema),errorCatch(editComment))
 .post("/delete-comment/:commentId", userAuthMiddleware,validateData(IdSchema),errorCatch(deleteComment))
 
 //reply
-.post("/user/postreplay",userAuthMiddleware,errorCatch(replyToComment))
+.post("/user/postreplay",userAuthMiddleware,validateData(ReplySchema),errorCatch(replyToComment))
 .get("/user/findreply/:commentId",userAuthMiddleware,errorCatch(getRepliesForComment))
 .put("/user/editreplay",userAuthMiddleware,errorCatch(editReply))
 .delete("/user/deletereplay",userAuthMiddleware,errorCatch(deleteReply))

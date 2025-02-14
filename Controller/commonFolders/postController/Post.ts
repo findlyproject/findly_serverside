@@ -19,7 +19,7 @@ const getAllPosts = async (req: Request, res: Response): Promise<void> => {
     },
   });
   const totalPosts = await Post.countDocuments(); 
-  res.status(200).json({status:true,message:"Got all the posts and count", posts, totalPosts });  
+  res.status(200).json({ posts, totalPosts });  
 };
 
 export const addPost = async (req: Request, res: Response): Promise<void> => {
@@ -142,23 +142,20 @@ const ReportPost = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
 
   if (!userId) {
-   
-    throw new CustomError("Unauthorized: User ID missing", 401);
-
+    throw new CustomError("Unauthorized: User ID missing",404)
+  
   }
   const { reason, postId } = req.body;
   
 
   if (!reason || reason.trim() === "") {
-    
-    throw new CustomError("Comment cannot be empty", 400);
-    
+    throw new CustomError("Comment cannot be empty",404)
+  
   }
   const post = await Post.findById(postId);
   if (!post) {
-    
-    throw new CustomError("Post not found", 404);
-
+    throw new CustomError("Post not found",404)
+   
   }
 
   const report = new Report({

@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { CustomError } from "../Utils/errorHandler";
+import { stat } from "fs";
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -20,27 +22,27 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
     try {
         const token: string | undefined = req.cookies?.token;
         if (!token) {
-             res.status(401).json({ message: "Authentication token missing" });
-             return
+            throw new CustomError("Authentication token missing",401);
+             
         }
 
         const secretKey = process.env.USER_SECRETKEY;
         if (!secretKey) {
-             res.status(500).json({status:false, message: "Server error: Secret key is missing" });
-             return
+            throw new CustomError("missing secret key",404);
+           
         }
 
         await jwt.verify(token, secretKey, (error, user) => {
             if (error) {
-                 res.status(401).json({ status: false, message: "Invalid token", response: error });
-                 return
+                throw new CustomError("Invalid token",401);
             }
 
             req.user = user as JwtDecoded; 
             next();
         });
     } catch (error) {
-        res.status(500).json({status:false, message: "Internal server error" });
+        res.status(400).json({status:false,message:"Internal server error"});
+        return
     }
 };
 

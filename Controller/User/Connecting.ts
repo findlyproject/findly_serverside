@@ -2,33 +2,31 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 import User from "../../model/UserSchema";
 import { IUser } from "../../types/allTypes";
+import { CustomError } from "../../Utils/errorHandler";
+
+
 
 const userconnections = async (req: Request, res: Response): Promise<void> => {
   const _id = req.user?.id;
   const connectionId = req.params.id;
 
   if (!_id) {
-    res.status(400).json({ status: "failed", message: "User ID is missing" });
-    return;
+    throw new CustomError("User ID is missing",404);
   }
-
+userconnections;''
   if (!mongoose.Types.ObjectId.isValid(connectionId)) {
-    res
-      .status(400)
-      .json({ status: "failed", message: "Invalid connection ID format" });
-    return;
+    throw new CustomError("Invalid connection ID format",404);
+    
   }
 
   const currentUser = await User.findById(_id);
   if (!currentUser) {
-    res.status(404).json({ status: "failed", message: "Current user not found" });
-    return;
+    throw new CustomError("Current user not found",404);
   }
 
   const targetUser = await User.findById(connectionId);
   if (!targetUser) {
-    res.status(404).json({ status: "failed", message: "Target user not found" });
-    return;
+    throw new CustomError("Target user not found",404);
   }
 
   const isDuplicate = targetUser.connecting.some(
@@ -36,10 +34,7 @@ const userconnections = async (req: Request, res: Response): Promise<void> => {
   );
 
   if (isDuplicate) {
-    res
-      .status(400)
-      .json({ status: "failed", message: "Connection request already sent" });
-    return;
+    throw new CustomError("Connection request already sent",404);
   }
 
   targetUser.connecting.push({
@@ -71,29 +66,23 @@ const acceptconnectionrequest = async (
   const connectionId = req.params.id;
 
   if (!_id) {
-    res.status(400).json({ status: "failed", message: "User ID is missing" });
-    return;
+    throw new CustomError("User ID is missing",404);
   }
 
   if (!mongoose.Types.ObjectId.isValid(connectionId)) {
-    res
-      .status(400)
-      .json({ status: "failed", message: "Invalid connection ID format" });
-    return;
+    throw new CustomError("Invalid connection ID format",404);
+   
   }
 
   const targetUser = await User.findById(_id);
   if (!targetUser) {
-    res.status(404).json({ status: "failed", message: "Target user not found" });
-    return;
+    throw new CustomError("Target user not found",404);
+   
   }
 
   const requestingUser = await User.findById(connectionId);
   if (!requestingUser) {
-    res
-      .status(404)
-      .json({ status: "failed", message: "Requesting user not found" });
-    return;
+    throw new CustomError("Requesting user not found",404);
   }
 
   const connectionIndex = targetUser.connecting.findIndex(
@@ -101,10 +90,8 @@ const acceptconnectionrequest = async (
   );
 
   if (connectionIndex === -1) {
-    res
-      .status(400)
-      .json({ status: "failed", message: "No pending connection request found" });
-    return;
+    throw new CustomError("No pending connection request found",404);
+  
   }
 
   targetUser.connecting[connectionIndex].status = true;
@@ -132,8 +119,8 @@ const getconnection = async (req: Request, res: Response): Promise<void> => {
   const _id = req.user?.id;
 
   if (!_id) {
-    res.status(400).json({ status: false, message: "User ID is missing" });
-    return;
+    throw new CustomError("User ID is missing",404);
+   
   }
 
   const foundUser: IUser | null = await User.findOne({ _id }).populate({
@@ -142,8 +129,8 @@ const getconnection = async (req: Request, res: Response): Promise<void> => {
   });
 
   if (!foundUser) {
-    res.status(404).json({ status: false, message: "User not found" });
-    return;
+    throw new CustomError("User not found",404);
+   
   }
 
   const userConnections = foundUser.connecting.filter(
@@ -164,22 +151,20 @@ const removeConnection = async (req: Request, res: Response): Promise<void> => {
   const connectionId = req.params.id;
 
   if (!mongoose.Types.ObjectId.isValid(connectionId)) {
-    res.status(400).json({ status: false, message: "Invalid connection ID" });
-    return;
+    throw new CustomError("Invalid connection ID format",404);
+  
   }
 
   const user = await User.findById(_id);
   if (!user) {
-    res.status(404).json({ status: false, message: "User not found" });
-    return;
+    throw new CustomError("User not found",404);
+   
   }
 
   const findConnectedUser = await User.findOne({ _id: connectionId });
   if (!findConnectedUser) {
-    res
-      .status(404)
-      .json({ status: false, message: "Connected user not found" });
-    return;
+    throw new CustomError("Connected user not found",404);
+   
   }
 
   const userobjectid = new mongoose.Types.ObjectId(_id);
@@ -190,10 +175,8 @@ const removeConnection = async (req: Request, res: Response): Promise<void> => {
   );
 
   if (!finduserconnection) {
-    res
-      .status(400)
-      .json({ status: false, message: "User connection not found" });
-    return;
+    throw new CustomError("User connection not found",404);
+
   }
 
   const filteredconnections = findConnectedUser.connecting.filter((item) =>
@@ -201,10 +184,8 @@ const removeConnection = async (req: Request, res: Response): Promise<void> => {
   );
 
   if (!filteredconnections) {
-    res
-      .status(400)
-      .json({ status: false, message: "Connected user connection not found" });
-    return;
+    throw new CustomError("Connected user connection not found",404);
+   
   }
 
   user.connecting = user.connecting.filter(
@@ -264,21 +245,19 @@ const ignoreConnectionRequest = async (
   const connectionId = req.params.id;
 
   if (!_id) {
-    res.status(400).json({ status: false, message: "User ID is missing" });
-    return;
+    throw new CustomError("User ID is missing",404);
+   
   }
 
   if (!mongoose.Types.ObjectId.isValid(connectionId)) {
-    res
-      .status(400)
-      .json({ status: false, message: "Invalid connection ID format" });
-    return;
+    throw new CustomError("Invalid connection ID format",404);
+  
   }
 
   const currentUser = await User.findById(_id);
   if (!currentUser) {
-    res.status(404).json({ status: false, message: "Current user not found" });
-    return;
+    throw new CustomError("Current user not found",404);
+   
   }
 
   const updatedConnections = currentUser.connecting.filter(
@@ -286,10 +265,8 @@ const ignoreConnectionRequest = async (
   );
 
   if (updatedConnections.length === currentUser.connecting.length) {
-    res
-      .status(400)
-      .json({ status: false, message: "Connection request not found" });
-    return;
+    throw new CustomError("Connection request not found",404);
+    
   }
 
   currentUser.connecting = updatedConnections;

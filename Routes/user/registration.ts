@@ -8,12 +8,14 @@ import { reportuser } from "../../Controller/User/getotheruserdetails";
 import { refreshAccessToken } from "../../Controller/User/refreshToken";
 import { generateSignedUrl } from "../../Utils/fileUpload";
 import ressumeupload from '../../middleware/ressumeUploading'
+import { validateData } from "../../middleware/zodValidation";
+import { LoginSchema, ReportSchema, UserSchema } from "../../Utils/zodSchema";
 
 const router = express.Router()
 
 router
-.post("/registration", errorCatch(RegistrationUser))
-.post("/login",errorCatch(login))
+.post("/registration",validateData(UserSchema),errorCatch(RegistrationUser))
+.post("/login",validateData(LoginSchema),errorCatch(login))
 .post("/googleauthlogin",errorCatch(googleauthlogin))
    
 .post("/logout",errorCatch(logout))
@@ -22,7 +24,7 @@ router
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
 .get("/people-you-might-know", userAuthMiddleware, errorCatch(getPeopleYouMightKnow))
 
-.put("/profile",userAuthMiddleware,errorCatch(updateUserProfile))
+.put("/profile",userAuthMiddleware,validateData(UserSchema),errorCatch(updateUserProfile))
 
 
 .post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
@@ -32,7 +34,7 @@ router
 .put( "/profile",userAuthMiddleware,errorCatch(updateUserProfile))
 .get('/all',AllUsersEmailCheck)
 .get('/users',AllUsers)
-.post("/reportuser",userAuthMiddleware,errorCatch(reportuser))
+.post("/reportuser",userAuthMiddleware,validateData(ReportSchema),errorCatch(reportuser))
 .post("/refreshtoken",errorCatch(refreshAccessToken))
 .get("/generate-signed-url", errorCatch(generateSignedUrl))
 .get("/spacificuserdetails/:id", userAuthMiddleware, errorCatch(spacificuserdetails))

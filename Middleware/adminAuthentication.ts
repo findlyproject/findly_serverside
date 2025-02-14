@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { CustomError } from "../Utils/errorHandler";
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -20,27 +21,26 @@ const adminAuthentication = async (req: Request, res: Response, next: NextFuncti
     try {
         const token: string | undefined = req.cookies?.adminToken;
         if (!token) {
-             res.status(401).json({status:false, message: "Admin authentication token missing" });
-             return
+            throw new CustomError("Admin authentication token missing",401);
+             
         }
 
         const secretKey = process.env.USER_SECRETKEY;
         if (!secretKey) {
-             res.status(500).json({status:false, message: "Server error: Secret key is missing" });
-             return
+            throw new CustomError("missing secret key",404);
+             
         }
 
        const verifyToken = jwt.verify(token, secretKey, (error, user) => {
             if (error) {
-                 res.status(401).json({ status: false, message: "Invalid Admin Token", response: error });
-                 return
+                throw new CustomError("Invalid Admin Token",401);
             }
 
             req.user = user as JwtDecoded; 
             next();
         });
     } catch (error) {
-        res.status(500).json({status:false, message: "Internal server error" });
+        throw new CustomError("Error when validating data", 400);
     }
 };
 

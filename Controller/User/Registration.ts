@@ -5,6 +5,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import mongoose from "mongoose";
 
 
+
+//Registration
 const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
   const {
     email,
@@ -16,28 +18,25 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
     jobTitles,
     jobLocations,
   } = req.body;
-  console.log("gggggreq.bodyy",req.body);
-  
+
   const emailRegex = /\S+@\S+\.\S+/;
   if (!emailRegex.test(email)) {
-    res.status(400).json({ message: "Invalid email format" });
+    res.status(400).json({ status: "failed", message: "Invalid email format" });
   }
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    res.status(400).json({ message: "User already exists" });
+    res.status(400).json({ status: "failed", message: "User already exists" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  
-  
 
   const user = new User({
     email,
     password: hashedPassword,
     firstName,
     lastName,
-    education:education || [],
+    education: education || [],
     location,
     jobTitle: jobTitles,
     jobLocation: jobLocations,
@@ -69,10 +68,9 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
-console.log("user",user);
-
-
-  res.status(200).json({ message: "success", user });
+  res
+    .status(200)
+    .json({ status: "success", message: "Registration successful", user });
 };
 
 ////////////////////// LOGIN API ////////////////////////
@@ -92,7 +90,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
   const currentDate = new Date();
   if (logeduser.role === "premium" && logeduser.subscriptionEndDate) {
     if (logeduser.subscriptionEndDate < currentDate) {
-      
       logeduser.role = "user";
       logeduser.subscriptionStartDate = null;
       logeduser.subscriptionEndDate = null;
@@ -128,63 +125,60 @@ const login = async (req: Request, res: Response): Promise<void> => {
     });
   }
 
-
-
   if (logeduser.role === "premium" && logeduser.subscriptionEndDate) {
-
     const subscriptionEndDate = logeduser.subscriptionEndDate
       ? new Date(logeduser.subscriptionEndDate)
       : null;
-  
-    
+
     if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
       const currentDate = new Date();
-  
-     
-      const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
-  
+
+      const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0));
+
       const normalizedEndDate = startOfDay(subscriptionEndDate);
       const normalizedCurrentDate = startOfDay(currentDate);
-  
-      const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
-  
-      const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
-  
 
+      const differenceInTime =
+        normalizedEndDate.getTime() - normalizedCurrentDate.getTime();
+
+      const remainingValidityDays = Math.floor(
+        differenceInTime / (1000 * 60 * 60 * 24)
+      );
 
       if (remainingValidityDays > 0) {
         const payload = {
-            userId: logeduser._id,
-            email: logeduser.email,
-            role: logeduser.role,
-            remainingValidityDays,
+          userId: logeduser._id,
+          email: logeduser.email,
+          role: logeduser.role,
+          remainingValidityDays,
         };
 
         const secretKey = process.env.USER_SECRETKEY!;
 
         const subscriptionToken = jwt.sign(payload, secretKey, {
-            expiresIn: `${remainingValidityDays}d`,
+          expiresIn: `${remainingValidityDays}d`,
         });
 
-        res.cookie('subscriptionToken', subscriptionToken, {
-            httpOnly: false,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/', 
-            maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
-          });
-    } else {
-         res.status(403).json({
-            success: false,
-            message: "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+        res.cookie("subscriptionToken", subscriptionToken, {
+          httpOnly: false,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
         });
-        return
-    }
+      } else {
+        res.status(403).json({
+          success: false,
+          message:
+            "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+        });
+        return;
+      }
     } else {
       console.error("Invalid subscription end date");
     }
   }
-  
+
   res
     .status(200)
     .json({ status: true, message: "Login successful", logeduser });
@@ -193,8 +187,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
 //////////////////////////////  LOGOUT //////////////////
 
 const logout = async (req: Request, res: Response): Promise<void> => {
-
-
   const userId = req.user?.id;
 
   if (userId) {
@@ -204,7 +196,7 @@ const logout = async (req: Request, res: Response): Promise<void> => {
       const currentDate = new Date();
 
       if (user.subscriptionEndDate < currentDate) {
-        user.role = "user"; 
+        user.role = "user";
         user.subscriptionStartDate = null;
         user.subscriptionEndDate = null;
         await user.save();
@@ -228,8 +220,6 @@ const logout = async (req: Request, res: Response): Promise<void> => {
     secure: false,
     sameSite: "lax",
   });
-  
-  
 
   res.status(200).json({ status: true, message: "Logout successfully" });
 };
@@ -237,17 +227,18 @@ const logout = async (req: Request, res: Response): Promise<void> => {
 ////////////////////// GOOGLE AUTH LOGIN /////////////////////
 
 const googleauthlogin = async (req: Request, res: Response) => {
+  const { email, name, image } = req.body;
 
-  const { email,name,image } = req.body;
+  console.log("email:", email, "name:", name, "image:", image);
 
-  console.log("email:",email,"name:",name,"image:",image);
-  
-  if(!name && !email){
-    res.status(404).json({status:false,message:"name or email is missing"})
-    return
+  if (!name && !email) {
+    res
+      .status(404)
+      .json({ status: false, message: "name or email is missing" });
+    return;
   }
   const finduser = await User.findOne({ email });
-  
+
   if (finduser) {
     const token = jwt.sign(
       {
@@ -259,11 +250,9 @@ const googleauthlogin = async (req: Request, res: Response) => {
       { expiresIn: "1d" }
     );
 
-
     const currentDate = new Date();
     if (finduser.role === "premium" && finduser.subscriptionEndDate) {
       if (finduser.subscriptionEndDate < currentDate) {
-        
         finduser.role = "user";
         finduser.subscriptionStartDate = null;
         finduser.subscriptionEndDate = null;
@@ -271,61 +260,58 @@ const googleauthlogin = async (req: Request, res: Response) => {
       }
     }
 
-
-
     if (finduser.role === "premium" && finduser.subscriptionEndDate) {
+      const subscriptionEndDate = finduser.subscriptionEndDate
+        ? new Date(finduser.subscriptionEndDate)
+        : null;
 
-    const subscriptionEndDate = finduser.subscriptionEndDate
-      ? new Date(finduser.subscriptionEndDate)
-      : null;
-  
-    
-    if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
-      const currentDate = new Date();
-  
-     
-      const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0)); 
-  
-      const normalizedEndDate = startOfDay(subscriptionEndDate);
-      const normalizedCurrentDate = startOfDay(currentDate);
-  
-      const differenceInTime = normalizedEndDate.getTime() - normalizedCurrentDate.getTime(); 
-  
-      const remainingValidityDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24)); 
-  
+      if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
+        const currentDate = new Date();
 
+        const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0));
 
-      if (remainingValidityDays > 0) {
-        const payload = {
+        const normalizedEndDate = startOfDay(subscriptionEndDate);
+        const normalizedCurrentDate = startOfDay(currentDate);
+
+        const differenceInTime =
+          normalizedEndDate.getTime() - normalizedCurrentDate.getTime();
+
+        const remainingValidityDays = Math.floor(
+          differenceInTime / (1000 * 60 * 60 * 24)
+        );
+
+        if (remainingValidityDays > 0) {
+          const payload = {
             userId: finduser._id,
             email: finduser.email,
             role: finduser.role,
             remainingValidityDays,
-        };
+          };
 
-        const secretKey = process.env.USER_SECRETKEY!;
+          const secretKey = process.env.USER_SECRETKEY!;
 
-        const subscriptionToken = jwt.sign(payload, secretKey, {
+          const subscriptionToken = jwt.sign(payload, secretKey, {
             expiresIn: `${remainingValidityDays}d`,
-        });
+          });
 
-        res.cookie('subscriptionToken', subscriptionToken, {
+          res.cookie("subscriptionToken", subscriptionToken, {
             httpOnly: false,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/', 
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
             maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
           });
-    } else {
-         res.status(403).json({
+        } else {
+          res.status(403).json({
             success: false,
-            message: "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
-        });
-        return
+            message:
+              "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+          });
+          return;
+        }
+      } else {
+      }
     }
-    } else {
-    }
-  }
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
@@ -347,29 +333,36 @@ const googleauthlogin = async (req: Request, res: Response) => {
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
-    res.status(200).json({status:true,message:"google auth Login successful",finduser})
-    return
-  }else{
-    const user =await new User({
-      email,    
-      firstName:name,
-      profileImage:image, 
+    res.status(200).json({
+      status: true,
+      message: "google auth Login successful",
+      finduser,
     });
-    const savegoogleauth =await user.save()
-    res.status(200).json({status:true,message:"google auth registration and Login successful",savegoogleauth})
+    return;
+  } else {
+    const user = await new User({
+      email,
+      firstName: name,
+      profileImage: image,
+    });
+    const savegoogleauth = await user.save();
+    res.status(200).json({
+      status: true,
+      message: "google auth registration and Login successful",
+      savegoogleauth,
+    });
   }
 };
 
-
-
-const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
-
-  const userId = req.user?.id
+const findCurrentUserDetails = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const userId = req.user?.id;
   if (!userId) {
     res.status(401).json({ message: "Unauthorized: No user ID found" });
     return;
   }
-
 
   const currentUserDetails = await User.findById(userId).select("-password");
 
@@ -378,120 +371,116 @@ const findCurrentUserDetails=async( req:Request,res:Response):Promise<void>=>{
     return;
   }
 
-  res.status(200).json({success:true,currentUserDetails});
-
-}
-
-export const getPeopleYouMightKnow = async (req: Request, res: Response): Promise<void> => {
-    // const userId = req.user?.id;
-
-    // if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-    //   res.status(400).json({ error: "Valid User ID is required" });
-    //   return;
-    // }
-
-    // const user = await User.findById(userId).populate("connecting");
-
-    // if (!user) {
-    //   res.status(404).json({ error: "User not found" });
-    //   return;
-    // }
-
-    // const potentialConnections = await User.find({
-    //   _id: { 
-    //     $ne: userId,
-    //     $nin: user.connecting?.map((conn) => conn._id) || [] 
-    //   }
-    // }).populate("connecting"); 
-
-    // const suggestedPeople = potentialConnections.filter((person) => {
-    //   // Find mutual connections
-    //   const mutualConnections = user.connecting?.filter((conn) =>
-    //     person.connecting?.some((pConn) => pConn._id.equals(conn._id))
-    //   );
-
-    //   return mutualConnections.length > 0;
-    // });
-
-    // res.status(200).json({ suggestedPeople });
- 
+  res.status(200).json({ success: true, currentUserDetails });
 };
 
-
-
-export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
-
-    console.log(req.body);
-    const userId = req.user?.id; // Assuming `req.user` is set from authentication middleware
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      res.status(400).json({ error: "Valid User ID is required" });
-      return;
-    }
-
-    // Find user
-    const user = await User.findById(userId);
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
-
-    // Extract text fields from req.body
-    const {
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-      dateOfBirth,
-      location,
-      skills,
-      jobTitle,
-      jobLocation,
-      about,
-      education,
-      projects,
-      profileImage,
-      banner
-    } = req.body;
-
-    // Prepare update data
-    const updateData: { [key: string]: any } = {
-      ...(firstName && { firstName }),
-      ...(lastName && { lastName }),
-      ...(email && { email }),
-      ...(phoneNumber && { phoneNumber }),
-      ...(dateOfBirth && { dateOfBirth }),
-      ...(location && { location }),
-      ...(skills && { skills }),
-      ...(jobTitle && { jobTitle }),
-      ...(jobLocation && { jobLocation }),
-      ...(about && { about }),
-      ...(education && { education }),
-      ...(projects && { projects }),
-      ...(profileImage && { profileImage }),
-      ...(banner && { banner }),
-
-    };
-
-    
-    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
-
-
-    if (!updatedUser) {
-      res.status(500).json({ error: "Error updating user profile" });
-      return;
-    }
-
-    res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
-  
-
-
+export const getPeopleYouMightKnow = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  // const userId = req.user?.id;
+  // if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+  //   res.status(400).json({ error: "Valid User ID is required" });
+  //   return;
+  // }
+  // const user = await User.findById(userId).populate("connecting");
+  // if (!user) {
+  //   res.status(404).json({ error: "User not found" });
+  //   return;
+  // }
+  // const potentialConnections = await User.find({
+  //   _id: {
+  //     $ne: userId,
+  //     $nin: user.connecting?.map((conn) => conn._id) || []
+  //   }
+  // }).populate("connecting");
+  // const suggestedPeople = potentialConnections.filter((person) => {
+  //   // Find mutual connections
+  //   const mutualConnections = user.connecting?.filter((conn) =>
+  //     person.connecting?.some((pConn) => pConn._id.equals(conn._id))
+  //   );
+  //   return mutualConnections.length > 0;
+  // });
+  // res.status(200).json({ suggestedPeople });
 };
 
+export const updateUserProfile = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  console.log(req.body);
+  const userId = req.user?.id; // Assuming `req.user` is set from authentication middleware
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    res.status(400).json({ error: "Valid User ID is required" });
+    return;
+  }
 
+  // Find user
+  const user = await User.findById(userId);
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
 
-export const uploadResume = async (req: Request, res: Response): Promise<void> => {
+  // Extract text fields from req.body
+  const {
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    dateOfBirth,
+    location,
+    skills,
+    jobTitle,
+    jobLocation,
+    about,
+    education,
+    projects,
+    profileImage,
+    banner,
+  } = req.body;
+
+  // Prepare update data
+  const updateData: { [key: string]: any } = {
+    ...(firstName && { firstName }),
+    ...(lastName && { lastName }),
+    ...(email && { email }),
+    ...(phoneNumber && { phoneNumber }),
+    ...(dateOfBirth && { dateOfBirth }),
+    ...(location && { location }),
+    ...(skills && { skills }),
+    ...(jobTitle && { jobTitle }),
+    ...(jobLocation && { jobLocation }),
+    ...(about && { about }),
+    ...(education && { education }),
+    ...(projects && { projects }),
+    ...(profileImage && { profileImage }),
+    ...(banner && { banner }),
+  };
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+    new: true,
+  });
+
+  if (!updatedUser) {
+    res.status(500).json({ error: "Error updating user profile" });
+    return;
+  }
+
+  res
+    .status(200)
+    .json({ message: "Profile updated successfully", user: updatedUser });
+};
+
+export const uploadResume = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const files = req.files as { resume?: Express.Multer.File[]; video?: Express.Multer.File[] };
+    const files = req.files as {
+      resume?: Express.Multer.File[];
+      video?: Express.Multer.File[];
+    };
     const pdfFile = files?.resume ? files.resume[0] : null;
     const videoFile = files?.video ? files.video[0] : null;
 
@@ -515,7 +504,6 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
     if (!user.resumePDF) user.resumePDF = [];
     if (!user.resumeVideo) user.resumeVideo = [];
 
-   
     if (pdfFile) {
       const existingActivePDF = user.resumePDF.some((pdf) => !pdf.isDeleted);
       if (!existingActivePDF) {
@@ -526,13 +514,17 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
           isDeleted: false,
         });
       } else {
-        res.status(400).json({ success: false, message: "A resume PDF already exists." });
+        res
+          .status(400)
+          .json({ success: false, message: "A resume PDF already exists." });
         return;
       }
     }
 
     if (videoFile) {
-      const existingActiveVideo = user.resumeVideo.some((video) => !video.isDeleted);
+      const existingActiveVideo = user.resumeVideo.some(
+        (video) => !video.isDeleted
+      );
       if (!existingActiveVideo) {
         user.resumeVideo.push({
           fileUrl: videoFile.path,
@@ -541,38 +533,37 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
           isDeleted: false,
         });
       } else {
-        res.status(400).json({ success: false, message: "A resume video already exists." });
+        res
+          .status(400)
+          .json({ success: false, message: "A resume video already exists." });
         return;
       }
     }
 
     await user.save();
 
-   
     res.status(200).json({
       success: true,
       message: "Resume uploaded successfully",
       user: {
         ...user.toObject(),
-        resumePDF: user.resumePDF.filter((pdf) => !pdf.isDeleted), 
-        resumeVideo: user.resumeVideo.filter((video) => !video.isDeleted), 
+        resumePDF: user.resumePDF.filter((pdf) => !pdf.isDeleted),
+        resumeVideo: user.resumeVideo.filter((video) => !video.isDeleted),
       },
     });
-
   } catch (error) {
     console.error("Error uploading resume:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
-
 };
 
-
-
-
-export const getUploadedFiles = async (req: Request, res: Response): Promise<void> => {
+export const getUploadedFiles = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const userId = req.user?.id; 
-console.log("user",userId);
+    const userId = req.user?.id;
+    console.log("user", userId);
 
     if (!userId) {
       res.status(401).json({ success: false, message: "Unauthorized" });
@@ -586,9 +577,10 @@ console.log("user",userId);
       return;
     }
 
-  
     const activeResumePDFs = user.resumePDF?.filter((pdf) => !pdf.isDeleted);
-    const activeResumeVideos = user.resumeVideo?.filter((video) => !video.isDeleted);
+    const activeResumeVideos = user.resumeVideo?.filter(
+      (video) => !video.isDeleted
+    );
 
     res.status(200).json({
       success: true,
@@ -598,29 +590,31 @@ console.log("user",userId);
         resumeVideos: activeResumeVideos,
       },
     });
-
   } catch (error) {
     console.error("Error retrieving uploaded files:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-
-
-
 const removeResumeFile = async (req: Request, res: Response): Promise<void> => {
   const userId: string | undefined = req.user?.id;
-  const fileType: "resume" | "introductionVideo" | undefined = req.query.fileType as "resume" | "introductionVideo";
-  console.log("fileType",fileType);
-  
+  const fileType: "resume" | "introductionVideo" | undefined = req.query
+    .fileType as "resume" | "introductionVideo";
+  console.log("fileType", fileType);
 
   if (!userId) {
     res.status(401).json({ success: false, message: "Unauthorized access" });
     return;
   }
 
-  if (!fileType || (fileType !== "resume" && fileType !== "introductionVideo")) {
-    res.status(400).json({ success: false, message: "Invalid file type. Use 'pdf' or 'video'." });
+  if (
+    !fileType ||
+    (fileType !== "resume" && fileType !== "introductionVideo")
+  ) {
+    res.status(400).json({
+      success: false,
+      message: "Invalid file type. Use 'pdf' or 'video'.",
+    });
     return;
   }
 
@@ -636,17 +630,21 @@ const removeResumeFile = async (req: Request, res: Response): Promise<void> => {
       resume.isDeleted = true;
     });
 
-   
     updatedFiles = user.resumePDF.filter((resume) => !resume.isDeleted);
-  } else if (fileType === "introductionVideo" && Array.isArray(user.resumeVideo)) {
+  } else if (
+    fileType === "introductionVideo" &&
+    Array.isArray(user.resumeVideo)
+  ) {
     user.resumeVideo.forEach((resume) => {
       resume.isDeleted = true;
     });
 
- 
     updatedFiles = user.resumeVideo.filter((resume) => !resume.isDeleted);
   } else {
-    res.status(404).json({ success: false, message: `No ${fileType} files found to mark as deleted` });
+    res.status(404).json({
+      success: false,
+      message: `No ${fileType} files found to mark as deleted`,
+    });
     return;
   }
 
@@ -655,75 +653,79 @@ const removeResumeFile = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({
       success: true,
       message: `${fileType} files marked as deleted.`,
-      files: updatedFiles, 
+      files: updatedFiles,
     });
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).json({ success: false, message: "Failed to update user data" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update user data" });
   }
 };
 
 
+//Email check
 
-
- 
-
-const AllUsersEmailCheck=async(req:Request,res:Response)=>{
+const AllUsersEmailCheck = async (req: Request, res: Response) => {
   const { email } = req.query;
-  console.log("email req.query",req.query);
-  
+
   const user = await User.findOne({ email });
-console.log("useremail",user);
 
   if (user) {
-     res.json({ exists: true })
-     return
+    res.json({ exists: true });
+    return;
   } else {
-     res.json({ exists: false })
-     return
+    res.json({ exists: false });
+    return;
   }
-  
-}
+};
 
-
-const AllUsers=async(req:Request,res:Response)=>{
-  const users=await User.find()
-  const length=users.length
-  if(!users){
-    res.status(404).json({status:'failed',message:"cannot find users"})
-    return
+//All users
+const AllUsers = async (req: Request, res: Response) => {
+  const users = await User.find();
+  const length = users.length;
+  if (!users) {
+    res.status(404).json({ status: "failed", message: "cannot find users" });
+    return;
   }
 
-  res.status(200).json({status:"success",message:"all users detailes",users,length})
-  return
-}
+  res
+    .status(200)
+    .json({ status: "success", message: "all users detailes", users, length });
+  return;
+};
 
+////////////////// ALL USER PROFILE /////////////////
 
-////////////////// ALL USER PROFILE ///////////////// 
-
-const spacificuserdetails = async (req:Request,res:Response):Promise<void>=>{
- 
+const spacificuserdetails = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const userid = req.params.id;
-console.log("userid",userid);
+  console.log("userid", userid);
 
-  if(!userid){
-    res.status(404).json({status:false,message:"cannot find id"})
-    return
+  if (!userid) {
+    res.status(404).json({ status: false, message: "cannot find id" });
+    return;
   }
-  const finduserprofile = await User.findOne({_id:userid,isDeleted:false,isBlocked:false}).populate('connecting.connectionID')
-  console.log("finduserprofile",finduserprofile);
-  
-  if(!finduserprofile){
-    res.status(404).json({status:false,message:"cannot find all profile"})
-    return
+  const finduserprofile = await User.findOne({
+    _id: userid,
+    isDeleted: false,
+    isBlocked: false,
+  }).populate("connecting.connectionID");
+  console.log("finduserprofile", finduserprofile);
+
+  if (!finduserprofile) {
+    res.status(404).json({ status: false, message: "cannot find all profile" });
+    return;
   }
 
-  res.status(200).json({status:true,message:"All profile finded",finduserprofile})
-}
+  res
+    .status(200)
+    .json({ status: true, message: "All profile finded", finduserprofile });
+};
 
-
-
-export{
+export {
   RegistrationUser,
   login,
   logout,
@@ -732,6 +734,5 @@ export{
   AllUsersEmailCheck,
   AllUsers,
   spacificuserdetails,
-  removeResumeFile
-  
-}
+  removeResumeFile,
+};

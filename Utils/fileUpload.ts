@@ -6,32 +6,32 @@ export const generateSignedUrl =async (req: Request, res: Response):Promise<void
     const { fileType } = req.query as { fileType?: string };
 
     if (!fileType) {
-      res.status(400).json({ error: "Missing fileType parameter" });
+      res.status(400).json({status:false, error: "Missing fileType parameter" });
       return;
     }
 
-    const timestamp: number = Math.round(new Date().getTime() / 1000); // Current timestamp
+    const timestamp: number = Math.round(new Date().getTime() / 1000);
 
     const paramsToSign = {
       timestamp,
-      folder: "uploads", // Ensure this matches frontend
+      folder: "uploads",
     };
 
-    // 🔹 Generate signature using API secret
+ 
     const signature: string = cloudinary.v2.utils.api_sign_request(
       paramsToSign,
       process.env.CLOUDINARY_API_SECRET || ""
     );
 
     res.json({
+      status:true,
       api_key: process.env.CLOUDINARY_API_KEY,
       cloudName: process.env.CLOUDINARY_CLOUD_NAME,
       folder: "uploads",
       timestamp,
-      signature, // Signed correctly using API_SECRET
+      signature, 
     });
   } catch (error) {
-    console.error("Error generating signed URL:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({status:false, error: "Internal Server Error" });
   }
 };

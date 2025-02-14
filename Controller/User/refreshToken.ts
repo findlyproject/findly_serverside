@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { stat } from "fs";
 import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
 
 declare module "express-serve-static-core" {
@@ -18,12 +19,12 @@ export interface JwtDecoded extends JwtPayload {
 const refreshAccessToken = async (req:Request, res:Response):Promise<void> => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-         res.status(404).json({ message: "Refresh token not found please login" });
+         res.status(404).json({status:false, message: "Refresh token not found please login" });
          return
     }
     const secretKey = process.env.USER_SECRETKEY || "default_secret";
 if(!secretKey){
-    res.status(404).json({ message: "missing secret key" });
+    res.status(404).json({status:false, message: "missing secret key" });
              return
 }
 jwt.verify(refreshToken, secretKey, (error: VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
@@ -49,7 +50,7 @@ jwt.verify(refreshToken, secretKey, (error: VerifyErrors | null, decoded: JwtPay
             sameSite: "lax",
         });
 
-         res.status(200).json({message:"accessToken created", accessToken });
+         res.status(200).json({status:true,message:"accessToken created", accessToken });
          return
     });
 };

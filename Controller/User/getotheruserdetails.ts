@@ -5,7 +5,6 @@ import { IUser } from "../../types/allTypes";
 
 const getauteruserdetails = async (req:Request,res:Response)=>{
     const userid = req.params.id;
-    console.log(userid);
     
 }
 
@@ -47,7 +46,6 @@ const reportuser = async(req:Request,res:Response):Promise<void>=>{
     if (!Array.isArray(findreporteduser.reports)) {
         findreporteduser.reports = [];
     }           
-    console.log(findreporteduser,'hhh');
 
     findreporteduser.reports.push(report.id);
     const a = await findreporteduser.save();

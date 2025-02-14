@@ -188,7 +188,6 @@ const removeConnection = async (req: Request, res: Response): Promise<void> => {
   const finduserconnection = user.connecting.find((item) =>
     item.connectionID.equals(connectedIDobject)
   );
-  console.log("finduserconnection", finduserconnection);
 
   if (!finduserconnection) {
     res
@@ -200,7 +199,6 @@ const removeConnection = async (req: Request, res: Response): Promise<void> => {
   const filteredconnections = findConnectedUser.connecting.filter((item) =>
     item.connectionID.equals(userobjectid)
   );
-  console.log("filteredconnections", filteredconnections);
 
   if (!filteredconnections) {
     res
@@ -286,7 +284,6 @@ const ignoreConnectionRequest = async (
   const updatedConnections = currentUser.connecting.filter(
     (conn) => conn.connectionID?.toString() !== connectionId
   );
-  console.log();
 
   if (updatedConnections.length === currentUser.connecting.length) {
     res

@@ -6,10 +6,10 @@ export function validateData(bodySchema?: AnyZodObject, paramSchema?: AnyZodObje
 	return (req: Request, _res: Response, next: NextFunction) => {
 	  try {
 		if (paramSchema) {
-		  paramSchema.parse(req.params); 
+		  paramSchema.parse(req.params); // Validate params
 		}
 		if (bodySchema) {
-		  bodySchema.parse(req.body); 
+		  bodySchema.parse(req.body); // Validate body
 		}
 		next();
 	  } catch (error) {
@@ -23,4 +23,3 @@ export function validateData(bodySchema?: AnyZodObject, paramSchema?: AnyZodObje
 	  }
 	};
   }
-  

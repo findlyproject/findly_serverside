@@ -9,7 +9,7 @@ import { refreshAccessToken } from "../../Controller/User/refreshToken";
 import { generateSignedUrl } from "../../Utils/fileUpload";
 import ressumeupload from '../../middleware/ressumeUploading'
 import { validateData } from "../../middleware/zodValidation";
-import { LoginSchema, ReportSchema, UserSchema } from "../../Utils/zodSchema";
+import { IdSchema, LoginSchema, ReportSchema, UserSchema } from "../../Utils/zodSchema";
 
 const router = express.Router()
 
@@ -31,12 +31,11 @@ router
 .get("/getuploadedfiles",userAuthMiddleware,errorCatch(getUploadedFiles))
 .delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
 
-.put( "/profile",userAuthMiddleware,errorCatch(updateUserProfile))
 .get('/all',AllUsersEmailCheck)
 .get('/users',AllUsers)
 .post("/reportuser",userAuthMiddleware,validateData(ReportSchema),errorCatch(reportuser))
 .post("/refreshtoken",errorCatch(refreshAccessToken))
 .get("/generate-signed-url", errorCatch(generateSignedUrl))
-.get("/spacificuserdetails/:id", userAuthMiddleware, errorCatch(spacificuserdetails))
+.get("/spacificuserdetails/:id", userAuthMiddleware,validateData(IdSchema), errorCatch(spacificuserdetails))
 
 export {router}

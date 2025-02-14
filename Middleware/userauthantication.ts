@@ -26,7 +26,7 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
 
         const secretKey = process.env.USER_SECRETKEY;
         if (!secretKey) {
-             res.status(500).json({ message: "Server error: Secret key is missing" });
+             res.status(500).json({status:false, message: "Server error: Secret key is missing" });
              return
         }
 
@@ -40,8 +40,7 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
             next();
         });
     } catch (error) {
-        console.error("Auth middleware error:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({status:false, message: "Internal server error" });
     }
 };
 

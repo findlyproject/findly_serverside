@@ -35,7 +35,7 @@ export const login = async(req:Request,res:Response):Promise<void>=>{
             maxAge: 2*24 * 60 * 60 * 1000,
           });
 
-          res.status(200).json({status:"success",message:"Admin login successful"})
+          res.status(200).json({status:true,message:"Admin login successful"})
     
 }
 // logout
@@ -49,6 +49,6 @@ export const logout = async (req:Request,res:Response):Promise<void>=>{
     }
       )
    
-    res.status(200).json({status:"success",message:"Admin logout sucssesfully"})
+    res.status(200).json({status:true,message:"Admin logout sucssesfully"})
 
 }

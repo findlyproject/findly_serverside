@@ -20,13 +20,13 @@ const adminAuthentication = async (req: Request, res: Response, next: NextFuncti
     try {
         const token: string | undefined = req.cookies?.adminToken;
         if (!token) {
-             res.status(401).json({ message: "Admin authentication token missing" });
+             res.status(401).json({status:false, message: "Admin authentication token missing" });
              return
         }
 
         const secretKey = process.env.USER_SECRETKEY;
         if (!secretKey) {
-             res.status(500).json({ message: "Server error: Secret key is missing" });
+             res.status(500).json({status:false, message: "Server error: Secret key is missing" });
              return
         }
 
@@ -40,8 +40,7 @@ const adminAuthentication = async (req: Request, res: Response, next: NextFuncti
             next();
         });
     } catch (error) {
-        console.error("Admin auth middleware error:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({status:false, message: "Internal server error" });
     }
 };
 

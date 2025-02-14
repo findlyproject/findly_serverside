@@ -101,6 +101,7 @@ const getpostbyid = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json({status:true,message:"Got post by ID",onepost });
 };
 
+//like or dislike
 const LikeOrDislike = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
 
@@ -136,6 +137,7 @@ const LikeOrDislike = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+//report a post
 const ReportPost = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
 

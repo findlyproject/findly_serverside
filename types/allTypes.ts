@@ -80,25 +80,36 @@ export interface IUser extends Document {
   firstName: string;
   lastName: string;
   email: string;
-  isVerified?:boolean,
   password: string;
   phoneNumber?: string;
   dateOfBirth?: Date;
-  location?: string;
+  location?: {
+    country: string,
+      countryName: string,
+      state: string,
+      stateName: string,
+      city: string
+  };
   gender?:string;
   profileImage?: string;
   banner?: string;
   skills?: string[];
   jobTitle?: string[];
-  jobLocation?: string[];
+  jobLocation?:{
+      country: string,
+      countryName: string,
+      state: string,
+      stateName: string,
+      city: string
+  }[];
   reports: mongoose.Types.ObjectId[]; 
 
   education: {
     qualification: string;
     startYear: string
-    endYear:string
-    location: string;
-    college:string
+    endYear:string;
+    college:string;
+    subject:string;
   }[];
 
  

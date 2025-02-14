@@ -1,11 +1,10 @@
 import { Request, Response } from "express"
 import { Admin } from "../../model/AdminSchema";
 import  jwt  from "jsonwebtoken";
-import User from "../../model/UserSchema";
 import bcrypt from "bcrypt"
 
-
-const login = async(req:Request,res:Response):Promise<void>=>{
+//login
+export const login = async(req:Request,res:Response):Promise<void>=>{
     const { email, password } = req.body;
     
 
@@ -36,13 +35,12 @@ const login = async(req:Request,res:Response):Promise<void>=>{
             maxAge: 2*24 * 60 * 60 * 1000,
           });
 
-          res.status(200).json({status:true,message:"Admin login successful"})
+          res.status(200).json({status:"success",message:"Admin login successful"})
     
 }
+// logout
 
-/////////////////////// LOG OUT //////////////////
-
-const logout = async (req:Request,res:Response):Promise<void>=>{
+export const logout = async (req:Request,res:Response):Promise<void>=>{
 
       res.clearCookie("adminToken",{
         httpOnly:true,
@@ -51,13 +49,6 @@ const logout = async (req:Request,res:Response):Promise<void>=>{
     }
       )
    
-    res.status(200).json({status:true,message:"Admin logout sucssesfully"})
-
-}
-
-export = {
-    login,
-    logout,
-    
+    res.status(200).json({status:"success",message:"Admin logout sucssesfully"})
 
 }

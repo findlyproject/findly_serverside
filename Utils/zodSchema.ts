@@ -1,96 +1,136 @@
-import {z} from "zod"
+import { z } from "zod";
 import mongoose from "mongoose";
+
 const ObjectIdSchema = z
   .string()
   .refine((val) => mongoose.Types.ObjectId.isValid(val), {
     message: "Invalid ObjectId",
   });
-const PostSchema = z.object({
-    description: z.string().max(500).optional(),
-    owner: ObjectIdSchema,
-    images: z.string().optional(),
-    lists: z.array(ObjectIdSchema),
-    likedBy: z.array(ObjectIdSchema),
-    reports: z.array(           
-      z.object({
-        reportedBy: ObjectIdSchema,
-        reason: z.string().min(1),
-        reportedAt: z.date().optional().default(new Date()),
-      })
-    ),
-    comments: z.array(
-      z.object({
-        user: ObjectIdSchema,
-        comment: z.string().min(1),
-        commentedAt: z.date().optional().default(new Date()),
-        replies: z.array(
-          z.object({
-            user: ObjectIdSchema,
-            reply: z.string().min(1),
-            repliedAt: z.date().optional().default(new Date()),
-          })
-        ),
-      })
-    ),
+
+// validating an ID in req.params
+export const IdSchema = z.object({
+  id: ObjectIdSchema,
+});
+
+export type IdType = z.infer<typeof IdSchema>;
+
+//login
+  export const LoginSchema = z.object({
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
   });
-  export type PostType = z.infer<typeof PostSchema>;
+  
+  export type LoginType = z.infer<typeof LoginSchema>;
 
+  
+// User Schema Components
+const educationSchema = z.object({
+  qualification: z.string(),
+  startYear: z.string(),
+  endYear: z.string(),
+  location: z.string(),
+  college: z.string(),
+});
 
+const experienceSchema = z.object({
+  jobRole: z.string(),
+  companyName: z.string(),
+  startYear: z.string(),
+  endYear: z.string(),
+});
 
-const UserSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email format"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  phoneNumber: z.string().min(10, "Invalid phone number"),
-  dateOfBirth: z.string(), // Can be changed to `z.date()` if you want strict date validation
+const resumeSchema = z.object({
+  fileUrl: z.string().url(),
+  fileName: z.string(),
+  uploadedAt: z.date().nullable().optional(),
+  isDeleted: z.boolean().default(false),
+});
+
+const projectSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  link: z.string().url().optional(),
+});
+
+const connectingSchema = z.object({
+  connectionID: ObjectIdSchema,
+  status: z.boolean().default(false),
+  createdAt: z.date(),
+});
+
+const resumeFileSchema = z.object({
+  fileUrl: z.string().url(),
+  type: z.enum(["PDF", "Video"]),
+  uploadedAt: z.date().nullable().optional(),
+});
+
+// User Schema
+export const UserSchema = z.object({
+  _id: ObjectIdSchema,
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email(),
+  isVerified: z.boolean().optional(),
+  password: z.string(),
+  phoneNumber: z.string().optional(),
+  dateOfBirth: z.date().optional(),
   location: z.string().optional(),
-  profileImage: z.string().optional(),
-  banner: z.string().optional(),
-
+  gender: z.string().optional(),
+  profileImage: z.string().url().optional(),
+  banner: z.string().url().optional(),
   skills: z.array(z.string()).optional(),
   jobTitle: z.array(z.string()).optional(),
   jobLocation: z.array(z.string()).optional(),
-
-  education: z.array(
-    z.object({
-      qualification: z.string().min(1),
-      startYear: z.string().min(4, "Invalid year"),
-      endYear: z.string().min(4, "Invalid year"),
-      college: z.string().min(1),
-    })
-  ).optional(),
-
-  projects: z.array(
-    z.object({
-      title: z.string().min(1, "Project title is required"),
-      description: z.string().min(1, "Project description is required"),
-      link: z.string().url().optional(),
-    })
-  ).optional(),
-
-  followers: z.array(ObjectIdSchema).optional(),
-  following: z.array(ObjectIdSchema).optional(),
-
+  reports: z.array(ObjectIdSchema),  // Fixed here
+  education: z.array(educationSchema),
+  experience: z.array(experienceSchema),
+  resumePDF: z.array(resumeSchema).optional(),
+  resumeVideo: z.array(resumeSchema).optional(),
+  projects: z.array(projectSchema).optional(),
+  connecting: z.array(connectingSchema),
   about: z.string().optional(),
-
-  resume: z.array(
-    z.object({
-      fileUrl: z.string().min(1, "Resume file URL is required"),
-      type: z.enum(["PDF", "Video"]),
-      uploadedAt: z.date().optional().default(new Date()),
-    })
-  ).optional(),
-
+  resume: z.array(resumeFileSchema).optional(),
+  role: z.enum(["user", "premium"]),
+  subscriptionEndDate: z.date().nullable(),
+  subscriptionStartDate: z.date().nullable(),
   coverLetter: z.string().optional(),
-
   isBlocked: z.boolean().default(false),
-  role: z.enum(["user", "premium"]).default("user"),
-
-  createdAt: z.date().optional().default(new Date()),
+  isDeleted: z.boolean().default(false),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
-
 export type UserType = z.infer<typeof UserSchema>;
 
+// Post Schema
+const PostSchema = z.object({
+  description: z.string().max(500).optional(),
+  owner: ObjectIdSchema,
+  images: z.string().optional(),
+  lists: z.array(ObjectIdSchema),
+  likedBy: z.array(ObjectIdSchema),
+  reports: z.array(
+    z.object({
+      reportedBy: ObjectIdSchema,
+      reason: z.string().min(1),
+      reportedAt: z.date().optional().default(new Date()),
+    })
+  ),
+  comments: z.array(
+    z.object({
+      user: ObjectIdSchema,
+      comment: z.string().min(1),
+      commentedAt: z.date().optional().default(new Date()),
+      replies: z.array(
+        z.object({
+          user: ObjectIdSchema,
+          reply: z.string().min(1),
+          repliedAt: z.date().optional().default(new Date()),
+        })
+      ),
+    })
+  ),
+});
 
-export { PostSchema,UserSchema };
+export type PostType = z.infer<typeof PostSchema>;
+
+

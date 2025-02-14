@@ -506,6 +506,10 @@ export const uploadResume = async (
 
     if (pdfFile) {
       const existingActivePDF = user.resumePDF.some((pdf) => !pdf.isDeleted);
+      console.log("pdfFile",pdfFile);
+      console.log("existingActivePDF",existingActivePDF);
+      
+      
       if (!existingActivePDF) {
         user.resumePDF.push({
           fileUrl: pdfFile.path,
@@ -708,16 +712,12 @@ const spacificuserdetails = async (
     res.status(404).json({ status: false, message: "cannot find id" });
     return;
   }
-  const finduserprofile = await User.findOne({
-    _id: userid,
-    isDeleted: false,
-    isBlocked: false,
-  }).populate("connecting.connectionID");
-  console.log("finduserprofile", finduserprofile);
+  const finduserprofile = await User.findOne({_id:userid,isDeleted:false,isBlocked:false}).populate('connecting.connectionID')
 
-  if (!finduserprofile) {
-    res.status(404).json({ status: false, message: "cannot find all profile" });
-    return;
+  
+  if(!finduserprofile){
+    res.status(404).json({status:false,message:"cannot find all profile"})
+    return
   }
 
   res

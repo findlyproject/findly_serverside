@@ -11,26 +11,21 @@ const getAllPosts = async (req: Request, res: Response): Promise<void> => {
   .populate("likedBy", "firstName lastName profileImage")
   .populate({
     path: "comments",  
-    match: { isDeleted: false },// only get comments.isDeleted=false
+    match: { isDeleted: false },
     populate: {
       path: "user",
-      select: "firstName lastName profileImage ", // Only fetch required fields
+      select: "firstName lastName profileImage ", 
     },
   });
-  const totalPosts = await Post.countDocuments(); // Fetch posts without authentication checks
+  const totalPosts = await Post.countDocuments(); /
   res.status(200).json({ posts, totalPosts });  
 };
 
-
-
 export const addPost = async (req: Request, res: Response): Promise<void> => {
-  try {
-    console.log("Received Files:", req.files);
+ 
     const { description } = req.body;
-    console.log(req.body)
     const media = req.files;
 
-    console.log("media files",req.files);
     
 
     if (!description || !req.user?.id) {
@@ -43,11 +38,9 @@ export const addPost = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // ✅ `req.files` is an object when using `upload.fields()`
     const uploadedImages: string[] = [];
     let uploadedVideo: string | null = null;
 
-    // ✅ Process images
     if ("media" in req.files) {
       const mediaFiles = req.files["media"] as Express.Multer.File[];
 
@@ -57,7 +50,6 @@ export const addPost = async (req: Request, res: Response): Promise<void> => {
           folder: "posts/media",
         });
 
-        // ✅ Categorize as image or video
         if (file.mimetype.startsWith("image/")) {
           uploadedImages.push(result.secure_url);
         } else if (file.mimetype.startsWith("video/")) {
@@ -66,12 +58,11 @@ export const addPost = async (req: Request, res: Response): Promise<void> => {
       }
     }
 
-    // ✅ Create new post
     const newPost = new Post({
       description,
       owner: req.user.id,
-      images: uploadedImages, // Store image URLs
-      video: uploadedVideo, // Store video URL
+      images: uploadedImages, 
+      video: uploadedVideo, 
     });
 
     await newPost.save();
@@ -80,39 +71,31 @@ export const addPost = async (req: Request, res: Response): Promise<void> => {
       message: "Post uploaded successfully",
       post: newPost,
     });
-  } catch (error) {
-    console.error("Upload error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
+ 
 };
 
 //  Get Posts by user
 const getPostsByOwner = async (req: Request, res: Response): Promise<void> => {
-  const { ownerId } = req.params; // Fetch ownerId from route params
+  const { ownerId } = req.params; 
 
-  // Validate ownerId
   if (!ownerId || !mongoose.Types.ObjectId.isValid(ownerId)) {
     res.status(400).json({ error: "Valid Owner ID is required" });
     return;
   }
 
-  // Fetch posts by the specified owner
   const posts = await Post.find({ owner: ownerId }).populate("owner");
 
-  // If no posts found
   if (!posts || posts.length === 0) {
     res.status(404).json({ error: "No posts found for this owner" });
     return;
   }
 
-  //  the posts in the response
   res.status(200).json({ posts });
   return;
 };
 
 const getpostbyid = async (req: Request, res: Response): Promise<void> => {
   const onepost = await Post.findById(req.params.id).populate("comments owner");
-  console.log(onepost);
 
   res.json({ onepost });
 };
@@ -127,10 +110,7 @@ const LikeOrDislike = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  if (!mongoose.Types.ObjectId.isValid(postId)) {
-    res.status(400).json({ message: "Invalid post ID" });
-    return;
-  }
+ 
 
   const post = await Post.findById(postId);
   if (!post) {
@@ -162,10 +142,7 @@ const ReportPost = async (req: Request, res: Response): Promise<void> => {
   }
   const { reason, postId } = req.body;
   console.log("postId", postId);
-  if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
-    res.status(400).json({ error: "Valid Post ID is required" });
-    return;
-  }
+  
 
   if (!reason || reason.trim() === "") {
     res.status(400).json({ error: "Comment cannot be empty" });

@@ -2,19 +2,19 @@ import { Request, Response } from "express";
 import User from "../../model/UserSchema";
 import { Report } from "../../model/ReportSchema";
 import { Post } from "../../model/PostSchema";
+import { CustomError } from "../../Utils/errorHandler";
 
 //user block and unblock
 export const blockAndUnblock = async (req: Request,res: Response): Promise<void> => {
   const userId = req.params.id;
   if (!userId) {
-    res.status(404).json({ status: false, message: "User ID for blocking is missing" });
-    return;
+    throw new CustomError('User ID for blocking is missing', 404)  
   }
+
   const findUser = await User.findOne({ _id: userId });
 
   if (!findUser) {
-    res.status(404).json({ status: false, message: "User to be blocked not found" });
-    return;
+    throw new CustomError('User to be blocked not found', 404)
   }
 
   findUser.isBlocked = !findUser.isBlocked;
@@ -30,8 +30,8 @@ export const allUsers = async (req: Request, res: Response): Promise<void> => {
   const users = await User.find();
   const totalUsers = await User.countDocuments();
   if (!users) {
-     res.status(404). json({message:"users not found"});
-     return
+    throw new CustomError('users not found', 404)
+
   }
   res.status(200).json({status:"success",massage:"Got all the users and the count", users, totalUsers });
 };
@@ -48,8 +48,8 @@ export const dismissReports = async (req: Request,res: Response): Promise<void> 
 
   const post = await Post.findById(postId).select("reports");
   if (!post) {
-    res.status(404).json({ message: "Post not found" });
-    return;
+    throw new CustomError('Post not found', 404)
+
   }
 
   const updatedReports = await Report.updateMany(
@@ -58,8 +58,8 @@ export const dismissReports = async (req: Request,res: Response): Promise<void> 
   );
 
   if (updatedReports.matchedCount === 0) {
-    res.status(404).json({ message: "No reports found for this post" });
-    return;
+    throw new CustomError('No reports found for this post', 404)
+
   }
 
   await Post.findByIdAndUpdate(postId, { $set: { reports: [] } });

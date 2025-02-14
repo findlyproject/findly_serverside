@@ -229,13 +229,10 @@ const logout = async (req: Request, res: Response): Promise<void> => {
 const googleauthlogin = async (req: Request, res: Response) => {
   const { email, name, image } = req.body;
 
-  console.log("email:", email, "name:", name, "image:", image);
-
-  if (!name && !email) {
-    res
-      .status(404)
-      .json({ status: false, message: "name or email is missing" });
-    return;
+  
+  if(!name && !email){
+    res.status(404).json({status:false,message:"name or email is missing"})
+    return
   }
   const finduser = await User.findOne({ email });
 
@@ -404,16 +401,13 @@ export const getPeopleYouMightKnow = async (
   // res.status(200).json({ suggestedPeople });
 };
 
-export const updateUserProfile = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  console.log(req.body);
-  const userId = req.user?.id; // Assuming `req.user` is set from authentication middleware
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-    res.status(400).json({ error: "Valid User ID is required" });
-    return;
-  }
+export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
+
+    const userId = req.user?.id; // Assuming `req.user` is set from authentication middleware
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      res.status(400).json({ error: "Valid User ID is required" });
+      return;
+    }
 
   // Find user
   const user = await User.findById(userId);
@@ -422,60 +416,62 @@ export const updateUserProfile = async (
     return;
   }
 
-  // Extract text fields from req.body
-  const {
-    firstName,
-    lastName,
-    email,
-    phoneNumber,
-    dateOfBirth,
-    location,
-    skills,
-    jobTitle,
-    jobLocation,
-    about,
-    education,
-    projects,
-    profileImage,
-    banner,
-  } = req.body;
+    
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      dateOfBirth,
+      location,
+      skills,
+      jobTitle,
+      jobLocation,
+      about,
+      education,
+      projects,
+      profileImage,
+      banner
+    } = req.body;
 
-  // Prepare update data
-  const updateData: { [key: string]: any } = {
-    ...(firstName && { firstName }),
-    ...(lastName && { lastName }),
-    ...(email && { email }),
-    ...(phoneNumber && { phoneNumber }),
-    ...(dateOfBirth && { dateOfBirth }),
-    ...(location && { location }),
-    ...(skills && { skills }),
-    ...(jobTitle && { jobTitle }),
-    ...(jobLocation && { jobLocation }),
-    ...(about && { about }),
-    ...(education && { education }),
-    ...(projects && { projects }),
-    ...(profileImage && { profileImage }),
-    ...(banner && { banner }),
-  };
+    const updateData: { [key: string]: any } = {
+      ...(firstName && { firstName }),
+      ...(lastName && { lastName }),
+      ...(email && { email }),
+      ...(phoneNumber && { phoneNumber }),
+      ...(dateOfBirth && { dateOfBirth }),
+      ...(location && { location }),
+      ...(skills && { skills }),
+      ...(jobTitle && { jobTitle }),
+      ...(jobLocation && { jobLocation }),
+      ...(about && { about }),
+      ...(education && { education }),
+      ...(projects && { projects }),
+      ...(profileImage && { profileImage }),
+      ...(banner && { banner }),
+
+    };
 
   const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
     new: true,
   });
 
-  if (!updatedUser) {
-    res.status(500).json({ error: "Error updating user profile" });
-    return;
-  }
+    if (!updatedUser) {
+      res.status(500).json({status:false, error: "Error updating user profile" });
+      return;
+    }
 
-  res
-    .status(200)
-    .json({ message: "Profile updated successfully", user: updatedUser });
+    res.status(200).json({status:true, message: "Profile updated successfully", user: updatedUser });
+  
+
+
 };
 
-export const uploadResume = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+
+
+export const uploadResume = async (req: Request, res: Response): Promise<void> => {
+  console.log("hey");
+  
   try {
     const files = req.files as {
       resume?: Express.Multer.File[];
@@ -706,11 +702,10 @@ const spacificuserdetails = async (
   res: Response
 ): Promise<void> => {
   const userid = req.params.id;
-  console.log("userid", userid);
 
-  if (!userid) {
-    res.status(404).json({ status: false, message: "cannot find id" });
-    return;
+  if(!userid){
+    res.status(404).json({status:false,message:"cannot find id"})
+    return
   }
   const finduserprofile = await User.findOne({_id:userid,isDeleted:false,isBlocked:false}).populate('connecting.connectionID')
 

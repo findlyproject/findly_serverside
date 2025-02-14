@@ -1,18 +1,17 @@
 //CONTACT US
 import nodemailer from "nodemailer";
 import { Request, Response } from "express";
+import { CustomError } from "../../Utils/errorHandler";
 
 const EmailUs = async (req: Request, res: Response): Promise<void> => {
   const { email, message } = req.body;
   if (!email || !message) {
-    res
-      .status(400)
-      .json({ status: "failed", message: "Email and message are required." });
-    return;
+  
+    throw new CustomError("Email and message are required")
   }
   const emailRegex = /\S+@\S+\.\S+/;
   if (!emailRegex.test(email)) {
-    res.status(400).json({ status: "failed", message: "Invalid email format" });
+    throw new CustomError("Invalid email format" ,400)
   }
 
   const transporter = nodemailer.createTransport({
@@ -35,7 +34,7 @@ const EmailUs = async (req: Request, res: Response): Promise<void> => {
 
   res
     .status(200)
-    .json({ status: "success", message: "Email sent successfully", info });
+    .json({ status:true, message: "Email sent successfully", info });
 };
 
 export { EmailUs };

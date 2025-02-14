@@ -1,12 +1,9 @@
 import { Request, Response } from "express";
 import User from "../../model/UserSchema";
 import { Report } from "../../model/ReportSchema";
-import { IUser } from "../../types/allTypes";
 
-const getauteruserdetails = async (req:Request,res:Response)=>{
-    const userid = req.params.id;
-    
-}
+
+
 
 //////////////////// REPORT USER ////////////
 
@@ -54,6 +51,5 @@ const reportuser = async(req:Request,res:Response):Promise<void>=>{
     res.status(200).json({ status: true, message: "Reported successfully", popuatedreports });
 }
 export {
-    getauteruserdetails,
     reportuser
 }

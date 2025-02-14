@@ -17,6 +17,7 @@ const uploadConfig: Record<string, { folder: string; resource_type: string; allo
     resource_type: "auto",
     allowed_formats: ["pdf"],
   },
+  
   video: {
     folder: "users/video",
     resource_type: "video",
@@ -24,9 +25,12 @@ const uploadConfig: Record<string, { folder: string; resource_type: string; allo
   },
 };
 
+
+
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (_req, file) => {
+  
     if (!uploadConfig[file.fieldname]) {
       throw new Error("Invalid file field name");
     }

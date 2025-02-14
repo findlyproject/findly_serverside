@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import cloudinary from "cloudinary";
+import { CustomError } from "./errorHandler";
 
 export const generateSignedUrl =async (req: Request, res: Response):Promise<void>=> {
   try {
     const { fileType } = req.query as { fileType?: string };
 
     if (!fileType) {
-      res.status(400).json({status:false, error: "Missing fileType parameter" });
-      return;
+      throw new CustomError("Missing fileType parameter",400);
+
     }
 
     const timestamp: number = Math.round(new Date().getTime() / 1000);
@@ -32,6 +33,6 @@ export const generateSignedUrl =async (req: Request, res: Response):Promise<void
       signature, 
     });
   } catch (error) {
-    res.status(500).json({status:false, error: "Internal Server Error" });
+    throw new CustomError("Internal Server Error",500);
   }
 };

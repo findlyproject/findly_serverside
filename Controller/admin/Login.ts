@@ -1,8 +1,8 @@
-import { Request, Response } from "express"
+import { Request, Response } from "express";
 import { Admin } from "../../model/AdminSchema";
-import  jwt  from "jsonwebtoken";
-import bcrypt from "bcrypt"
-import { CustomError} from "../../Utils/customError";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { CustomError } from "../../Utils/errorHandler";
 
 //login
 export const login = async(req:Request,res:Response):Promise<void>=>{

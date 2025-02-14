@@ -1,5 +1,4 @@
 export class CustomError extends Error {
-	// all custom errors will extend this class
 	statusCode: number;
 	status: string;
 	errorCode?: string;

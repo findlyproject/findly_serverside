@@ -490,6 +490,8 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
 
 
 export const uploadResume = async (req: Request, res: Response): Promise<void> => {
+  console.log("hey");
+  
   try {
     const files = req.files as { resume?: Express.Multer.File[]; video?: Express.Multer.File[] };
     const pdfFile = files?.resume ? files.resume[0] : null;
@@ -518,6 +520,10 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
    
     if (pdfFile) {
       const existingActivePDF = user.resumePDF.some((pdf) => !pdf.isDeleted);
+      console.log("pdfFile",pdfFile);
+      console.log("existingActivePDF",existingActivePDF);
+      
+      
       if (!existingActivePDF) {
         user.resumePDF.push({
           fileUrl: pdfFile.path,
@@ -704,14 +710,12 @@ const AllUsers=async(req:Request,res:Response)=>{
 const spacificuserdetails = async (req:Request,res:Response):Promise<void>=>{
  
   const userid = req.params.id;
-console.log("userid",userid);
-
   if(!userid){
     res.status(404).json({status:false,message:"cannot find id"})
     return
   }
   const finduserprofile = await User.findOne({_id:userid,isDeleted:false,isBlocked:false}).populate('connecting.connectionID')
-  console.log("finduserprofile",finduserprofile);
+
   
   if(!finduserprofile){
     res.status(404).json({status:false,message:"cannot find all profile"})

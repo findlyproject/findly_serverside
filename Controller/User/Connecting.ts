@@ -8,26 +8,26 @@ const userconnections = async (req: Request, res: Response): Promise<void> => {
   const connectionId = req.params.id;
 
   if (!_id) {
-    res.status(400).json({ status: false, message: "User ID is missing" });
+    res.status(400).json({ status: "failed", message: "User ID is missing" });
     return;
   }
 
   if (!mongoose.Types.ObjectId.isValid(connectionId)) {
     res
       .status(400)
-      .json({ status: false, message: "Invalid connection ID format" });
+      .json({ status: "failed", message: "Invalid connection ID format" });
     return;
   }
 
   const currentUser = await User.findById(_id);
   if (!currentUser) {
-    res.status(404).json({ status: false, message: "Current user not found" });
+    res.status(404).json({ status: "failed", message: "Current user not found" });
     return;
   }
 
   const targetUser = await User.findById(connectionId);
   if (!targetUser) {
-    res.status(404).json({ status: false, message: "Target user not found" });
+    res.status(404).json({ status: "failed", message: "Target user not found" });
     return;
   }
 
@@ -38,7 +38,7 @@ const userconnections = async (req: Request, res: Response): Promise<void> => {
   if (isDuplicate) {
     res
       .status(400)
-      .json({ status: false, message: "Connection request already sent" });
+      .json({ status: "failed", message: "Connection request already sent" });
     return;
   }
 
@@ -57,7 +57,7 @@ const userconnections = async (req: Request, res: Response): Promise<void> => {
   );
 
   res.status(200).json({
-    status: true,
+    status: "success",
     message: "Connection request sent successfully",
     targetUser: populatedTargetUser, 
   });
@@ -71,20 +71,20 @@ const acceptconnectionrequest = async (
   const connectionId = req.params.id;
 
   if (!_id) {
-    res.status(400).json({ status: false, message: "User ID is missing" });
+    res.status(400).json({ status: "failed", message: "User ID is missing" });
     return;
   }
 
   if (!mongoose.Types.ObjectId.isValid(connectionId)) {
     res
       .status(400)
-      .json({ status: false, message: "Invalid connection ID format" });
+      .json({ status: "failed", message: "Invalid connection ID format" });
     return;
   }
 
   const targetUser = await User.findById(_id);
   if (!targetUser) {
-    res.status(404).json({ status: false, message: "Target user not found" });
+    res.status(404).json({ status: "failed", message: "Target user not found" });
     return;
   }
 
@@ -92,7 +92,7 @@ const acceptconnectionrequest = async (
   if (!requestingUser) {
     res
       .status(404)
-      .json({ status: false, message: "Requesting user not found" });
+      .json({ status: "failed", message: "Requesting user not found" });
     return;
   }
 
@@ -103,7 +103,7 @@ const acceptconnectionrequest = async (
   if (connectionIndex === -1) {
     res
       .status(400)
-      .json({ status: false, message: "No pending connection request found" });
+      .json({ status: "failed", message: "No pending connection request found" });
     return;
   }
 
@@ -119,7 +119,7 @@ const acceptconnectionrequest = async (
   await requestingUser.save();
 
   res.status(200).json({
-    status: true,
+    status: "success",
     message: "Connection request accepted successfully",
     targetUser,
     requestingUser,

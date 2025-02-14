@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomError } from "../Utils/errorHandler";
+import { stat } from "fs";
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -40,7 +41,8 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
             next();
         });
     } catch (error) {
-        throw new CustomError("Internal server error", 400);
+        res.status(400).json({status:false,message:"Internal server error"});
+        return
     }
 };
 

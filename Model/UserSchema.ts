@@ -2,7 +2,7 @@ import mongoose, {connection, Schema } from "mongoose";
 import { IUser } from "../types/allTypes";
 const profile = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735360/profile_jtwxaj.png"
 const banner = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735269/banner_ozuamb.png"
-const companyLogo="https://img.freepik.com/free-vector/diamond-square-puzzle_78370-8329.jpg?t=st=1738926443~exp=1738930043~hmac=07611684498f289e765ee3efbe528e97e27d9d41e4b518014740c7b3fb07acae&w=740"
+
 
 const UserSchema = new Schema<IUser>(
   {
@@ -13,11 +13,11 @@ const UserSchema = new Schema<IUser>(
     phoneNumber: { type: String },
     dateOfBirth: { type: Date },
     location: {
-      country: String,
-      countryName: String,
-      state: String,
-      stateName: String,
-      city: String
+      country:{type: String},
+      countryName:{type: String},
+      state:{type: String},
+      stateName:{type: String},
+      city: {type:String}
     },
     reports: [{ type: Schema.Types.ObjectId, ref: "Report" }],
 
@@ -34,11 +34,11 @@ const UserSchema = new Schema<IUser>(
     jobTitle: [{ type: String }],
     jobLocation: [
       {
-        country: String,
-        countryName: String,
-        state: String,
-        stateName: String,
-        city: String
+        country:{type:String} ,
+        countryName: {type:String},
+        state: {type:String},
+        stateName: {type:String},
+        city: {type:String}
       }
     ],
 
@@ -48,6 +48,7 @@ const UserSchema = new Schema<IUser>(
         startYear: { type: String },
         endYear: { type: String },
         college: { type: String },  
+        subject:{type:String}
       }
     ], 
     experience:[{
@@ -101,10 +102,7 @@ const UserSchema = new Schema<IUser>(
         isDeleted: { type: Boolean, default: false },
       }
     ],
-    isVerified:{  
-      type:Boolean,
-      default:false
-    },
+    
    
     coverLetter: { type: String },
     isBlocked: { type: Boolean, default: false },

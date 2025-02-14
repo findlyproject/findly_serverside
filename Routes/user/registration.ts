@@ -8,11 +8,13 @@ import { reportuser } from "../../Controller/User/getotheruserdetails";
 import { refreshAccessToken } from "../../Controller/User/refreshToken";
 import { generateSignedUrl } from "../../Utils/fileUpload";
 import ressumeupload from '../../middleware/ressumeUploading'
+import { validateData } from "../../middleware/zodValidation";
+import { UserSchema } from "../../Utils/zodSchema";
 
 const router = express.Router()
 
 router
-.post("/registration", errorCatch(RegistrationUser))
+.post("/registration",validateData(UserSchema) ,errorCatch(RegistrationUser))
 .post("/login",errorCatch(login))
 .post("/googleauthlogin",errorCatch(googleauthlogin))
    

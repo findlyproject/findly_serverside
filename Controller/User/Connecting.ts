@@ -5,7 +5,10 @@ import { IUser } from "../../types/allTypes";
 
 const userconnections = async (req: Request, res: Response): Promise<void> => {
   const _id = req.user?.id;
+  console.log("_id",_id);
+  
   const connectionId = req.params.id;
+console.log("connectionId",connectionId);
 
   if (!_id) {
     res.status(400).json({ status: "failed", message: "User ID is missing" });
@@ -130,6 +133,7 @@ const acceptconnectionrequest = async (
 
 const getconnection = async (req: Request, res: Response): Promise<void> => {
   const _id = req.user?.id;
+console.log("----id",_id);
 
   if (!_id) {
     res.status(400).json({ status: false, message: "User ID is missing" });

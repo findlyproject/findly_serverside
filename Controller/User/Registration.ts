@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import mongoose from "mongoose";
-import { CustomError } from "../../Utils/customError";
+import { CustomError } from "../../Utils/errorHandler";
 
 
 
@@ -71,7 +71,7 @@ const RegistrationUser = async (req: Request, res: Response): Promise<void> => {
 
   res
     .status(200)
-    .json({ status: "success", message: "Registration successful", user });
+    .json({ status: true, message: "Registration successful", user });
 };
 
 ////////////////////// LOGIN API ////////////////////////
@@ -686,13 +686,12 @@ const AllUsers = async (req: Request, res: Response) => {
   const users = await User.find();
   const length = users.length;
   if (!users) {
-    res.status(404).json({ status: "failed", message: "cannot find users" });
-    return;
+    throw new CustomError("users not found",404)
   }
 
   res
     .status(200)
-    .json({ status: "success", message: "all users detailes", users, length });
+    .json({ status: true, message: "all users detailes", users, length });
   return;
 };
 

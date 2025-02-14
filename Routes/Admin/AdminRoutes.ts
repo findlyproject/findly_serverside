@@ -20,7 +20,7 @@ adminRoutes
   .patch(
     "/blockandunblock/:id",
     adminAuthentication,
-    validateData(IdSchema),
+    validateData(undefined,IdSchema),
     errorCatch(blockAndUnblock)
   )
   .get("/users", adminAuthentication, errorCatch(allUsers))
@@ -29,13 +29,13 @@ adminRoutes
   .post(
     "/dismissreports/:id",
     adminAuthentication,
-    validateData(IdSchema),
+    validateData(undefined,IdSchema),
     errorCatch(dismissReports)
   )
   .delete(
     "/deletepost/:id",
     adminAuthentication,
-    validateData(IdSchema),
+    validateData(undefined,IdSchema),
     errorCatch(deletePost)
   );
 

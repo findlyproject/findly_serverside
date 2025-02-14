@@ -13,7 +13,7 @@ export const getAllComments = async (
   res
     .status(200)
     .json({
-      status: "success",
+      status: true,
       message: "Got all the comments",
       comments,
       totalComments,
@@ -56,7 +56,7 @@ export const addCommentToPost = async (
   res
     .status(201)
     .json({
-      status: "success",
+      status: true,
       message: "Comment added successfully",
       comment: populatedComment,
     });
@@ -91,7 +91,7 @@ export const editComment = async (
   res
     .status(200)
     .json({
-      status: "success",
+      status: true,
       message: "Comment updated successfully",
       comment,
     });
@@ -123,7 +123,7 @@ export const deleteComment = async (
   res
     .status(200)
     .json({
-      status: "success",
+      status: true,
       message: "Comment marked as deleted successfully",
       comment,
     });
@@ -147,6 +147,6 @@ export const getCommentById = async (
   }
   res
     .status(200)
-    .json({ status: "success", message: "Comment found", comment });
+    .json({ status: true, message: "Comment found", comment });
   return;
 };

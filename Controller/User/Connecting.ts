@@ -11,7 +11,7 @@ const userconnections = async (req: Request, res: Response): Promise<void> => {
     res.status(400).json({ status: "failed", message: "User ID is missing" });
     return;
   }
-
+userconnections;''
   if (!mongoose.Types.ObjectId.isValid(connectionId)) {
     res
       .status(400)

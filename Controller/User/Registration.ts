@@ -80,13 +80,13 @@ const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   const logeduser = await User.findOne({ email });
   if (!logeduser) {
-    res.status(404).json({ status: false, message: "email id is wrong" });
-    return;
+    throw new CustomError("email id is wrong",404);
+   
   }
   const verfyuser = await bcrypt.compare(password, logeduser.password);
   if (!verfyuser) {
-    res.status(404).json({ status: false, message: "password is wrong" });
-    return;
+    throw new CustomError("password is wrong",404);
+    
   }
   const currentDate = new Date();
   if (logeduser.role === "premium" && logeduser.subscriptionEndDate) {
@@ -168,12 +168,10 @@ const login = async (req: Request, res: Response): Promise<void> => {
           maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
         });
       } else {
-        res.status(403).json({
-          success: false,
-          message:
-            "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
-        });
-        return;
+        throw new CustomError(
+          "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+          403
+        )
       }
     } else {
       console.error("Invalid subscription end date");
@@ -232,8 +230,8 @@ const googleauthlogin = async (req: Request, res: Response) => {
 
   
   if(!name && !email){
-    res.status(404).json({status:false,message:"name or email is missing"})
-    return
+    throw new CustomError("name or email is missing",404);
+   
   }
   const finduser = await User.findOne({ email });
 
@@ -300,12 +298,10 @@ const googleauthlogin = async (req: Request, res: Response) => {
             maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
           });
         } else {
-          res.status(403).json({
-            success: false,
-            message:
-              "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
-          });
-          return;
+          throw new CustomError(
+            "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+            404
+          )
         }
       } else {
       }
@@ -358,15 +354,14 @@ const findCurrentUserDetails = async (
 ): Promise<void> => {
   const userId = req.user?.id;
   if (!userId) {
-    res.status(401).json({ message: "Unauthorized: No user ID found" });
-    return;
+    throw new CustomError("User ID is missing",404);
   }
 
   const currentUserDetails = await User.findById(userId).select("-password");
 
   if (!currentUserDetails) {
-    res.status(404).json({ message: "User not found" });
-    return;
+    throw new CustomError("User not found",404);
+    
   }
 
   res.status(200).json({ success: true, currentUserDetails });
@@ -406,15 +401,14 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
 
     const userId = req.user?.id; // Assuming `req.user` is set from authentication middleware
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      res.status(400).json({ error: "Valid User ID is required" });
-      return;
+      throw new CustomError("Valid User ID is required",404);
+      
     }
 
   // Find user
   const user = await User.findById(userId);
   if (!user) {
-    res.status(404).json({ error: "User not found" });
-    return;
+    throw new CustomError("User not found",404);
   }
 
     
@@ -458,8 +452,8 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
   });
 
     if (!updatedUser) {
-      res.status(500).json({status:false, error: "Error updating user profile" });
-      return;
+      throw new CustomError("User not found",404);
+      
     }
 
     res.status(200).json({status:true, message: "Profile updated successfully", user: updatedUser });

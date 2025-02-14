@@ -149,4 +149,22 @@ const PostSchema = z.object({
 
 export type PostType = z.infer<typeof PostSchema>;
 
+//report
+export const ReportSchema = z.object({
+  reportedBy: z.string().min(24, "Invalid user ID").max(24, "Invalid user ID"), // MongoDB ObjectId (24 characters)
+  reason: z.string().min(5, "Reason must be at least 5 characters").max(500, "Reason must be at most 500 characters"),
+  reportedAt: z.date().optional(), // Automatically set in Mongoose schema
+  isDeleted: z.boolean().optional().default(false),
+  status: z.enum(["pending", "reviewed", "resolved"]).optional().default("pending"),
+});
+
+export type ReportType = z.infer<typeof ReportSchema>;
+
+//rating
+export const ratingSchema = z.object({
+  review: z.string().min(3, "Review must be at least 3 characters long."),
+  starsRating: z.number().min(1, "Rating must be at least 1").max(5, "Rating must not exceed 5"),
+})
+
+export type RatingType = z.infer<typeof ratingSchema>;
 

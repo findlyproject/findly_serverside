@@ -205,10 +205,4 @@ export const VerificationSchema = z.object({
 });
 
 
-export const resumeSchma=z.object({
-
-})
-
-
-
 export type VerificationType = z.infer<typeof VerificationSchema>;

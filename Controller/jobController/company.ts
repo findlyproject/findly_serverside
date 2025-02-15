@@ -15,10 +15,6 @@ export const createJobPost = async (req: Request, res: Response): Promise<void> 
         res.status(400).json({ message: "Cannot upload more than 5 images" });
         return
     }
-
-
-
-
     const job = new JobPost({
         title,
         company,

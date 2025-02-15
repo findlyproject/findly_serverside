@@ -206,3 +206,25 @@ export const VerificationSchema = z.object({
 
 
 export type VerificationType = z.infer<typeof VerificationSchema>;
+
+//company
+export const CompanySchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+  cpassword: z.string().min(6, "Confirm password must be at least 6 characters long"),
+  contact: z.string().min(10, "Contact number must be at least 10 digits"),
+  age: z.string().optional(),
+  IndustryType: z.string().optional(),
+  about: z.string().min(10, "About must be at least 10 characters long"),
+  role: z.string().default("company"),
+  address: z.object({
+    country: z.string().min(2, "Country is required"),
+    state: z.string().min(2, "State is required"),
+    city: z.string().min(2, "City is required"),
+    pincode: z.string().min(4, "Pincode is required"),
+  }),
+  logo: z.string().optional(), // Assuming it's a file URL or path
+});
+export type CompanyType = z.infer<typeof CompanySchema>;
+

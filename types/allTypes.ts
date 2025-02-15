@@ -57,20 +57,37 @@ export interface ISubscription extends Document {
   type: "UserSubscription" | "CompanySubscription";
   paymentStatus: "pending" | "completed";
 }
+
 export interface ICompany extends Document {
   name: string;
   logo: string;
-  location: string;
-  about: string;
+  about?: string;
   email: string;
   contact: number;
-  employees: string;
-  role?: "user" | "premium";
-  isVerified?: boolean;
+  password: string;
+
+  employees: {
+    employee: string; 
+    position: string; 
+  }[];
+
+  role?: "company" | "premium";
+  age?: number;
+  IndustryType?: string;
+
+  address: {
+    pincode: string;
+    landmark?: string;
+    city: string;
+    state: string;
+    country: string;
+  };
+
   subscriptionEndDate: Date | null;
   subscriptionStartDate: Date | null;
   isDeleted: boolean;
 }
+
 
 export interface IUser extends Document {
   firstName: string;

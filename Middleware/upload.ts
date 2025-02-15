@@ -39,9 +39,13 @@ console.log("files,files",file);
         folder: "posts/media",
         resource_type: "auto",
         allowed_formats: ["png", "jpg", "jpeg", "mp4", "mov", "avi", "mkv"],
-      }, // ✅ Fix: Properly closed media object
+      },
+      logo: {
+        folder: "logo",
+        resource_type: "image",
+        allowed_formats: ["png", "jpg", "jpeg"],
+      },  
     };
-    console.log("upload multer",uploadConfig[file.fieldname])
     if (!uploadConfig[file.fieldname]) {
       throw new Error(`Invalid file field name: ${file.fieldname}`);
     }

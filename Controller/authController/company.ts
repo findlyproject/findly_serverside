@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { Company } from "../../model/CompanySchema";
 import { CustomError } from "../../Utils/errorHandler";
 
-// Register Company
+
 export const register = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password, cpassword, contact, age, IndustryType, address, role } = req.body;
   
@@ -72,3 +72,110 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
   res.status(201).json({ status: true, message: "Company registered successfully", company });
 };       
+
+
+
+export const login=async(req:Request,res:Response)=>{
+    const {email,password}=req.body;
+    const company=await Company.findOne({email})
+    if (!company) {
+        throw new CustomError(`The email ${email} is not associated with any company`);
+    }
+        const verfyPassword = await bcrypt.compare(password, company.password);
+         if (!verfyPassword) {
+           throw new CustomError("password is wrong", 404);
+         }
+         const currentDate = new Date();
+         if (company.role === "premium" && company.subscriptionEndDate) {
+           if (company.subscriptionEndDate < currentDate) {
+            company.role = "company";
+            company.subscriptionStartDate = null;
+            company.subscriptionEndDate = null;
+             await company.save();
+           }
+         }
+
+if (verfyPassword) {
+    const token = jwt.sign(
+      {
+        id: company._id,
+        email: company.email,
+ 
+      },
+      process.env.USER_SECRETKEY!,
+      { expiresIn: "1d" }
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    const refreshToken = jwt.sign(
+      { id: company._id, email: company.email },
+      process.env.USER_SECRETKEY!,
+      { expiresIn: "7d" }
+    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+  }
+
+  if (company.role === "premium" && company.subscriptionEndDate) {
+      const subscriptionEndDate = company.subscriptionEndDate
+        ? new Date(company.subscriptionEndDate)
+        : null;
+  
+      if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
+        const currentDate = new Date();
+  
+        const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0));
+  
+        const normalizedEndDate = startOfDay(subscriptionEndDate);
+        const normalizedCurrentDate = startOfDay(currentDate);
+  
+        const differenceInTime =
+          normalizedEndDate.getTime() - normalizedCurrentDate.getTime();
+  
+        const remainingValidityDays = Math.floor(
+          differenceInTime / (1000 * 60 * 60 * 24)
+        );
+  
+        if (remainingValidityDays > 0) {
+          const payload = {
+            userId: company._id,
+            email: company.email,
+            role: company.role,
+            remainingValidityDays,
+          };
+  
+          const secretKey = process.env.USER_SECRETKEY!;
+  
+          const subscriptionToken = jwt.sign(payload, secretKey, {
+            expiresIn: `${remainingValidityDays}d`,
+          });
+  
+          res.cookie("subscriptionToken", subscriptionToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
+            maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
+          });
+        } else {
+          throw new CustomError(
+            "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+            403
+          );
+        }
+      } else {
+        console.error("Invalid subscription end date");
+      }
+    }
+
+    res.status(200).json({ status: true, message: "Login successful", company });
+         
+}

@@ -184,8 +184,7 @@ export type RatingType = z.infer<typeof RatingSchema>;
 
 
  export const SubscriptionSchema = z.object({
-  userId:ObjectIdSchema,
-  companyId: ObjectIdSchema.optional(),
+  
   price: z.number().min(0, { message: "Price must be a positive number" }),
   features: z.array(z.string()).min(1, { message: "At least one feature is required" }),
   popular: z.boolean().default(false),
@@ -194,7 +193,7 @@ export type RatingType = z.infer<typeof RatingSchema>;
   active: z.boolean().default(false),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
-  type: z.enum(["UserSubscription", "CompanySubscription"]),
+  type: z.enum(["UserSubscription", "CompanySubscription"]).optional(),
   paymentStatus: z.enum(["pending", "completed"]).default("pending"),
 });
 

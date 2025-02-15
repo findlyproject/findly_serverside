@@ -23,7 +23,7 @@ paymentRouter
     userAuthMiddleware,
     validateData(undefined, VerificationSchema),
     errorCatch(verifySubscription)
-  )
+  )  
   .post(
     "/findsubscriptionbyId/:sessionId",
     userAuthMiddleware,

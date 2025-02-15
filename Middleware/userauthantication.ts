@@ -21,13 +21,15 @@ export interface JwtDecoded extends JwtPayload {
 const userAuthMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const token: string | undefined = req.cookies?.token;
-        if (!token) {
+        console.log("token",token);
+        
+        if (token=="undefined"||!token) {
             throw new CustomError("Authentication token missing",401);
              
         }
 
         const secretKey = process.env.USER_SECRETKEY;
-        if (!secretKey) {
+        if (!secretKey) {   
             throw new CustomError("missing secret key",404);
            
         }

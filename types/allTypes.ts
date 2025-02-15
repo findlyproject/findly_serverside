@@ -165,3 +165,23 @@ export interface IAdmin extends Document {
   isBlocked?: boolean;
   isDeleted?: boolean;
 }
+
+
+
+export interface IJobPost {
+  title: string;
+  company: string;
+  location: string;
+  jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
+  description: string;
+  requirements: string[];
+  salary: string;
+  postedBy: Types.ObjectId;
+  images: string[]; 
+  likes: Types.ObjectId[];
+  comments: Types.ObjectId[];
+  reports: Types.ObjectId[]; 
+  isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}

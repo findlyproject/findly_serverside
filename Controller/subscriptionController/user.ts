@@ -12,7 +12,9 @@ export const createSubscription = async (
   res: Response
 ): Promise<void> => {
   const stripe = new Stripe(process.env.STRIPE_KEY || "");
-  const { plan, price, features, type } = req.body;
+  console.log("stripe",stripe);
+  
+  const { plan, price, features } = req.body;
   let userId = req.user?.id;
   if (!features) {
     res.status(404).json({ success: false, message: "not found features" });
@@ -57,7 +59,6 @@ export const createSubscription = async (
     metadata: {
       userId: userId || "",
       companyId: companyId || "",
-      type,
       features: featuresString || "",
     },
   });

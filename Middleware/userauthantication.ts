@@ -26,7 +26,7 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
         }
 
         const secretKey = process.env.USER_SECRETKEY;
-        if (!secretKey) {
+        if (!secretKey) {   
             throw new CustomError("missing secret key",404);
            
         }

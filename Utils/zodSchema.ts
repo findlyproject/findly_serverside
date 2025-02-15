@@ -56,7 +56,7 @@ const experienceSchema = z.object({
 const resumeSchema = z.object({
   fileUrl: z.string().url(),
   fileName: z.string(),
-  uploadedAt: z.date().nullable().optional(),
+  uploadedAt: z.string().nullable().optional(),
   isDeleted: z.boolean().default(false),
 });
 
@@ -70,7 +70,7 @@ const projectSchema = z.object({
 
   connectionID: ObjectIdSchema.optional(),
   status: z.boolean().default(false),
-  createdAt: z.date().optional(),
+  createdAt: z.string().optional(),
 });
 export type ConnectionType = z.infer<typeof connectingSchema>;
 
@@ -89,7 +89,7 @@ export const UserSchema = z.object({
   email: z.string().email(),
   password: z.string(),
   phoneNumber: z.string().optional(),
-  dateOfBirth: z.date().optional(),
+  dateOfBirth: z.string().optional(),
   location: locationSchema,
   gender: z.string().optional(),
   profileImage: z.string().url().optional(),
@@ -112,8 +112,8 @@ export const UserSchema = z.object({
   coverLetter: z.string().optional(),
   isBlocked: z.boolean().default(false),
   isDeleted: z.boolean().default(false),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 export type UserType = z.infer<typeof UserSchema>;
 

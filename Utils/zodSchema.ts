@@ -56,7 +56,7 @@ const experienceSchema = z.object({
 const resumeSchema = z.object({
   fileUrl: z.string().url(),
   fileName: z.string(),
-  uploadedAt: z.date().nullable().optional(),
+  uploadedAt: z.string().nullable().optional(),
   isDeleted: z.boolean().default(false),
 });
 
@@ -70,7 +70,7 @@ const projectSchema = z.object({
 
   connectionID: ObjectIdSchema.optional(),
   status: z.boolean().default(false),
-  createdAt: z.date().optional(),
+  createdAt: z.string().optional(),
 });
 export type ConnectionType = z.infer<typeof connectingSchema>;
 
@@ -89,7 +89,7 @@ export const UserSchema = z.object({
   email: z.string().email(),
   password: z.string(),
   phoneNumber: z.string().optional(),
-  dateOfBirth: z.date().optional(),
+  dateOfBirth: z.string().optional(),
   location: locationSchema,
   gender: z.string().optional(),
   profileImage: z.string().url().optional(),
@@ -112,8 +112,8 @@ export const UserSchema = z.object({
   coverLetter: z.string().optional(),
   isBlocked: z.boolean().default(false),
   isDeleted: z.boolean().default(false),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 export type UserType = z.infer<typeof UserSchema>;
 
@@ -184,8 +184,8 @@ export type RatingType = z.infer<typeof RatingSchema>;
 
 
  export const SubscriptionSchema = z.object({
-  userId:ObjectIdSchema,
-  companyId: ObjectIdSchema.optional(),
+  // userId:ObjectIdSchema,
+  // companyId: ObjectIdSchema.optional(),
   price: z.number().min(0, { message: "Price must be a positive number" }),
   features: z.array(z.string()).min(1, { message: "At least one feature is required" }),
   popular: z.boolean().default(false),
@@ -194,7 +194,7 @@ export type RatingType = z.infer<typeof RatingSchema>;
   active: z.boolean().default(false),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
-  type: z.enum(["UserSubscription", "CompanySubscription"]),
+  type: z.enum(["UserSubscription", "CompanySubscription"]).optional(),
   paymentStatus: z.enum(["pending", "completed"]).default("pending"),
 });
 

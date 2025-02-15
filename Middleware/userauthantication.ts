@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomError } from "../Utils/errorHandler";
-import { stat } from "fs";
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -22,8 +21,8 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
     try {
         const token: string | undefined = req.cookies?.token;
         if (!token) {
-            throw new CustomError("Authentication token missing",401);
-             
+            res.status(401).json({status:false,message:"Authentication token missing"})
+            return             
         }
 
         const secretKey = process.env.USER_SECRETKEY;

@@ -23,7 +23,7 @@ export type IdType = z.infer<typeof IdSchema>;
   export type LoginType = z.infer<typeof LoginSchema>;
 
   
-// User Schema Components
+// User Schema Compone nts
 const educationSchema = z.object({
   qualification: z.string().optional(),
   startYear: z.string(),

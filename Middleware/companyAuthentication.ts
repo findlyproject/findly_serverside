@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomError } from "../Utils/errorHandler";
-import { companyAuthMiddleware } from "./companyAuthentication";
 
 declare module "express-serve-static-core" {
     interface Request {
-        user?: JwtDecoded;
+        company?: JwtDecoded;
         token?: string;
     }
 }
@@ -18,13 +17,10 @@ export interface JwtDecoded extends JwtPayload {
 }
 
 
-const userAuthMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const companyAuthMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const token: string | undefined = req.cookies?.token;
+        const token: string | undefined = req.cookies?.ctoken;
         if (!token) {
-
-           await companyAuthMiddleware(req, res, next);  
-           return; 
             res.status(401).json({status:false,message:"Authentication token missing"})
             return             
         }
@@ -35,12 +31,12 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
            
         }
 
-        await jwt.verify(token, secretKey, (error, user) => {
+        await jwt.verify(token, secretKey, (error, company) => {
             if (error) {
                 throw new CustomError("Invalid token",401);
             }
 
-            req.user = user as JwtDecoded; 
+            req.company = company as JwtDecoded; 
             next();
         });
     } catch (error) {
@@ -49,4 +45,4 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-export { userAuthMiddleware };
+export { companyAuthMiddleware };

@@ -38,7 +38,7 @@ const SubscriptionPlanSchema = new Schema<ISubscription>(
     },
     paymentStatus: {
       type: String,
-      required: true,
+      required: true,  
       default: "pending",
       enum: ["pending", "completed"],
     },

@@ -3,7 +3,7 @@ import { EmailUs } from "../Controller/ContactUs";
 import { errorCatch } from "../middleware/tryCatch";
 import { userAuthMiddleware } from "../middleware/userauthantication";
 import { reportuser } from "../Controller/reportController/user";
-import { refreshAccessToken } from "../Controller/authController/user";
+import { refreshAccessToken, resetPasword, sendOtp } from "../Controller/authController/user";
 import { generateSignedUrl } from "../Utils/fileUpload";
 import ressumeupload from '../middleware/ressumeUploading'
 import { validateData } from "../middleware/zodValidation";
@@ -37,6 +37,10 @@ userRouter
 
 .post("/reportuser",userAuthMiddleware,validateData(ReportSchema),errorCatch(reportuser))
 .get("/generate-signed-url", errorCatch(generateSignedUrl))
+.post("/resetpasword/:email/:password", errorCatch(resetPasword))
+.post("/sendotp/:email", errorCatch(sendOtp))
+
+
 .get("/spacificuserdetails/:id", userAuthMiddleware,validateData(IdSchema), errorCatch(spacificuserdetails))
 
 export {userRouter}

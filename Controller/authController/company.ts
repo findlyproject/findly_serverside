@@ -45,25 +45,25 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   await company.save();
 
   // Generate JWT tokens
-  const token = jwt.sign(
+  const ctoken = jwt.sign(
       { id: company._id, email: company.email },
       process.env.COMPANY_SECRETKEY!,   
       { expiresIn: "1d" }
   );
-  const refreshToken = jwt.sign(
+  const crefreshToken = jwt.sign(
       { id: company._id, email: company.email },
       process.env.COMPANY_SECRETKEY!,
       { expiresIn: "7d" }
   );
 
-  res.cookie("token", token, {
+  res.cookie("ctoken", ctoken, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
   });
 
-  res.cookie("refreshToken", refreshToken, {
+  res.cookie("crefreshToken", crefreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
@@ -79,7 +79,7 @@ export const login=async(req:Request,res:Response)=>{
     const {email,password}=req.body;
     const company=await Company.findOne({email})
     if (!company) {
-        throw new CustomError(`The email ${email} is not associated with any company`);
+        throw new CustomError(`No account found for ${email}`,401);
     }
         const verfyPassword = await bcrypt.compare(password, company.password);
          if (!verfyPassword) {
@@ -96,7 +96,7 @@ export const login=async(req:Request,res:Response)=>{
          }
 
 if (verfyPassword) {
-    const token = jwt.sign(
+    const ctoken = jwt.sign(
       {
         id: company._id,
         email: company.email,
@@ -105,18 +105,18 @@ if (verfyPassword) {
       process.env.USER_SECRETKEY!,
       { expiresIn: "1d" }
     );
-    res.cookie("token", token, {
+    res.cookie("ctoken", ctoken, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
-    const refreshToken = jwt.sign(
+    const crefreshToken = jwt.sign(
       { id: company._id, email: company.email },
       process.env.USER_SECRETKEY!,
       { expiresIn: "7d" }
     );
-    res.cookie("refreshToken", refreshToken, {
+    res.cookie("crefreshToken", crefreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
@@ -177,5 +177,43 @@ if (verfyPassword) {
     }
 
     res.status(200).json({ status: true, message: "Login successful", company });
-         
+      
+}   
+
+
+export const logOut=async(req:Request,res:Response)=>{
+     const companyId=req.company?.id;
+     if (companyId) {
+      const company = await Company.findById(companyId);
+  
+      if (company && company.role === "premium" && company.subscriptionEndDate) {
+        const currentDate = new Date();
+  
+        if (company.subscriptionEndDate < currentDate) {
+          company.role = "company";
+          company.subscriptionStartDate = null;
+          company.subscriptionEndDate = null;
+          await company.save();
+        }
+      }
+    }
+
+    res.clearCookie("ctoken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+    res.clearCookie("crefreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+  
+    res.clearCookie("subscriptionToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+    res.status(200).json({ status: true, message: "Logout successfully" });
+  
 }

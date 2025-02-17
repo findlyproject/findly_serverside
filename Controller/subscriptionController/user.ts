@@ -12,15 +12,19 @@ export const createSubscription = async (
   res: Response
 ): Promise<void> => {
   const stripe = new Stripe(process.env.STRIPE_KEY || "");
-  console.log("stripe",stripe);
+
   
   const { plan, price, features } = req.body;
   let userId = req.user?.id;
+  let companyId = req.company?.id;
   if (!features) {
     res.status(404).json({ success: false, message: "not found features" });
     return;
   }
-  const companyId = null;
+
+  console.log("userId",userId);
+  console.log("companyId",companyId);
+  
   if (!userId && !companyId) {
     throw new CustomError("Either userId or companyId must be provided.", 401);
   }
@@ -103,14 +107,17 @@ export const verifySubscription = async (req: Request, res: Response) => {
     throw new CustomError("Payment not found", 404);
   }
   let accountInfo = null;
+  let accountType = ""; 
 
   if (subscription.type === "UserSubscription" && subscription.userId) {
     accountInfo = await User.findById(subscription.userId);
+    accountType="user"
   } else if (
     subscription.type === "CompanySubscription" &&
     subscription.companyId
   ) {
     accountInfo = await Company.findById(subscription.companyId);
+    accountType="company"
   }
 
   if (!accountInfo) {
@@ -139,10 +146,11 @@ export const verifySubscription = async (req: Request, res: Response) => {
   await subscription.save();
 
   accountInfo.subscriptionStartDate = startDate;
-  accountInfo.subscriptionEndDate = endDate;
+  accountInfo.subscriptionEndDate = endDate;  
   accountInfo.role = "premium";
 
   await accountInfo.save();
+console.log("accountInfo",accountInfo);
 
   const payload = {
     userId: accountInfo._id,
@@ -165,7 +173,7 @@ export const verifySubscription = async (req: Request, res: Response) => {
     maxAge: durationDays * 24 * 60 * 60 * 1000,
   });
 
-  res.status(200).json({ success: true, subscription, accountInfo });
+  res.status(200).json({ success: true, subscription, accountInfo,accountType });
 };
 
 export const findSubscriptionById = async (req: Request, res: Response) => {

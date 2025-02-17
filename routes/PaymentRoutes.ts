@@ -8,6 +8,7 @@ import {
 } from "../Controller/subscriptionController/user";
 import { SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
 import { validateData } from "../middleware/zodValidation";
+import { companyAuthMiddleware } from "../middleware/companyAuthentication";
 const paymentRouter = express.Router();
 
 paymentRouter

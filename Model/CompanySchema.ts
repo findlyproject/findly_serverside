@@ -36,6 +36,7 @@ const CompanySchema = new Schema<ICompany>(
 
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },
+    isBlocked: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }

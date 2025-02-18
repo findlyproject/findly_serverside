@@ -20,6 +20,7 @@ import { Schema, model } from "mongoose";
         type: [String], 
         validate: [(val: string[]) => val.length <= 5, "Cannot upload more than 5 images"]
       },
+      
       likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
       comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }], 
       reports: [{ type: Schema.Types.ObjectId, ref: "User" }], 

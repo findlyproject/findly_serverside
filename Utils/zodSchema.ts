@@ -223,7 +223,7 @@ export const CompanySchema = z.object({
     city: z.string().min(2, "City is required"),
     pincode: z.string().min(4, "Pincode is required"),
   }),
-  logo: z.string().optional(), // Assuming it's a file URL or path
+  logo: z.string().optional(), 
 });
 export type CompanyType = z.infer<typeof CompanySchema>;
 
@@ -235,6 +235,10 @@ export const jobPostSchema = z.object({
   experienceLevel: z.string().min(1, { message: "Experience Level is required" }),
   industry: z.string().min(1, { message: "Industry is required" }),
   description: z.string().min(1, { message: "Description is required" }),
-  salary: z.string().min(1, { message: "Salary is required" }),
+salary:z.object({
+  rate:z.string().min(1,{message:"Rate is required (e.g., Hourly, Monthly)"}),
+  min:z.number().min(0,{message:"Minimum salary must be 0 or more"}),
+  max:z.number().min(0,{message:"maximum salary must be 0 or more"})
+}),
   contactEmail: z.string().email({ message: "Invalid email address" }).min(1, { message: "Contact Email is required" }),
 });

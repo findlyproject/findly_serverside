@@ -5,8 +5,8 @@ import { IPost } from "../types/allTypes";
 const PostSchema = new Schema <IPost>(
   {
     description: { type: String, maxlength: 500 },
-    images: [{ type: String }], // Array of image URLs
-    video: { type: String }, // Video URL
+    images: [{ type: String }],
+    video: { type: String }, 
     owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
     likedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
     reports: [{ type: Schema.Types.ObjectId, ref: "Report" }], 

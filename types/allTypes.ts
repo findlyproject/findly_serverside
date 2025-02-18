@@ -200,7 +200,11 @@ export interface IJobPost {
   description: string;
   requirements: string[];
   qualification:string
-  salary: string;
+  salary:{
+    rate:string,
+    min:number,
+    max:number
+  }
   postedBy: Types.ObjectId;
   images: string[]; 
   likes: Types.ObjectId[];

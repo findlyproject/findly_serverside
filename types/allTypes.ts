@@ -190,15 +190,24 @@ export interface IJobPost {
   company: string;
   location: string;
   jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
+  experienceLevel:"Entry" | "Mid" | "Senior" | "Expert";
+  jobResponsibilities:string[]
+  industry:string;
+  applicationDeadline:Date|null
+  contactEmail:string;
+  contactPhone:string
+  benefits:string[]
   description: string;
   requirements: string[];
+  qualification:string
   salary: string;
   postedBy: Types.ObjectId;
   images: string[]; 
   likes: Types.ObjectId[];
   comments: Types.ObjectId[];
   reports: Types.ObjectId[]; 
+  status:"Open"|"Closed"
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
-}
+}    

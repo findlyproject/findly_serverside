@@ -56,13 +56,11 @@ console.log(req.body);
 };
 
 
-
 export const updateJobPost = async (req: Request, res: Response): Promise<void> => {
     try {
         const jobId = req.params.jobId; // Get the job post ID from the URL parameters
         const companyId = req.company?.id; // Assuming `req.company` holds the authenticated company data
         
-        // Destructure the fields to be updated from the request body
         const {
             title,
             location,
@@ -89,41 +87,65 @@ export const updateJobPost = async (req: Request, res: Response): Promise<void> 
             return;
         }
 
-        // Update the job post with the provided details
-        job.title = title || job.title;
-        job.location = location || job.location;
-        job.jobType = jobType || job.jobType;
-        job.experienceLevel = experienceLevel || job.experienceLevel;
-        job.industry = industry || job.industry;
-        job.description = description || job.description;
-        job.requirements = requirements || job.requirements;
-        job.jobResponsibilities = jobResponsibilities || job.jobResponsibilities;
-        job.salary = salary || job.salary;
-        job.applicationDeadline = applicationDeadline || job.applicationDeadline;
-        job.benefits = benefits || job.benefits;
-        job.contactEmail = contactEmail || job.contactEmail;
-        job.contactPhone = contactPhone || job.contactPhone;
-        job.status = status || job.status || job.status; // Preserve existing status if not updated
+        // Update only the fields provided in the request body
+        const updatedFields: Record<string, any> = {};
+
+        if (title) updatedFields.title = title;
+        if (location) updatedFields.location = location;
+        if (jobType) updatedFields.jobType = jobType;
+        if (experienceLevel) updatedFields.experienceLevel = experienceLevel;
+        if (industry) updatedFields.industry = industry;
+        if (description) updatedFields.description = description;
+        if (requirements) updatedFields.requirements = requirements;
+        if (jobResponsibilities) updatedFields.jobResponsibilities = jobResponsibilities;
+        if (salary) updatedFields.salary = salary;
+        if (applicationDeadline) updatedFields.applicationDeadline = applicationDeadline;
+        if (benefits) updatedFields.benefits = benefits;
+        if (contactEmail) updatedFields.contactEmail = contactEmail;
+        if (contactPhone) updatedFields.contactPhone = contactPhone;
+        if (status) updatedFields.status = status;
+
+        // Update the job post with the new values
+        Object.assign(job, updatedFields);
 
         // Save the updated job post
         await job.save();
 
-        // Respond with the updated job details
+        // Respond with the updated fields only
         res.status(200).json({
             message: "Job post updated successfully",
-            job: {
-                _id: job._id,
-                title: job.title,
-                company: job.company,
-                location: job.location,
-                jobType: job.jobType,
-                salary: job.salary,
-                status: job.status
-            }
+            updatedFields
         });
 
     } catch (error) {
         // Handle any unexpected errors
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+
+export const deleteJobPost = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const jobId = req.params.jobId; 
+        const companyId = req.company?.id; 
+
+
+        const job = await JobPost.findOne({ _id: jobId, postedBy: companyId });
+
+        if (!job) {
+            res.status(404).json({ message: "Job post not found or you do not have permission to delete it" });
+            return;
+        }
+
+        job.isDeleted = true;
+        await job.save();
+
+        res.status(200).json({ message: "Job post soft deleted successfully" });
+
+    } catch (error) {
+        
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
     }

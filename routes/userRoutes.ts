@@ -10,6 +10,7 @@ import { validateData } from "../middleware/zodValidation";
 import { IdSchema, LoginSchema, ReportSchema, UserSchema } from "../Utils/zodSchema";
 import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } from "../Controller/authController/user";
 import { findCurrentUserDetails, getPeopleYouMightKnow, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
+import { applyToJob } from "../Controller/jobController/user";
 
 const userRouter = express.Router()
 
@@ -42,5 +43,10 @@ userRouter
 
 
 .get("/spacificuserdetails/:id", userAuthMiddleware,validateData(IdSchema), errorCatch(spacificuserdetails))
+
+
+//apply job
+.post("/applytojob/:jobId", userAuthMiddleware, ressumeupload, errorCatch(applyToJob))
+
 
 export {userRouter}

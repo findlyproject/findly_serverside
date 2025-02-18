@@ -30,7 +30,7 @@ const JobPostSchema = new Schema<IJobPost>(
     benefits: [{ type: String }],
     contactEmail: { type: String, required: true },
     contactPhone: { type: String },
-    postedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    postedBy: { type: Schema.Types.ObjectId, ref: "Company", required: true },
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }], 
     reports: [{ type: Schema.Types.ObjectId, ref: "User" }], 

@@ -5,7 +5,7 @@ import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
 import { CompanySchema, jobPostSchema, LoginSchema } from "../Utils/zodSchema";
 import { companyAuthMiddleware } from "../middleware/companyAuthentication";
-import { createJobPost, deleteJobPost, getAllJobPost, getJobsById, updateJobPost } from "../Controller/jobController/company";
+import { createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsById, updateJobPost } from "../Controller/jobController/company";
 import { userAuthMiddleware } from "../middleware/userauthantication";
 const companyRouter = express.Router();
 
@@ -25,6 +25,8 @@ companyRouter
   .delete("/deletejobpost/:jobId",companyAuthMiddleware,errorCatch(deleteJobPost))
   .get("/getalljobs",userAuthMiddleware,errorCatch(getAllJobPost))
   .get("/getJobsById/:id",userAuthMiddleware,errorCatch(getJobsById))
+  .get("/findapplications",companyAuthMiddleware,errorCatch(findAppliedUsers))
+  .get("/findapplications/:userId/:jobId",companyAuthMiddleware,errorCatch(findUserApplication))
 
 
 

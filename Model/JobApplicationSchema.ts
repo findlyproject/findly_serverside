@@ -4,6 +4,7 @@ const jobApplicationSchema = new mongoose.Schema(
     {
         jobId: { type: mongoose.Schema.Types.ObjectId, ref: "JobPost", required: true },
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true },
         resume: { type: String, required: true },
         coverLetter: { type: String },
         introVideo: { type: String, required: false },

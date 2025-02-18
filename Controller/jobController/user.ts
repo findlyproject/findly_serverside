@@ -4,7 +4,7 @@ import {JobApplication} from "../../model/JobApplicationSchema"
 import { CustomError } from "../../Utils/errorHandler";
 
 export const applyToJob = async (req: Request, res: Response): Promise<void> => {
-    try {
+
         const { jobId } = req.params; 
         const userId = req.user?.id; 
 
@@ -43,6 +43,7 @@ export const applyToJob = async (req: Request, res: Response): Promise<void> => 
         const application = new JobApplication({
             jobId,
             userId,
+            companyId:job.postedBy,
             resume: pdfFile?.path, 
             coverLetter,
             introVideo: videoFile?.path, 
@@ -64,8 +65,7 @@ export const applyToJob = async (req: Request, res: Response): Promise<void> => 
             },
         });
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal server error" });
-    }
+
 };
+
+

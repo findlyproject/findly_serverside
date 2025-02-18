@@ -150,3 +150,44 @@ export const deleteJobPost = async (req: Request, res: Response): Promise<void> 
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+////// get all job post 
+
+export const getAllJobPost = async (req: Request, res: Response): Promise<void> => {
+
+    const page = parseInt(req.query.page as string) || 1;  
+    const limit = 10; 
+    const skip = (page - 1) * limit;    
+
+    const jobs = await JobPost.find({ isDeleted: false })
+        .populate("postedBy")
+        .skip(skip)
+        .limit(limit);
+
+    const totalJobs = await JobPost.countDocuments({ isDeleted: false });
+
+    res.status(200).json({
+        status: true,
+        message: "All jobs fetched successfully",
+        jobs,
+        currentPage: page,
+        totalPages: Math.ceil(totalJobs / limit),
+        totalJobs
+    });
+
+}
+
+
+/// get jobs by id //
+
+export const getJobsById = async (req: Request, res: Response): Promise<void> => {
+    const jobId = req.params.id;
+    if(!jobId){
+    throw new CustomError("job Id is required", 400);
+    }
+    const findJob = await JobPost.findById(jobId);
+    if(!findJob){
+        throw new CustomError("job not found", 404);
+    }
+    res.status(200).json({status:true,message:"Get Job By Id",job:findJob});
+}

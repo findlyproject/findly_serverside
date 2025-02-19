@@ -46,7 +46,7 @@ const reportuser = async(req:Request,res:Response):Promise<void>=>{
     }           
 
     findreporteduser.reports.push(report.id);
-    const a = await findreporteduser.save();
+     await findreporteduser.save();
     const popuatedreports = await User.findOne({ _id: repoteduserid }).populate("reports");
  
     res.status(200).json({ status: true, message: "Reported successfully", popuatedreports });

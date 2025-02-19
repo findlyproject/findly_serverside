@@ -91,7 +91,7 @@ export const UserSchema = z.object({
   phoneNumber: z.string().optional(),
   dateOfBirth: z.date().optional(),
   location: locationSchema,
-  gender: z.string().optional(),
+  gender: z.string(),
   profileImage: z.string().url().optional(),
   banner: z.string().url().optional(),
   skills: z.array(z.string()).optional(),
@@ -150,7 +150,7 @@ export type PostType = z.infer<typeof PostSchema>;
 
 //report
 export const ReportSchema = z.object({
-  reportedBy: z.string().min(24, "Invalid user ID").max(24, "Invalid user ID"), // MongoDB ObjectId (24 characters)
+  reportedBy: z.string().min(24, "Invalid user ID").max(24, "Invalid user ID").optional(), // MongoDB ObjectId (24 characters)
   reason: z.string().min(5, "Reason must be at least 5 characters").max(500, "Reason must be at most 500 characters"),
   reportedAt: z.date().optional(), // Automatically set in Mongoose schema
   isDeleted: z.boolean().optional().default(false),
@@ -159,13 +159,28 @@ export const ReportSchema = z.object({
 
 export type ReportType = z.infer<typeof ReportSchema>;
 
+//comment 
+export const CommentSchema = z.object({
+  postId: z.string().min(1, "Post ID is required").regex(/^[a-fA-F0-9]{24}$/, "Invalid Post ID").optional(),
+  comment: z.string().min(1, "Comment cannot be empty").max(500, "Comment is too long"),
+});
+export type CommentType = z.infer<typeof CommentSchema>;
+
+//reply
+export const ReplySchema = z.object({
+  postId: z.string().min(1, "Post ID is required").regex(/^[a-fA-F0-9]{24}$/, "Invalid Post ID"),
+  commentId: z.string().min(1, "Comment ID is required").regex(/^[a-fA-F0-9]{24}$/, "Invalid Comment ID"),
+  replyText: z.string().min(1, "Reply cannot be empty").max(500, "Reply is too long"),
+});
+export type ReplyType = z.infer<typeof ReplySchema>;
+
 //rating
-export const ratingSchema = z.object({
+export const RatingSchema = z.object({
   review: z.string().min(3, "Review must be at least 3 characters long."),
   starsRating: z.number().min(1, "Rating must be at least 1").max(5, "Rating must not exceed 5"),
 })
 
-export type RatingType = z.infer<typeof ratingSchema>;
+export type RatingType = z.infer<typeof RatingSchema>;
 
 
  export const SubscriptionSchema = z.object({
@@ -190,10 +205,7 @@ export const VerificationSchema = z.object({
 });
 
 
-export const resumeSchma=z.object({
-
-})
-
-
-
 export type VerificationType = z.infer<typeof VerificationSchema>;
+
+
+

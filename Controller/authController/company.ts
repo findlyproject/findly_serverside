@@ -70,13 +70,13 @@ console.log(otpStore)
 
 // Step 3: Final Registration Form Submission
 export const finalRegister = async (req: Request, res: Response): Promise<void> => {
-    const { name, email, password, cpassword, contact, age, IndustryType, address, role } = req.body;
-  
+    const { name, email, password, cpassword, contact, age, IndustryType, address } = req.body;
+  console.log(req.body)
     if (!name || !email || !password || !cpassword || !contact) {
         throw new CustomError("All required fields must be filled.", 400);
     }
   
-    const emailRegex = /\S+@\S+\.\S+/;
+    const emailRegex = /\S+@\S+\.\S+/; 
     if (!emailRegex.test(email)) {
         throw new CustomError("Invalid email format.", 400);
     }
@@ -90,17 +90,17 @@ export const finalRegister = async (req: Request, res: Response): Promise<void> 
         throw new CustomError("Company already exists.", 400);
     }
   
-    const hashedPassword = await bcrypt.hash(password, 10);
-  
-    const logo = req.file ? req.file.path : ""; // Ensure this field exists
+    const hashedPassword = await bcrypt.hash(password, 10);  
+ 
+    const logo = req.file ? req.file.path : ""; 
+    console.log(logo)// Ensure this field exists
   
     const company = new Company({  
-        name,
+        name,   
         logo, 
         email,
         password: hashedPassword,
         contact,
-        role: role || "company",
         age,
         IndustryType,
         address
@@ -137,7 +137,7 @@ export const finalRegister = async (req: Request, res: Response): Promise<void> 
     res.status(201).json({ status: true, message: "Company registered successfully", company });
   };    
 
-
+  
 export const login=async(req:Request,res:Response)=>{
     const {email,password}=req.body;
     const company=await Company.findOne({email})

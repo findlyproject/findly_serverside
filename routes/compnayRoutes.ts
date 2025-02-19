@@ -12,7 +12,7 @@ const companyRouter = express.Router();
 companyRouter
 
   //auth
-  
+    
   .post(
     "/send-otp",
     // validateData(CompanySchema),
@@ -24,7 +24,7 @@ companyRouter
   )
   .post(
     "/final-register",
-    validateData(CompanySchema),
+    // validateData(CompanySchema),  
     upload.single("logo"),
     errorCatch(finalRegister)
   )

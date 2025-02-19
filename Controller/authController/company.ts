@@ -96,7 +96,7 @@ export const login=async(req:Request,res:Response)=>{
          }
 
 if (verfyPassword) {
-    const ctoken = jwt.sign(
+    const token = jwt.sign(
       {
         id: company._id,
         email: company.email,
@@ -105,22 +105,29 @@ if (verfyPassword) {
       process.env.USER_SECRETKEY!,
       { expiresIn: "1d" }
     );
-    res.cookie("ctoken", ctoken, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
-    const crefreshToken = jwt.sign(
+    const refreshToken = jwt.sign(
       { id: company._id, email: company.email },
       process.env.USER_SECRETKEY!,
       { expiresIn: "7d" }
     );
-    res.cookie("crefreshToken", crefreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie(`type`, "Company", {
+      httpOnly: true,
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      sameSite: 'none',
     });
   }
 

@@ -166,6 +166,7 @@ export interface IUser extends Document {
     uploadedAt: Date | null;
   }[];
   role: "user" | "premium";
+  type:"User"|"Admin"|"Company"
   subscriptionEndDate: Date | null;
   subscriptionStartDate: Date | null;
 

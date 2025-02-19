@@ -51,4 +51,17 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-export { userAuthMiddleware };
+
+const companyAuth=(req:Request,res:Response,next:NextFunction):void=>{
+    console.log('Admin auth middleware');
+    userAuthMiddleware(req,res,()=>{
+        if(req.user &&req.user.type=='Company'){
+            return next()
+        }else{
+            return next(new CustomError('You are not authorized', 403));
+        }
+    })
+    
+}
+
+export { userAuthMiddleware,companyAuth };

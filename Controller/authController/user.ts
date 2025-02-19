@@ -123,6 +123,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    res.cookie(`type`, "User", {
+      httpOnly: true,
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      sameSite: 'none',
+    });
   }
 
   if (logeduser.role === "premium" && logeduser.subscriptionEndDate) {

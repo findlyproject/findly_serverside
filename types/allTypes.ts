@@ -85,6 +85,7 @@ export interface ICompany extends Document {
 
   subscriptionEndDate: Date | null;
   subscriptionStartDate: Date | null;
+  isBlocked?: boolean;
   isDeleted: boolean;
 }
 

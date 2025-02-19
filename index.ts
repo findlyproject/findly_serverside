@@ -11,6 +11,7 @@ import { adminRouter } from "./routes/AdminRoutes";
 import errorHandler from "./middleware/customClassMiddleware";
 import postRouter from "./routes/postRoutes";
 import { connectionRouter } from "./routes/connectionRoutes";
+import { companyRouter } from "./routes/compnayRoutes";
 
 dotenv.config();
 const app = express();
@@ -30,6 +31,8 @@ app.use(cors({
   app.use("/api/user",searchRouter)
   app.use("/api/connecting",connectionRouter)
   app.use("/api/admin",adminRouter)
+  app.use("/api/company",companyRouter)
+
 
   app.use(errorHandler);
 

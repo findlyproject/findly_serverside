@@ -68,6 +68,7 @@ export const addPost = async (req: Request, res: Response): Promise<void> => {
     images: uploadedImages,
     video: uploadedVideo,
   });
+  
 
   await newPost.save();
 

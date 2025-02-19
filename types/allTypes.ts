@@ -57,20 +57,37 @@ export interface ISubscription extends Document {
   type: "UserSubscription" | "CompanySubscription";
   paymentStatus: "pending" | "completed";
 }
+
 export interface ICompany extends Document {
   name: string;
   logo: string;
-  location: string;
-  about: string;
+  about?: string;
   email: string;
   contact: number;
-  employees: string;
-  role?: "user" | "premium";
-  isVerified?: boolean;
+  password: string;
+
+  employees: {
+    employee: string; 
+    position: string; 
+  }[];
+
+  role?: "company" | "premium";
+  age?: number;
+  IndustryType?: string;
+
+  address: {
+    pincode: string;
+    landmark?: string;
+    city: string;
+    state: string;
+    country: string;
+  };
+
   subscriptionEndDate: Date | null;
   subscriptionStartDate: Date | null;
   isDeleted: boolean;
 }
+
 
 export interface IUser extends Document {
   firstName: string;
@@ -172,6 +189,7 @@ export interface IAdmin extends Document {
 }
 
 
+
 export interface ISkill extends Document{
   name:string;
   status:boolean;
@@ -184,4 +202,37 @@ export interface ITitles extends Document{
   status:boolean;
   isDeleted:boolean
 }
+
+
+
+export interface IJobPost {
+  title: string;
+  company: string;
+  location: string;
+  jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
+  experienceLevel:"Entry" | "Mid" | "Senior" | "Expert";
+  jobResponsibilities:string[]
+  industry:string;
+  applicationDeadline:Date|null
+  contactEmail:string;
+  contactPhone:string
+  benefits:string[]
+  description: string;
+  requirements: string[];
+  qualification:string
+  salary:{
+    rate:string,
+    min:number,
+    max:number
+  }
+  postedBy: Types.ObjectId;
+  images: string[]; 
+  likes: Types.ObjectId[];
+  comments: Types.ObjectId[];
+  reports: Types.ObjectId[]; 
+  status:"Open"|"Closed"
+  isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}    
 

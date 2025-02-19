@@ -18,12 +18,12 @@ export type IdType = z.infer<typeof IdSchema>;
   export const LoginSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
-  });
+  });   
   
   export type LoginType = z.infer<typeof LoginSchema>;
 
   
-// User Schema Components
+// User Schema Compone nts
 const educationSchema = z.object({
   qualification: z.string().optional(),
   startYear: z.string(),
@@ -56,7 +56,7 @@ const experienceSchema = z.object({
 const resumeSchema = z.object({
   fileUrl: z.string().url(),
   fileName: z.string(),
-  uploadedAt: z.date().nullable().optional(),
+  uploadedAt: z.string().nullable().optional(),
   isDeleted: z.boolean().default(false),
 });
 
@@ -70,7 +70,7 @@ const projectSchema = z.object({
 
   connectionID: ObjectIdSchema.optional(),
   status: z.boolean().default(false),
-  createdAt: z.date().optional(),
+  createdAt: z.string().optional(),
 });
 export type ConnectionType = z.infer<typeof connectingSchema>;
 
@@ -89,7 +89,7 @@ export const UserSchema = z.object({
   email: z.string().email(),
   password: z.string(),
   phoneNumber: z.string().optional(),
-  dateOfBirth: z.date().optional(),
+  dateOfBirth: z.string().optional(),
   location: locationSchema,
   gender: z.string(),
   profileImage: z.string().url().optional(),
@@ -112,8 +112,8 @@ export const UserSchema = z.object({
   coverLetter: z.string().optional(),
   isBlocked: z.boolean().default(false),
   isDeleted: z.boolean().default(false),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 export type UserType = z.infer<typeof UserSchema>;
 
@@ -184,8 +184,7 @@ export type RatingType = z.infer<typeof RatingSchema>;
 
 
  export const SubscriptionSchema = z.object({
-  userId:ObjectIdSchema,
-  companyId: ObjectIdSchema.optional(),
+  
   price: z.number().min(0, { message: "Price must be a positive number" }),
   features: z.array(z.string()).min(1, { message: "At least one feature is required" }),
   popular: z.boolean().default(false),
@@ -194,7 +193,7 @@ export type RatingType = z.infer<typeof RatingSchema>;
   active: z.boolean().default(false),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
-  type: z.enum(["UserSubscription", "CompanySubscription"]),
+  type: z.enum(["UserSubscription", "CompanySubscription"]).optional(),
   paymentStatus: z.enum(["pending", "completed"]).default("pending"),
 });
 
@@ -208,4 +207,40 @@ export const VerificationSchema = z.object({
 export type VerificationType = z.infer<typeof VerificationSchema>;
 
 
+//company
+export const CompanySchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+  cpassword: z.string().min(6, "Confirm password must be at least 6 characters long"),
+  contact: z.string().min(10, "Contact number must be at least 10 digits"),
+  age: z.string().optional(),
+  IndustryType: z.string().optional(),
+  about: z.string().min(10, "About must be at least 10 characters long"),
+  role: z.string().default("company"),
+  address: z.object({
+    country: z.string().min(2, "Country is required"),
+    state: z.string().min(2, "State is required"),
+    city: z.string().min(2, "City is required"),
+    pincode: z.string().min(4, "Pincode is required"),
+  }),
+  logo: z.string().optional(), 
+});
+export type CompanyType = z.infer<typeof CompanySchema>;
+
+export const jobPostSchema = z.object({
+  title: z.string().min(1, { message: "Title is required" }),
+  company: z.string().min(1, { message: "Company is required" }),
+  location: z.string().min(1, { message: "Location is required" }),
+  jobType: z.string().min(1, { message: "Job Type is required" }),
+  experienceLevel: z.string().min(1, { message: "Experience Level is required" }),
+  industry: z.string().min(1, { message: "Industry is required" }),
+  description: z.string().min(1, { message: "Description is required" }),
+salary:z.object({
+  rate:z.string().min(1,{message:"Rate is required (e.g., Hourly, Monthly)"}),
+  min:z.number().min(0,{message:"Minimum salary must be 0 or more"}),
+  max:z.number().min(0,{message:"maximum salary must be 0 or more"})
+}),
+  contactEmail: z.string().email({ message: "Invalid email address" }).min(1, { message: "Contact Email is required" }),
+});
 

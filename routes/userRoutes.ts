@@ -3,13 +3,14 @@ import { EmailUs } from "../Controller/ContactUs";
 import { errorCatch } from "../middleware/tryCatch";
 import { userAuthMiddleware } from "../middleware/userauthantication";
 import { reportuser } from "../Controller/reportController/user";
-import { refreshAccessToken } from "../Controller/authController/user";
+import { refreshAccessToken, resetPasword, sendOtp } from "../Controller/authController/user";
 import { generateSignedUrl } from "../Utils/fileUpload";
 import ressumeupload from '../middleware/ressumeUploading'
 import { validateData } from "../middleware/zodValidation";
 import { IdSchema, LoginSchema, ReportSchema, UserSchema } from "../Utils/zodSchema";
 import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } from "../Controller/authController/user";
 import { findCurrentUserDetails, getPeopleYouMightKnow, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
+import { applyToJob } from "../Controller/jobController/user";
 
 const userRouter = express.Router()
 
@@ -37,6 +38,18 @@ userRouter
 
 .post("/reportuser",userAuthMiddleware,validateData(ReportSchema),errorCatch(reportuser))
 .get("/generate-signed-url", errorCatch(generateSignedUrl))
+
 .get("/spacificuserdetails/:id", userAuthMiddleware, errorCatch(spacificuserdetails))
+
+.post("/resetpasword/:email/:password", errorCatch(resetPasword))
+.post("/sendotp/:email", errorCatch(sendOtp))
+
+
+
+
+
+//apply job
+.post("/applytojob/:jobId", userAuthMiddleware, ressumeupload, errorCatch(applyToJob))
+
 
 export {userRouter}

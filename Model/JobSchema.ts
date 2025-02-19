@@ -21,12 +21,16 @@ const JobPostSchema = new Schema<IJobPost>(
     description: { type: String, required: true, maxlength: 1000 },
     requirements: [{ type: String, required: true }],
     jobResponsibilities: [{ type: String, required: true }],
-    salary: { type: String, required: true },
+    salary: {
+      rate: { type: String, required: true },  
+      min: { type: Number, required: true },   
+      max: { type: Number, required: true }   
+  },
     applicationDeadline: { type: Date },
     benefits: [{ type: String }],
     contactEmail: { type: String, required: true },
     contactPhone: { type: String },
-    postedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    postedBy: { type: Schema.Types.ObjectId, ref: "Company", required: true },
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }], 
     reports: [{ type: Schema.Types.ObjectId, ref: "User" }], 

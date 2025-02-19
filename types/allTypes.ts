@@ -179,9 +179,29 @@ export interface IUser extends Document {
 export interface IAdmin extends Document {
   email: string;
   password: string;
+  firstName:string;
+  lastName:string;
+  profileImage:String;
+  bio:string;
   role: "user" | "admin";
+  phoneNumber:string;
   isBlocked?: boolean;
   isDeleted?: boolean;
+}
+
+
+
+export interface ISkill extends Document{
+  name:string;
+  status:boolean;
+  isDeleted:boolean
+}
+
+
+export interface ITitles extends Document{
+  name:string;
+  status:boolean;
+  isDeleted:boolean
 }
 
 
@@ -201,7 +221,11 @@ export interface IJobPost {
   description: string;
   requirements: string[];
   qualification:string
-  salary: string;
+  salary:{
+    rate:string,
+    min:number,
+    max:number
+  }
   postedBy: Types.ObjectId;
   images: string[]; 
   likes: Types.ObjectId[];
@@ -212,3 +236,4 @@ export interface IJobPost {
   createdAt: Date;
   updatedAt: Date;
 }    
+

@@ -12,8 +12,8 @@ const CompanySchema = new Schema<ICompany>(
 
     employees: [
       {
-        employee: { type: Schema.Types.ObjectId, ref: "User", required: true }, // ✅ Proper reference to User
-        position: { type: String, required: true }, // ✅ Added type for position
+        employee: { type: Schema.Types.ObjectId, ref: "User", required: true }, 
+        position: { type: String, required: true }, 
       },
     ],
 
@@ -23,8 +23,8 @@ const CompanySchema = new Schema<ICompany>(
       default: "company",
     },
 
-    age: { type: Number, required: false }, // ✅ Added type
-    IndustryType: { type: String, required: false }, // ✅ Added type
+    age: { type: Number, required: false },
+    IndustryType: { type: String, required: false },
 
     address: {
       pincode: { type: String, required: true },

@@ -22,6 +22,8 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
     try {
         const token: string | undefined = req.cookies?.token;
         if (!token) {
+            console.log("token",token);
+            
 
            await companyAuthMiddleware(req, res, next);  
            return; 

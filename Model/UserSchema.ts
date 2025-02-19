@@ -71,11 +71,7 @@ const UserSchema = new Schema<IUser>(
       enum: ["user", "premium"],
       default: "user",
     },
-    type:{
-      type:String,
-      enum:["User","Company","Admin"],
-      default:"User"
-    },
+    type:{type:String,required:false},
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },
 

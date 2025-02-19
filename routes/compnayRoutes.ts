@@ -24,7 +24,7 @@ companyRouter
   )
   .post(
     "/final-register",
-    validateData(CompanySchema),
+    // validateData(CompanySchema),
     upload.single("logo"),
     errorCatch(finalRegister)
   )
@@ -38,6 +38,6 @@ companyRouter
   .get("/findapplications",companyAuthMiddleware,errorCatch(findAppliedUsers))
   .get("/findapplications/:userId/:jobId",companyAuthMiddleware,errorCatch(findUserApplication))
 
-
+  
 
 export { companyRouter };

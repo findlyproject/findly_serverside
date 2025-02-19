@@ -54,7 +54,7 @@ export const reportuser = async (
     throw new CustomError("User ID is missing", 400);
   }
 
-  const finduser = await User.findOne({ _id: userid });
+  const finduser = await User.findOne({ _id: repoteduserid });
   if (!finduser) {
     throw new CustomError("User not found", 404);
   }

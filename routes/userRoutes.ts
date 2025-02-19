@@ -38,11 +38,14 @@ userRouter
 
 .post("/reportuser",userAuthMiddleware,validateData(ReportSchema),errorCatch(reportuser))
 .get("/generate-signed-url", errorCatch(generateSignedUrl))
+
+.get("/spacificuserdetails/:id", userAuthMiddleware, errorCatch(spacificuserdetails))
+
 .post("/resetpasword/:email/:password", errorCatch(resetPasword))
 .post("/sendotp/:email", errorCatch(sendOtp))
 
 
-.get("/spacificuserdetails/:id", userAuthMiddleware,validateData(IdSchema), errorCatch(spacificuserdetails))
+
 
 
 //apply job

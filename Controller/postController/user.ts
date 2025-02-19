@@ -115,7 +115,10 @@ export const LikeOrDislike = async (
 ): Promise<void> => {
   const userId = req.user?.id;
 
-  const postId = req.params.postid;
+
+  const postId = req.params.id;
+ 
+  
 
   if (!userId) {
     throw new CustomError("Unauthorized: User ID missing", 401);

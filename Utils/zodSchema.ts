@@ -18,12 +18,12 @@ export type IdType = z.infer<typeof IdSchema>;
   export const LoginSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
-  });
+  });   
   
   export type LoginType = z.infer<typeof LoginSchema>;
 
   
-// User Schema Components
+// User Schema Compone nts
 const educationSchema = z.object({
   qualification: z.string().optional(),
   startYear: z.string(),
@@ -227,3 +227,14 @@ export const CompanySchema = z.object({
 });
 export type CompanyType = z.infer<typeof CompanySchema>;
 
+export const jobPostSchema = z.object({
+  title: z.string().min(1, { message: "Title is required" }),
+  company: z.string().min(1, { message: "Company is required" }),
+  location: z.string().min(1, { message: "Location is required" }),
+  jobType: z.string().min(1, { message: "Job Type is required" }),
+  experienceLevel: z.string().min(1, { message: "Experience Level is required" }),
+  industry: z.string().min(1, { message: "Industry is required" }),
+  description: z.string().min(1, { message: "Description is required" }),
+  salary: z.string().min(1, { message: "Salary is required" }),
+  contactEmail: z.string().email({ message: "Invalid email address" }).min(1, { message: "Contact Email is required" }),
+});

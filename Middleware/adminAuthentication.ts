@@ -23,7 +23,7 @@ const adminAuthentication = async (req: Request, res: Response, next: NextFuncti
         if (!token) {
             throw new CustomError("Admin authentication token missing",401);
              
-        }
+        } 
 
         const secretKey = process.env.USER_SECRETKEY;
         if (!secretKey) {

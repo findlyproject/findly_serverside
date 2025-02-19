@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
 import { CustomError } from "../../Utils/errorHandler";
+import { IUser } from "../../types/allTypes";
+import nodemailer from "nodemailer";
 
 //Registration
 export const RegistrationUser = async (
@@ -360,53 +362,141 @@ export const AllUsersEmailCheck = async (req: Request, res: Response) => {
 
 // refresh token
 declare module "express-serve-static-core" {
-    interface Request {
-        user?: JwtDecoded;
-        token?: string;
-    }
+  interface Request {
+    user?: JwtDecoded;
+    token?: string;
+  }
 }
 
 export interface JwtDecoded extends JwtPayload {
-    id: string;
-    name: string;
-    email: string;
-    isBlocked: boolean;
+  id: string;
+  name: string;
+  email: string;
+  isBlocked: boolean;
 }
 
-export const refreshAccessToken = async (req:Request, res:Response):Promise<void> => {
-    const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
-        throw new CustomError("Refresh token not found please login",404);
-        
+export const refreshAccessToken = async (req: Request, res: Response): Promise<void> => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) {
+    throw new CustomError("Refresh token not found please login", 404);
+
+  }
+  const secretKey = process.env.USER_SECRETKEY || "default_secret";
+  if (!secretKey) {
+    throw new CustomError("missing secret key", 404);
+  }
+  jwt.verify(refreshToken, secretKey, (error: VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
+    if (error) {
+      throw new CustomError("Refresh token invalid", 404);
+
     }
-    const secretKey = process.env.USER_SECRETKEY || "default_secret";
-if(!secretKey){
-    throw new CustomError("missing secret key",404);
-}
-jwt.verify(refreshToken, secretKey, (error: VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
-        if (error) {
-            throw new CustomError("Refresh token invalid",404);
-            
-        }
-        if (typeof decoded !== "object" || !decoded) {
-            throw new CustomError("Invalid token structure",404);
-            
-        }
+    if (typeof decoded !== "object" || !decoded) {
+      throw new CustomError("Invalid token structure", 404);
 
-        const accessToken = jwt.sign(
-        { id: decoded.id, username: decoded.username, email: decoded.email },
-        secretKey,
-        { expiresIn: "1d" }
-        );
+    }
 
-        res.cookie("token", accessToken, {
-            httpOnly: true,
-            secure: true,
-            maxAge: 24 * 60 * 60 * 1000,
-            sameSite: "lax",
-        });
+    const accessToken = jwt.sign(
+      { id: decoded.id, username: decoded.username, email: decoded.email },
+      secretKey,
+      { expiresIn: "1d" }
+    );
 
-         res.status(200).json({status:true,message:"accessToken created", accessToken });
-         return
+    res.cookie("token", accessToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "lax",
     });
+
+    res.status(200).json({ status: true, message: "accessToken created", accessToken });
+    return
+  });
 };
+
+
+/// SEND OTP ///
+
+export const sendOtp = async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.params;
+  if (!email) {
+    throw new CustomError("email is not found", 404);
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new CustomError("User not found", 404);
+  }
+  const emailRegex = /\S+@\S+\.\S+/;
+  if (!emailRegex.test(email)) {
+    throw new CustomError("Invalid email format", 400);
+  }
+  const otp = Math.floor(1000 + Math.random() * 9000);
+
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.APP_EMAIL as string,
+      pass: process.env.APP_PASSWORD as string,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.APP_EMAIL as string,
+    replyTo: email,
+    to: email,
+    subject: '🔐 Password Reset OTP - Findly',
+    text: `Dear User,
+
+Your OTP for password reset is: ${otp}
+
+This OTP is valid for 10 minutes.
+
+If you didn’t request this, please ignore this email.
+
+Findly Support Team`,
+
+    html: `
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+        <h2 style="color: #333; text-align: center;">🔐 Password Reset Request</h2>
+        <p style="color: #555; font-size: 16px;">Dear User,</p>
+        <p style="color: #555; font-size: 16px;">We received a request to reset your password for your <b>Findly</b> account.</p>
+        <p style="color: #555; font-size: 16px;">Your One-Time Password (OTP) is:</p>
+        <div style="text-align: center; padding: 15px; background-color: #ffcc00; border-radius: 8px; font-size: 22px; font-weight: bold; letter-spacing: 2px;">
+            ${otp}
+        </div>
+        <p style="color: #555; font-size: 16px;">This OTP is valid for <b>10 minutes</b>. Do not share it with anyone for security reasons.</p>
+        <p style="color: #555; font-size: 16px;">If you did not request a password reset, please ignore this email.</p>
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+        <a href="${process.env.CLIENT_URL}/contactus/contact" style="color: #999; font-size: 14px; text-align: center;">Findly Support Team</a>
+
+    </div>
+    `,
+  };
+
+  const info = await transporter.sendMail(mailOptions);
+
+  res
+    .status(200)
+    .json({ status: true, message: "Otp sent successfully", otp });
+}
+
+///// RESET PASSWORD /////
+export const resetPasword = async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.params;
+  if (!email) {
+    res.status(404).json({ status: false, message: "email is not found" })
+  }
+  const findUser: IUser | null = await User.findOne({ email: email });
+  if (!findUser) {
+    res.status(404).json({ status: false, message: "you have no account" });
+    return;
+  }
+  if (!password) {
+    res.status(404).json({ status: false, message: "password is not found" })
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  findUser.password = hashedPassword
+
+  const updatedUser = await findUser.save();
+  res.status(200).json({ status: true, message: "password updated successfully", updatedUser })
+}

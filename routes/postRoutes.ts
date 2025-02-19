@@ -48,9 +48,9 @@ postRouter
 
   //like & unlike
   .post(
-    "/user/likepost/:postid",
+    "/user/likepost/:id",
     userAuthMiddleware,
-    validateData(IdSchema),
+    validateData(undefined,IdSchema),
     errorCatch(LikeOrDislike)
   )
 

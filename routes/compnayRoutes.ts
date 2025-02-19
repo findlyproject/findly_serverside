@@ -1,6 +1,6 @@
 import express from "express";
 import { errorCatch } from "../middleware/tryCatch";
-import { login, logOut, register } from "../Controller/authController/company";
+import { initialRegister,verifyOTP,finalRegister,login, logOut, } from "../Controller/authController/company";
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
 import { CompanySchema, jobPostSchema, LoginSchema } from "../Utils/zodSchema";
@@ -12,11 +12,21 @@ const companyRouter = express.Router();
 companyRouter
 
   //auth
+  
   .post(
-    "/register",
+    "/send-otp",
+    // validateData(CompanySchema),
+    errorCatch(initialRegister)
+  )
+  .post(
+    "/verify-otp",
+    errorCatch(verifyOTP)
+  )
+  .post(
+    "/final-register",
     validateData(CompanySchema),
     upload.single("logo"),
-    errorCatch(register)
+    errorCatch(finalRegister)
   )
   .post("/login",validateData(LoginSchema),errorCatch(login))
   .post("/logout",companyAuth, errorCatch(logOut))

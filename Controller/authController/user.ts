@@ -20,6 +20,7 @@ export const RegistrationUser = async (
     location,
     jobTitles,
     jobLocations,
+    gender
   } = req.body;
 
   const emailRegex = /\S+@\S+\.\S+/;
@@ -41,6 +42,7 @@ export const RegistrationUser = async (
     lastName,
     education: education || [],
     location,
+    gender,
     jobTitle: jobTitles,
     jobLocation: jobLocations,
   });

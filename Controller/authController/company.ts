@@ -103,35 +103,42 @@ export const finalRegister = async (req: Request, res: Response): Promise<void> 
         role: role || "company",
         age,
         IndustryType,
-        address
+        address,
+        type:"Company"
     });
   
     await company.save();
   
     // Generate JWT tokens
-    const ctoken = jwt.sign(
+    const token = jwt.sign(
         { id: company._id, email: company.email },
-        process.env.COMPANY_SECRETKEY!,   
+        process.env.USER_SECRETKEY!,   
         { expiresIn: "1d" }
     );
-    const crefreshToken = jwt.sign(
+    const refreshToken = jwt.sign(
         { id: company._id, email: company.email },
-        process.env.COMPANY_SECRETKEY!,
+        process.env.USER_SECRETKEY!,
         { expiresIn: "7d" }
     );
   
-    res.cookie("ctoken", ctoken, {
+    res.cookie("token", token, {
         httpOnly: true,
         secure: true,
         sameSite: "lax",
         maxAge: 24 * 60 * 60 * 1000,
     });
   
-    res.cookie("crefreshToken", crefreshToken, {
+    res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.cookie(`type`, "Company", {
+      httpOnly: true,
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      sameSite: 'none',
     });
   
     res.status(201).json({ status: true, message: "Company registered successfully", company });
@@ -159,31 +166,39 @@ export const login=async(req:Request,res:Response)=>{
          }
 
 if (verfyPassword) {
-    const ctoken = jwt.sign(
+    const token = jwt.sign(
       {
         id: company._id,
         email: company.email,
+        type:"Company"
  
       },
       process.env.USER_SECRETKEY!,
       { expiresIn: "1d" }
     );
-    res.cookie("ctoken", ctoken, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
-    const crefreshToken = jwt.sign(
+    const refreshToken = jwt.sign(
       { id: company._id, email: company.email },
       process.env.USER_SECRETKEY!,
       { expiresIn: "7d" }
     );
-    res.cookie("crefreshToken", crefreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie(`type`, "Company", {
+      httpOnly: true,
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      sameSite: 'none',
     });
   }
 
@@ -261,18 +276,24 @@ export const logOut=async(req:Request,res:Response)=>{
       }
     }
 
-    res.clearCookie("ctoken", {
+    res.clearCookie("token", {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
     });
-    res.clearCookie("crefreshToken", {
+    res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
     });
   
     res.clearCookie("subscriptionToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+
+    res.clearCookie("type", {
       httpOnly: true,
       secure: false,
       sameSite: "lax",

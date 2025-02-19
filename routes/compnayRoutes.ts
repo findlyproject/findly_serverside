@@ -6,7 +6,7 @@ import { validateData } from "../middleware/zodValidation";
 import { CompanySchema, jobPostSchema, LoginSchema } from "../Utils/zodSchema";
 import { companyAuthMiddleware } from "../middleware/companyAuthentication";
 import { createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsById, updateJobPost } from "../Controller/jobController/company";
-import { userAuthMiddleware } from "../middleware/userauthantication";
+import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 const companyRouter = express.Router();
 
 companyRouter
@@ -24,12 +24,12 @@ companyRouter
   )
   .post(
     "/final-register",
-    validateData(CompanySchema),
+    // validateData(CompanySchema),
     upload.single("logo"),
     errorCatch(finalRegister)
   )
   .post("/login",validateData(LoginSchema),errorCatch(login))
-  .post("/logout",companyAuthMiddleware, errorCatch(logOut))
+  .post("/logout",companyAuth, errorCatch(logOut))
   .post("/jobposting",companyAuthMiddleware,validateData(jobPostSchema),errorCatch(createJobPost))
   .patch("/updatejobs/:jobId",companyAuthMiddleware,errorCatch(updateJobPost))
   .delete("/deletejobpost/:jobId",companyAuthMiddleware,errorCatch(deleteJobPost))
@@ -38,6 +38,6 @@ companyRouter
   .get("/findapplications",companyAuthMiddleware,errorCatch(findAppliedUsers))
   .get("/findapplications/:userId/:jobId",companyAuthMiddleware,errorCatch(findUserApplication))
 
-
+  
 
 export { companyRouter };

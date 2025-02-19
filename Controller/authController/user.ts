@@ -72,6 +72,12 @@ export const RegistrationUser = async (
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
+  res.cookie(`type`, "User", {
+    httpOnly: true,
+    secure: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000, 
+    sameSite: 'none',
+  });
 
   res
     .status(200)
@@ -102,7 +108,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign(
       {
         id: logeduser._id,
-        email: logeduser.email,
+        
         isBlocked: logeduser.isBlocked,
       },
       process.env.USER_SECRETKEY!,
@@ -124,6 +130,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       secure: true,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie(`type`, "User", {
+      httpOnly: true,
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      sameSite: 'none',
     });
   }
 
@@ -215,6 +228,11 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   });
 
   res.clearCookie("subscriptionToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  res.clearCookie("type", {
     httpOnly: true,
     secure: false,
     sameSite: "lax",

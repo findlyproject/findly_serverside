@@ -12,7 +12,7 @@ const CompanySchema = new Schema<ICompany>(
 
     employees: [
       {
-        employee: { type: Schema.Types.ObjectId, ref: "User", required: true }, 
+        employee: { type: Schema.Types.ObjectId, ref: "User", }, 
         position: { type: String, required: true }, 
       },
     ],
@@ -22,7 +22,7 @@ const CompanySchema = new Schema<ICompany>(
       enum: ["company", "premium"],
       default: "company",
     },
-
+    type:{type:String,required:true},
     age: { type: Number, required: false },
     IndustryType: { type: String, required: false },
 

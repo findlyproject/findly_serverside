@@ -12,7 +12,6 @@ import errorHandler from "./middleware/customClassMiddleware";
 import postRouter from "./routes/postRoutes";
 import { connectionRouter } from "./routes/connectionRoutes";
 import { companyRouter } from "./routes/compnayRoutes";
-
 dotenv.config();
 const app = express();
 
@@ -22,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use(cors({
     origin: 'http://localhost:3000',   
-    credentials: true,
+    credentials: true, 
   }));
   app.use("/api/user",userRouter)
   app.use("/api/rating",ratingRouter) 

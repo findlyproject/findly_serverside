@@ -5,7 +5,7 @@ import { companyAuthMiddleware } from "./companyAuthentication";
 
 declare module "express-serve-static-core" {
     interface Request {
-        user?: JwtDecoded;
+        users?: JwtDecoded;
         token?: string;
     }
 }
@@ -15,18 +15,20 @@ export interface JwtDecoded extends JwtPayload {
     name: string;
     email: string;
     isBlocked: boolean;
+    type:string
 }
 
 
 const userAuthMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const token: string | undefined = req.cookies?.token;
+        console.log("token",token);
         if (!token) {
             console.log("token",token);
             
 
-           await companyAuthMiddleware(req, res, next);  
-           return; 
+        //    await companyAuthMiddleware(req, res, next);  
+        //    return; 
             res.status(401).json({status:false,message:"Authentication token missing"})
             return             
         }
@@ -43,6 +45,7 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
             }
 
             req.user = user as JwtDecoded; 
+            
             next();
         });
     } catch (error) {
@@ -51,4 +54,22 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-export { userAuthMiddleware };
+
+const companyAuth=(req:Request,res:Response,next:NextFunction):void=>{
+    console.log('Admin auth middleware');
+    userAuthMiddleware(req,res,()=>{
+       
+        
+        if(req.user &&req.user.type=='Company'){
+            console.log("req",req.user);
+            
+            return next()
+        }else{
+            console.log(req.user);
+            return next(new CustomError('You are not authorized', 403));
+        }
+    })
+    
+}
+
+export { userAuthMiddleware,companyAuth };

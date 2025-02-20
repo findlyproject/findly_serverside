@@ -38,6 +38,5 @@ companyRouter
   .get("/findapplications",companyAuthMiddleware,errorCatch(findAppliedUsers))
   .get("/findapplications/:userId/:jobId",companyAuthMiddleware,errorCatch(findUserApplication))
 
-  
 
 export { companyRouter };

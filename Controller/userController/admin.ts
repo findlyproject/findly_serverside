@@ -4,6 +4,7 @@ import { CustomError } from "../../Utils/errorHandler";
 import { SubscriptionPlan } from "../../model/SubscriptionSchema";
 import { Skill } from "../../model/SkillSchema";
 import { Title } from "../../model/JobTitleSchema";
+import { Company } from "../../model/CompanySchema";
 //user block and unblock
 export const blockAndUnblock = async (
   req: Request,
@@ -299,3 +300,21 @@ export const ApproveTitle=async(req:Request,res:Response)=>{
 await title.save()
 res.status(200).json({status:true,message:'approved',title})
 }
+
+
+
+export const allCompanies = async (req: Request, res: Response): Promise<void> => {
+  const companies = await Company.find();
+  const totalcompanies = await Company.countDocuments();
+  if (!companies) {
+    throw new CustomError("users not found", 404);
+  }
+  res
+    .status(200)
+    .json({
+      status: "success",
+      massage: "Got all the users and the count",
+      companies,
+      totalcompanies,
+    });
+};

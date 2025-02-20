@@ -12,7 +12,7 @@ const companyRouter = express.Router();
 companyRouter
 
   //auth
-  
+    
   .post(
     "/send-otp",
     // validateData(CompanySchema),

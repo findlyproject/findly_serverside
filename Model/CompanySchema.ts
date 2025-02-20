@@ -22,7 +22,7 @@ const CompanySchema = new Schema<ICompany>(
       enum: ["company", "premium"],
       default: "company",
     },
-    type:{type:String,required:true},
+    type:{type:String},
     age: { type: Number, required: false },
     IndustryType: { type: String, required: false },
 

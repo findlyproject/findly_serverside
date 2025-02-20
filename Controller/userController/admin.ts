@@ -376,6 +376,24 @@ res.status(200).json({status:true,message:'approved',title})
 
 
 
+export const allCompanies = async (req: Request, res: Response): Promise<void> => {
+  const companies = await Company.find();
+  const totalcompanies = await Company.countDocuments();
+  if (!companies) {
+    throw new CustomError("users not found", 404);
+  }
+  res
+    .status(200)
+    .json({
+      status: "success",
+      massage: "Got all the users and the count",
+      companies,
+      totalcompanies,
+    });
+};
+
+
+
  export const getDailyuser= async (req:Request, res:Response):Promise<void> => {
   
     const revenueData = await SubscriptionPlan.aggregate([

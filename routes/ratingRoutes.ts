@@ -1,7 +1,6 @@
 import express from "express";
 import {
   createRating,
-  deleteRating,
   getAllRatings,
   getUserRatings,
 } from "../Controller/ratingController/user";
@@ -19,18 +18,13 @@ ratingRouter
     validateData(RatingSchema),
     errorCatch(createRating)
   )
-  .delete(
-    "/:ratingId",
-    userAuthMiddleware,
-    validateData(undefined, IdSchema),
-    errorCatch(deleteRating)
-  )
+
   .get("/findallreviews", errorCatch(getAllRatings))
   .get(
     "/:userId",
     userAuthMiddleware,
     validateData(undefined, IdSchema),
     errorCatch(getUserRatings)
-  );
+  )
 
 export { ratingRouter };

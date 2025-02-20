@@ -26,6 +26,7 @@ const ratingSchema = new mongoose.Schema<IRating>(
       default: Date.now,
     },
     isDeleted:{type:Boolean,default:false},
+    status:{type:Boolean,default:false}
   },
   { timestamps: true }
 );

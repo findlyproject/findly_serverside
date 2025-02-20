@@ -72,6 +72,7 @@ export interface ICompany extends Document {
   }[];
 
   role?: "company" | "premium";
+    type:string
   age?: number;
   IndustryType?: string;
 
@@ -167,6 +168,7 @@ export interface IUser extends Document {
     uploadedAt: Date | null;
   }[];
   role: "user" | "premium";
+  type:string
   subscriptionEndDate: Date | null;
   subscriptionStartDate: Date | null;
 

@@ -27,7 +27,7 @@ companyRouter
   .get("/getJobsById/:id",userAuthMiddleware,errorCatch(getJobsById))
   .get("/findapplications",companyAuthMiddleware,errorCatch(findAppliedUsers))
   .get("/findapplications/:userId/:jobId",companyAuthMiddleware,errorCatch(findUserApplication))
-
+  
 
 
 export { companyRouter };

@@ -41,6 +41,7 @@ export interface IRating extends Document {
   userId?: Types.ObjectId;
   createdAt?: Date;
   isDeleted: boolean;
+  status:boolean
 }
 
 export interface ISubscription extends Document {

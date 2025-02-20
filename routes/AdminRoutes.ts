@@ -3,10 +3,12 @@ import { login, logout,ProfileEdit } from "../Controller/authController/admin";
 import { adminAuthentication } from "../middleware/adminAuthentication";
 import { validateData } from "../middleware/zodValidation";
 import { IdSchema, LoginSchema } from "../Utils/zodSchema";
-import { allUsers, blockAndUnblock ,getDailyRevenue,getDailyUsers,createSkills, createTitles, AllSkills, RemoveSkills, AllTitles, RemoveTitle, EditSkill, ApproveSkill, EditTitle, ApproveTitle,createTitlesbyUser, allCompanies} from "../Controller/userController/admin";
+import { allUsers, blockAndUnblock ,getDailyRevenue,getDailyUsers,createSkills, createTitles, AllSkills, RemoveSkills, AllTitles, RemoveTitle, EditSkill, ApproveSkill, EditTitle, ApproveTitle,createTitlesbyUser, allCompanies, getTotalUserRevenue, getDailyCompanies, getTotalCompanyRevenue, getTotalRevenue, getDailycompany, getDailyuser} from "../Controller/userController/admin";
 import { deletePost, dismissReports, getReports } from "../Controller/postController/admin";
 import { errorCatch } from "../middleware/tryCatch";
 import { upload } from "../middleware/upload";
+import { approveRating, deleteRating,getRatings } from "../Controller/ratingController/admin";
+
 const adminRouter = express.Router();
 
 adminRouter
@@ -44,12 +46,32 @@ adminRouter
   //editprofile
   .patch("/editprofile",adminAuthentication,upload.single("profileImage"),errorCatch(ProfileEdit))
 
+
+
+
+
   //daily users
   .get("/dailyusers",getDailyUsers)
-
+  //total user revenue
+  .get("/userrevenue",getTotalUserRevenue)
+  //daily companies
+  .get("/dailycompanies",getDailyCompanies)
   //daily revenue
 
   .get("/dailyrevenue",getDailyRevenue)
+  //total company revenue
+  .get("/companyrevenue",getTotalCompanyRevenue)
+//total revenue
+
+.get("/totalrevenue", errorCatch(getTotalRevenue)  )
+
+
+//chart
+.get("/new",errorCatch(getDailycompany))
+.get("/dailyuser",errorCatch(getDailyuser))
+
+
+
 
   //create skills
 
@@ -66,5 +88,10 @@ adminRouter
   .patch("/edittitle/:id",errorCatch(EditTitle))
   .patch("/approvetitle/:id",errorCatch(ApproveTitle))
 
+//remove rating
+
+.patch("/remove/:id",errorCatch(deleteRating))
+.patch("/approve/:id",errorCatch(approveRating))
+  .get("/ratings",errorCatch(getRatings))
 export { adminRouter };
 

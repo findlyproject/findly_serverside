@@ -7,7 +7,7 @@ const CompanySchema = new Schema<ICompany>(
     logo: { type: String, required: true },
     about: { type: String },
     email: { type: String, required: true, unique: true },
-    password: { type: String },
+    password: { type: String,required: true, },
     contact: { type: Number, required: true },
 
     employees: [

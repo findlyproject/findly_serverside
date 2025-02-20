@@ -13,7 +13,7 @@ const companyRouter = express.Router();
 companyRouter
 
   //auth
-  
+    
   .post(
     "/send-otp",
     // validateData(CompanySchema),
@@ -41,6 +41,5 @@ companyRouter
   .post("/sendotp/:email",errorCatch(sendOtp))
   .post("/resetpassword/:email/:password",errorCatch(resetPasword))
 
-  
 
 export { companyRouter };

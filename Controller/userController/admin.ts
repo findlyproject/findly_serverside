@@ -493,3 +493,9 @@ export const getDailycompany= async (req:Request, res:Response):Promise<void> =>
   });
  
 };
+
+
+export const AllTitlesAdmin=async(req:Request,res:Response):Promise<void>=>{
+  const titles=await Title.find({isDeleted:false})
+  res.status(200).json({status:true,message:'all titles ',titles})
+}

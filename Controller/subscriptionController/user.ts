@@ -15,14 +15,17 @@ export const createSubscription = async (
 
   
   const { plan, price, features } = req.body;
-  let userId = req.user?.id;
-  let companyId = req.company?.id;
+  const type=req.user &&req.user.type
+  console.log("type",type);
+  
+  let userId = type==="User"?req.user?.id:null
+  let companyId =type==="Company"?req.user?.id:null
   if (!features) {
     res.status(404).json({ success: false, message: "not found features" });
     return;
   }
 
-  console.log("userId",userId);
+  console.log("userId",userId); 
   console.log("companyId",companyId);
   
   if (!userId && !companyId) {
@@ -34,6 +37,8 @@ export const createSubscription = async (
       400
     );
   }
+const route=userId?"user":"company"
+console.log("route",route);
 
   const amountInINR = price * 100;
 
@@ -58,7 +63,7 @@ export const createSubscription = async (
       },
     ],
 
-    return_url: `${process.env.CLIENT_URL}/premium/verification/?session_id={CHECKOUT_SESSION_ID}`,
+    return_url: `${process.env.CLIENT_URL}/${route}/premium/verification/?session_id={CHECKOUT_SESSION_ID}`,
 
     metadata: {
       userId: userId || "",

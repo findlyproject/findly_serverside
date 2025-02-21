@@ -3,11 +3,12 @@ import { errorCatch } from "../middleware/tryCatch";
 import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, } from "../Controller/authController/company";
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
-import { CompanySchema, jobPostSchema, LoginSchema } from "../Utils/zodSchema";
+import { CompanySchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
 import { companyAuthMiddleware } from "../middleware/companyAuthentication";
 import { createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsById, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
+import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 const companyRouter = express.Router();
 
 companyRouter
@@ -40,6 +41,24 @@ companyRouter
   .get("/findapplications/:userId/:jobId",companyAuthMiddleware,errorCatch(findUserApplication))
   .post("/sendotp/:email",errorCatch(sendOtp))
   .post("/resetpassword/:email/:password",errorCatch(resetPasword))
+  .post(
+      "/payment/createSubscription",
+      companyAuth,
+      validateData(SubscriptionSchema),
+      errorCatch(createSubscription)
+    )
+    .post(
+        "/payment/verifySubscription/:sessionId",
+        companyAuth,
+        validateData(undefined, VerificationSchema),
+        errorCatch(verifySubscription)
+      )  
+      .post(
+        "/payment/findsubscriptionbyId/:sessionId",
+        companyAuth,
+        validateData(undefined, VerificationSchema),
+        errorCatch(findSubscriptionById)
+      );
 
 
 export { companyRouter };

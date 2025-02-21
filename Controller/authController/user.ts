@@ -108,7 +108,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign(
       {
         id: logeduser._id,
-        
+        email: logeduser.email,
+        type:"User",
         isBlocked: logeduser.isBlocked,
       },
       process.env.USER_SECRETKEY!,

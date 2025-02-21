@@ -4,7 +4,7 @@ import { ICompany } from "../types/allTypes";
 const CompanySchema = new Schema<ICompany>(
   {
     name: { type: String, required: true },
-    logo: { type: String, required: true },
+    logo: { type: String, required: false },
     about: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String,required: true, },

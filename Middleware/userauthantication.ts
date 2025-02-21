@@ -72,4 +72,25 @@ const companyAuth=(req:Request,res:Response,next:NextFunction):void=>{
     
 }
 
-export { userAuthMiddleware,companyAuth };
+
+const userAuth=(req:Request,res:Response,next:NextFunction):void=>{
+    console.log('user auth middleware');
+    userAuthMiddleware(req,res,()=>{
+    
+       
+        
+        if(req.user &&req.user.type=='User'){
+            console.log("req",req.user);
+            
+            return next()
+        }else{
+            console.log(req.user);
+            console.log(req.user &&req.user.type=='User');
+            return next(new CustomError('You are not authorized', 403));
+        }
+    })
+    
+}
+
+
+export { userAuthMiddleware,companyAuth,userAuth };

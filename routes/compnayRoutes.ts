@@ -9,6 +9,7 @@ import { createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, ge
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
+import { allCompanies } from "../Controller/userController/admin";
 const companyRouter = express.Router();
 
 companyRouter
@@ -41,6 +42,7 @@ companyRouter
   .get("/findapplications/:userId/:jobId",companyAuthMiddleware,errorCatch(findUserApplication))
   .post("/sendotp/:email",errorCatch(sendOtp))
   .post("/resetpassword/:email/:password",errorCatch(resetPasword))
+  .get("/allcompanies",errorCatch(allCompanies))
   .post(
       "/payment/createSubscription",
       companyAuth,

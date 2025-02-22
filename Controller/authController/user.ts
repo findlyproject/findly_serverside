@@ -521,3 +521,10 @@ export const resetPasword = async (req: Request, res: Response): Promise<void> =
   const updatedUser = await findUser.save();
   res.status(200).json({ status: true, message: "password updated successfully", updatedUser })
 }
+
+
+
+export const findUsers=async(req:Request,res:Response)=>{
+  const allUsers=await User.find()
+ res.status(200).json({success:true,message:"users found it ",allUsers})
+} 

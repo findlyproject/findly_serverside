@@ -5,7 +5,8 @@ import { Company } from "../../model/CompanySchema";
 import { CustomError } from "../../Utils/errorHandler";
 import { sendOTP } from "../../Utils/otpService";  
 import { generateOTP } from "../../Utils/otpGenerator"; 
-
+import nodemailer from "nodemailer";
+import { ICompany } from "../../types/allTypes";
 // Step 1: Initial Register (Send OTP)
 interface OTPStore {
     [key: string]: { otp: string; createdAt: number };
@@ -70,13 +71,13 @@ console.log(otpStore)
 
 // Step 3: Final Registration Form Submission
 export const finalRegister = async (req: Request, res: Response): Promise<void> => {
-    const { name, email, password, cpassword, contact, age, IndustryType, address, role } = req.body;
-  
+    const { name, email, password, cpassword, contact, age, IndustryType, address } = req.body;
+  console.log(req.body)
     if (!name || !email || !password || !cpassword || !contact) {
         throw new CustomError("All required fields must be filled.", 400);
     }
   
-    const emailRegex = /\S+@\S+\.\S+/;
+    const emailRegex = /\S+@\S+\.\S+/; 
     if (!emailRegex.test(email)) {
         throw new CustomError("Invalid email format.", 400);
     }
@@ -90,17 +91,17 @@ export const finalRegister = async (req: Request, res: Response): Promise<void> 
         throw new CustomError("Company already exists.", 400);
     }
   
-    const hashedPassword = await bcrypt.hash(password, 10);
-  
-    const logo = req.file ? req.file.path : ""; // Ensure this field exists
+    const hashedPassword = await bcrypt.hash(password, 10);  
+ 
+    const logo = req.file ? req.file.path : ""; 
+    console.log(logo)// Ensure this field exists
   
     const company = new Company({  
-        name,
+        name,   
         logo, 
         email,
         password: hashedPassword,
         contact,
-        role: role || "company",
         age,
         IndustryType,
         address,
@@ -144,7 +145,7 @@ export const finalRegister = async (req: Request, res: Response): Promise<void> 
     res.status(201).json({ status: true, message: "Company registered successfully", company });
   };    
 
-
+  
 export const login=async(req:Request,res:Response)=>{
     const {email,password}=req.body;
     const company=await Company.findOne({email})
@@ -300,4 +301,94 @@ export const logOut=async(req:Request,res:Response)=>{
     });
     res.status(200).json({ status: true, message: "Logout successfully" });
   
+}
+
+
+
+
+export const sendOtp = async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.params;
+  if (!email) {
+    throw new CustomError("email is not found", 404);
+  }
+  const company = await Company.findOne({ email });
+  if (!company) {
+    throw new CustomError("company not found", 404);
+  }
+  const emailRegex = /\S+@\S+\.\S+/;
+  if (!emailRegex.test(email)) {
+    throw new CustomError("Invalid email format", 400);
+  }
+  const otp = Math.floor(1000 + Math.random() * 9000);
+
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.APP_EMAIL as string,
+      pass: process.env.APP_PASSWORD as string,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.APP_EMAIL as string,
+    replyTo: email,
+    to: email,
+    subject: '🔐 Password Reset OTP - Findly',
+    text: `Dear User,
+
+Your OTP for password reset is: ${otp}
+
+This OTP is valid for 10 minutes.
+
+If you didn’t request this, please ignore this email.
+
+Findly Support Team`,
+
+    html: `
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+        <h2 style="color: #333; text-align: center;">🔐 Password Reset Request</h2>
+        <p style="color: #555; font-size: 16px;">Dear User,</p>
+        <p style="color: #555; font-size: 16px;">We received a request to reset your password for your <b>Findly</b> account.</p>
+        <p style="color: #555; font-size: 16px;">Your One-Time Password (OTP) is:</p>
+        <div style="text-align: center; padding: 15px; background-color: #ffcc00; border-radius: 8px; font-size: 22px; font-weight: bold; letter-spacing: 2px;">
+            ${otp}
+        </div>
+        <p style="color: #555; font-size: 16px;">This OTP is valid for <b>10 minutes</b>. Do not share it with anyone for security reasons.</p>
+        <p style="color: #555; font-size: 16px;">If you did not request a password reset, please ignore this email.</p>
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+        <a href="${process.env.CLIENT_URL}/contactus/contact" style="color: #999; font-size: 14px; text-align: center;">Findly Support Team</a>
+
+    </div>
+    `,
+  };
+
+  const info = await transporter.sendMail(mailOptions);
+
+  res
+    .status(200)
+    .json({ status: true, message: "Otp sent successfully", otp });
+}
+
+
+export const resetPasword = async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.params;
+  if (!email) {
+    res.status(404).json({ status: false, message: "email is not found" })
+  }
+  console.log("email",email);
+  
+  const findCompany: ICompany | null = await Company.findOne({ email: email });
+  if (!findCompany) {
+    res.status(404).json({ status: false, message: "you have no account" });
+    return;
+  }
+  if (!password) {
+    res.status(404).json({ status: false, message: "password is not found" })
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  findCompany.password = hashedPassword
+
+  const updatedUser = await findCompany.save();
+  res.status(200).json({ status: true, message: "password updated successfully", updatedUser })
 }

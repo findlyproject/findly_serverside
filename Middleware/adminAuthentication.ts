@@ -4,7 +4,7 @@ import { CustomError } from "../Utils/errorHandler";
 
 declare module "express-serve-static-core" {
     interface Request {
-        user?: JwtDecoded;
+        // user?: JwtDecoded;
         token?: string;
     }
 }

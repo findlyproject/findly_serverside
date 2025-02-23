@@ -3,7 +3,7 @@ import { login, logout,ProfileEdit } from "../Controller/authController/admin";
 import { adminAuthentication } from "../middleware/adminAuthentication";
 import { validateData } from "../middleware/zodValidation";
 import { IdSchema, LoginSchema } from "../Utils/zodSchema";
-import { allUsers, blockAndUnblock ,getDailyRevenue,getDailyUsers,createSkills, createTitles, AllSkills, RemoveSkills, AllTitles, RemoveTitle, EditSkill, ApproveSkill, EditTitle, ApproveTitle,createTitlesbyUser, getTotalRevenue,getDailyCompanies, getTotalUserRevenue, getTotalCompanyRevenue, getDailycompany, getDailyuser} from "../Controller/userController/admin";
+import { allUsers, blockAndUnblock ,getDailyRevenue,getDailyUsers,createSkills, createTitles, AllSkills, RemoveSkills, AllTitles, RemoveTitle, EditSkill, ApproveSkill, EditTitle, ApproveTitle,createTitlesbyUser, allCompanies, getTotalUserRevenue, getDailyCompanies, getTotalCompanyRevenue, getTotalRevenue, getDailycompany, getDailyuser, AllTitlesAdmin} from "../Controller/userController/admin";
 import { deletePost, dismissReports, getReports } from "../Controller/postController/admin";
 import { errorCatch } from "../middleware/tryCatch";
 import { upload } from "../middleware/upload";
@@ -24,6 +24,7 @@ adminRouter
     errorCatch(blockAndUnblock)
   )
   .get("/users", adminAuthentication, errorCatch(allUsers))
+  .get("/companies", adminAuthentication, errorCatch(allCompanies))
 
   //report
   .get("/viewreports", adminAuthentication, errorCatch(getReports))
@@ -33,8 +34,8 @@ adminRouter
     validateData(undefined,IdSchema),
     errorCatch(dismissReports)
   )
-
-  //post
+ 
+  //post 
   .delete(
     "/deletepost/:id",
     adminAuthentication,
@@ -86,7 +87,7 @@ adminRouter
   .patch("/removetitle/:titleid",errorCatch(RemoveTitle))
   .patch("/edittitle/:id",errorCatch(EditTitle))
   .patch("/approvetitle/:id",errorCatch(ApproveTitle))
-
+  .get("/alladmin",errorCatch(AllTitlesAdmin))
 //remove rating
 
 .patch("/remove/:id",errorCatch(deleteRating))

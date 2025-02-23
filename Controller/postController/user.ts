@@ -10,7 +10,7 @@ export const getAllPosts = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const posts = await Post.find()
+  const posts = await Post.find({isDeleted: false})
     .populate("owner")
     .populate("reports")
     .populate("likedBy", "firstName lastName profileImage")
@@ -78,6 +78,76 @@ export const addPost = async (req: Request, res: Response): Promise<void> => {
     post: newPost,
   });
 };
+
+export const updatePost = async (req: Request, res: Response): Promise<void> => {
+    const { postId } = req.params;
+    const { description } = req.body;
+console.log(req.params)
+    if (!postId) {
+      throw new CustomError("Post ID is required", 400);
+    }
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      throw new CustomError("Post not found", 404);
+    }
+
+    // Check if the user is the owner of the post
+    if (post.owner.toString() !== req.user?.id) {
+      throw new CustomError("Unauthorized to update this post", 403);
+    }
+
+    // Handle new media uploads
+    let uploadedImages: string[] = post.images || [];
+    let uploadedVideo: string  = post.video || "";
+
+
+    if (req.files && "media" in req.files) {
+      const mediaFiles = req.files["media"] as Express.Multer.File[];
+
+      // Delete existing media from Cloudinary if new files are uploaded
+      if (uploadedImages.length > 0 || uploadedVideo) {
+        for (const img of uploadedImages) {
+          await cloudinary.uploader.destroy(img);
+        }
+        if (uploadedVideo) {
+          await cloudinary.uploader.destroy(uploadedVideo);
+        }
+      }
+
+      uploadedImages = [];
+      uploadedVideo = "";
+
+      for (const file of mediaFiles) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          resource_type: "auto",
+          folder: "posts/media",
+        });
+
+        if (file.mimetype.startsWith("image/")) {
+          uploadedImages.push(result.secure_url);
+        } else if (file.mimetype.startsWith("video/")) {
+          uploadedVideo = result.secure_url;
+        }
+      }
+    }
+
+    // Update post details
+    post.description = description || post.description;
+    post.images = uploadedImages;
+    post.video = uploadedVideo;
+
+    await post.save();
+
+    res.status(200).json({
+      status: true,
+      message: "Post updated successfully",
+      post,
+    });
+ 
+};
+
 
 //  Get Posts by user
 export const getPostsByOwner = async (
@@ -147,3 +217,30 @@ export const LikeOrDislike = async (
       .json({ status: true, message: "Post disliked successfully", post });
   }
 };
+
+// delete 
+
+
+export const DeletePost = async (req: Request, res: Response): Promise<void> => {
+  const { postId } = req.params;
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      throw new CustomError("Post not found", 404);
+    }
+
+    if (post.owner.toString() !== req.user?.id) {
+      throw new CustomError("Unauthorized: You can only delete your own posts", 403);
+    }
+
+    post.isDeleted = true; // Soft delete
+    await post.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Post marked as deleted successfully",
+      post,
+    });
+  
+};
+

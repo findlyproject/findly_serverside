@@ -72,6 +72,12 @@ export const RegistrationUser = async (
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
+  res.cookie(`type`, "User", {
+    httpOnly: true,
+    secure: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000, 
+    sameSite: 'none',
+  });
 
   res
     .status(200)
@@ -103,6 +109,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       {
         id: logeduser._id,
         email: logeduser.email,
+        type:"User",
         isBlocked: logeduser.isBlocked,
       },
       process.env.USER_SECRETKEY!,
@@ -124,6 +131,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       secure: true,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie(`type`, "User", {
+      httpOnly: true,
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      sameSite: 'none',
     });
   }
 
@@ -215,6 +229,11 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   });
 
   res.clearCookie("subscriptionToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  res.clearCookie("type", {
     httpOnly: true,
     secure: false,
     sameSite: "lax",
@@ -502,3 +521,10 @@ export const resetPasword = async (req: Request, res: Response): Promise<void> =
   const updatedUser = await findUser.save();
   res.status(200).json({ status: true, message: "password updated successfully", updatedUser })
 }
+
+
+
+export const findUsers=async(req:Request,res:Response)=>{
+  const allUsers=await User.find()
+ res.status(200).json({success:true,message:"users found it ",allUsers})
+} 

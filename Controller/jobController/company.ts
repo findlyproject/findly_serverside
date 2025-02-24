@@ -194,9 +194,7 @@ export const getAllJobPost = async (req: Request, res: Response): Promise<void> 
 export const findAppliedUsers=async(req:Request,res:Response)=>{
         const companyId=req.company?.id;
         const appliedUsers=await JobApplication.find({companyId}).populate("userId").populate("jobId")
-        if(!appliedUsers){
-            throw new CustomError("no applications found",404)
-        }
+       
 
         res.status(200).json({success:true,message:"found all applications",appliedUsers})
 }

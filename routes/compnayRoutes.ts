@@ -5,7 +5,7 @@ import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
 import { CompanySchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
 import { companyAuthMiddleware } from "../middleware/companyAuthentication";
-import { createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsById, updateJobPost } from "../Controller/jobController/company";
+import { createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
@@ -33,12 +33,12 @@ companyRouter
   )
   .post("/login",validateData(LoginSchema),errorCatch(login))
   .post("/logout",companyAuth, errorCatch(logOut))
-  .post("/jobposting",companyAuthMiddleware,validateData(jobPostSchema),errorCatch(createJobPost))
+  .post("/jobposting",companyAuth,validateData(jobPostSchema),errorCatch(createJobPost))
   .patch("/updatejobs/:jobId",companyAuthMiddleware,errorCatch(updateJobPost))
   .delete("/deletejobpost/:jobId",companyAuthMiddleware,errorCatch(deleteJobPost))
   .get("/getalljobs",userAuthMiddleware,errorCatch(getAllJobPost))
   .get("/getJobsById/:id",userAuthMiddleware,errorCatch(getJobsById))
-  .get("/findapplications",companyAuthMiddleware,errorCatch(findAppliedUsers))
+  .get("/findapplications",companyAuth,errorCatch(findAppliedUsers))
   .get("/findapplications/:userId/:jobId",companyAuthMiddleware,errorCatch(findUserApplication))
   .post("/sendotp/:email",errorCatch(sendOtp))
   .post("/resetpassword/:email/:password",errorCatch(resetPasword))
@@ -60,7 +60,8 @@ companyRouter
         companyAuth,
         validateData(undefined, VerificationSchema),
         errorCatch(findSubscriptionById)
-      );
+      )
+      .get("/getjobs",companyAuth,errorCatch(getJobsByCompanies))
 
 
 export { companyRouter };

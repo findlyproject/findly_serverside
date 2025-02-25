@@ -49,7 +49,7 @@ userRouter
 
 
 //apply job
-.post("/applytojob/:jobId", userAuthMiddleware, ressumeupload, errorCatch(applyToJob))
+.post("/applytojob/:jobId", userAuthMiddleware, errorCatch(applyToJob))
 
 
 export {userRouter}

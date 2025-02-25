@@ -22,9 +22,7 @@ export interface JwtDecoded extends JwtPayload {
 const userAuthMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const token: string | undefined = req.cookies?.token;
-        console.log("token",token);
         if (!token) {
-            console.log("token",token);
             
 
         //    await companyAuthMiddleware(req, res, next);  
@@ -61,11 +59,9 @@ const companyAuth=(req:Request,res:Response,next:NextFunction):void=>{
        
         
         if(req.user &&req.user.type=='Company'){
-            console.log("req",req.user);
             
             return next()
         }else{
-            console.log(req.user);
             return next(new CustomError('You are not authorized', 403));
         }
     })

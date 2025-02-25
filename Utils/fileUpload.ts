@@ -3,8 +3,11 @@ import cloudinary from "cloudinary";
 import { CustomError } from "./errorHandler";
 
 export const generateSignedUrl =async (req: Request, res: Response):Promise<void>=> {
+  console.log("hhhhhh");
+  
   try {
     const { fileType } = req.query as { fileType?: string };
+console.log("fileType",fileType);
 
     if (!fileType) {
       throw new CustomError("Missing fileType parameter",400);

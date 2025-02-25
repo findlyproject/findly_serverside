@@ -30,9 +30,9 @@ export const sendOTP = async (email: string, otp: string): Promise<void> => {
   }
 };
 
-// Example function to send OTP via SMS (using Twilio, for instance)
+
 export const sendOTPViaSMS = async (contact: string, otp: string): Promise<void> => {
-  // Example for sending OTP via Twilio
+  
   const accountSid = process.env.TWILIO_ACCOUNT_SID;  
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const client = require('twilio')(accountSid, authToken);
@@ -40,8 +40,8 @@ export const sendOTPViaSMS = async (contact: string, otp: string): Promise<void>
   try {
     await client.messages.create({
       body: `Your OTP is: ${otp}. Please use this to complete your registration.`,
-      from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio number
-      to: contact, // Recipient's phone number
+      from: process.env.TWILIO_PHONE_NUMBER, 
+      to: contact, 
     });
     console.log(`OTP sent to ${contact}`);
   } catch (error) {
@@ -49,3 +49,4 @@ export const sendOTPViaSMS = async (contact: string, otp: string): Promise<void>
     throw new Error("Failed to send OTP. Please try again later.");
   }
 };
+ 

@@ -70,7 +70,7 @@ io.on("newMessage",(data:string)=>{
     const { senderId, receiverId } = req.params;
 
    
-      // Check if conversation exists between sender and receiver
+      
       const conversation = await Conversation.findOne({
         participants: { $all: [senderId, receiverId] }
       }).populate({

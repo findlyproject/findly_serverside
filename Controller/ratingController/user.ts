@@ -41,31 +41,10 @@ export const getUserRatings = async (req: Request, res: Response) => {
 
 //get all the rating
 export const getAllRatings = async (req: Request, res: Response) => {
-  const allratings = await Rating.find().populate("userId");
+  const allratings = await Rating.find({isDeleted:false,status:true}).populate("userId");
   if (!allratings) {
     throw new CustomError(" No review about findly", 404);
   }
   res.status(200).json({ success: true, message: "found it ", allratings });
 };
 
-//delete rating
-export const deleteRating = async (req: Request, res: Response) => {
-  const userId = req.user?.id;
-  if (!userId) {
-    throw new CustomError("Unauthorized", 404);
-  }
-
-  const { ratingId } = req.params;
-
-  if (!ratingId) {
-    throw new CustomError("Rating ID is required.", 400);
-  }
-
- const deletedRating = await Rating.findByIdAndDelete(ratingId);
-
-  if (!deletedRating) {
-    throw new CustomError("Rating not found.", 404);
-  }
-
-  res.status(200).json({ message: "Rating deleted successfully." });
-};

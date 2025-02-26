@@ -41,6 +41,7 @@ export interface IRating extends Document {
   userId?: Types.ObjectId;
   createdAt?: Date;
   isDeleted: boolean;
+  status:boolean
 }
 
 export interface ISubscription extends Document {
@@ -239,3 +240,34 @@ export interface IJobPost {
   updatedAt: Date;
 }    
 
+export interface IMessage extends Document {
+  sender: mongoose.Types.ObjectId;
+  receiver: mongoose.Types.ObjectId;
+  type:string;
+  seen:boolean;
+  message: string;
+  isDeleted:boolean;
+  timestamp: Date;
+}
+
+export interface IConversation extends Document {
+  participants: mongoose.Types.ObjectId[];
+  messages: IMessage[];
+  lastUpdated: Date;
+}
+
+export interface ICommunity extends Document{
+  name: string;
+  profile:string;
+  description: string;
+  members: mongoose.Types.ObjectId[];
+  createdBy: mongoose.Types.ObjectId;
+  timestamp:Date;
+}
+
+export interface ICommunityMessage extends Document{
+  sender:mongoose.Types.ObjectId
+  message:string;
+  type:string
+  timestamp:Date
+}

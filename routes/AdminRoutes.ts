@@ -4,12 +4,14 @@ import { adminAuthentication } from "../middleware/adminAuthentication";
 import { validateData } from "../middleware/zodValidation";
 import { IdSchema, LoginSchema } from "../Utils/zodSchema";
 
+
 import { allUsers, blockAndUnblock ,getDailyRevenue,getDailyUsers,createSkills, createTitles, AllSkills, RemoveSkills, AllTitles, RemoveTitle, EditSkill, ApproveSkill, EditTitle, ApproveTitle,createTitlesbyUser, allCompanies, getTotalUserRevenue, getDailyCompanies, getTotalCompanyRevenue, getTotalRevenue, getDailycompany, getDailyuser, AllTitlesAdmin} from "../Controller/userController/admin";
 
 import { deletePost, dismissReports, getReports } from "../Controller/postController/admin";
 import { errorCatch } from "../middleware/tryCatch";
 import { upload } from "../middleware/upload";
 import { approveRating, deleteRating,getRatings } from "../Controller/ratingController/admin";
+
 
 const adminRouter = express.Router();
 
@@ -49,6 +51,29 @@ adminRouter
   .patch("/editprofile",adminAuthentication,upload.single("profileImage"),errorCatch(ProfileEdit))
 
 
+  //daily users
+  .get("/dailyusers",getDailyUsers)
+
+  //daily revenue
+
+  .get("/dailyrevenue",getDailyRevenue)
+
+  //create skills
+
+  .post("/addskill",adminAuthentication,errorCatch(createSkills))
+  .get("/allskills",errorCatch(AllSkills))
+  .patch("/removeskill/:id",errorCatch(RemoveSkills))
+  .patch("/editskill/:id",errorCatch(EditSkill))
+  .patch("/approveskill/:id",errorCatch(ApproveSkill))
+  //create titles
+  .post("/addtitle",adminAuthentication,errorCatch(createTitles))
+  .post("/titlebyuser",errorCatch(createTitlesbyUser))
+   .get("/alltitle",errorCatch(AllTitles))
+  .patch("/removetitle/:titleid",errorCatch(RemoveTitle))
+  .patch("/edittitle/:id",errorCatch(EditTitle))
+  .patch("/approvetitle/:id",errorCatch(ApproveTitle))
+
+
 
 
 
@@ -64,6 +89,7 @@ adminRouter
   //total company revenue
   .get("/companyrevenue",getTotalCompanyRevenue)
 //total revenue
+
 
 .get("/totalrevenue", errorCatch(getTotalRevenue)  )
 

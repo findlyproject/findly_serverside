@@ -266,8 +266,10 @@ export interface ICommunity extends Document{
 }
 
 export interface ICommunityMessage extends Document{
+  communityId : mongoose.Types.ObjectId
   sender:mongoose.Types.ObjectId
   message:string;
-  type:string
+  type:string;
+  isDelete:boolean;
   timestamp:Date
 }

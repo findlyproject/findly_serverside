@@ -46,6 +46,7 @@ const CommunitySchema = new Schema<ICommunity>(
 );
 
 const CommunityMessageSchema=new Schema<ICommunityMessage>({
+    communityId: {type:mongoose.Schema.Types.ObjectId, ref:"Community",required:true,},
     sender: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -55,10 +56,11 @@ const CommunityMessageSchema=new Schema<ICommunityMessage>({
         type: String,
         required: true,
       },
+      isDelete: { type: Boolean, default: false },
       type: {
         type: String,
         required: true,
-        enum: ['text', 'image', 'video', 'file'], // Example message types
+        enum: ['text', 'image', 'video', 'file'], 
       },
       timestamp: {
         type: Date,

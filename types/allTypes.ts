@@ -160,7 +160,7 @@ export interface IUser extends Document {
     status: boolean;
     createdAt: Date;
   }[];
-
+  following:mongoose.Types.ObjectId[]
   about?: string;
 
   resume?: {

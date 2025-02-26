@@ -43,7 +43,7 @@ export const applyToJob = async (req: Request, res: Response): Promise<void> => 
         const application = new JobApplication({
             jobId,
             userId,
-            companyId:job.postedBy,
+            companyId:job.company,
             resume: pdfFile?.path, 
             coverLetter,
             introVideo: videoFile?.path, 

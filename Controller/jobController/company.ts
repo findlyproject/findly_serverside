@@ -6,12 +6,10 @@ import { JobApplication } from "../../model/JobApplicationSchema";
 export const createJobPost = async (req: Request, res: Response): Promise<void> => {
 
         const companyId = req.company?.id;
-console.log("heyy");
 
 
         const {
             title,
-            company,
             location,
             jobType,
             experienceLevel,
@@ -26,7 +24,6 @@ console.log("heyy");
             contactPhone,
             status
         } = req.body;
-console.log("salary",salary);
 
 if (salary && typeof salary === 'object' && 'rate' in salary && 'min' in salary && 'max' in salary) {
 } else {
@@ -36,7 +33,7 @@ if (salary && typeof salary === 'object' && 'rate' in salary && 'min' in salary 
 
         const job = new JobPost({
             title,
-            company,
+            company:companyId,
             location,
             jobType,
             experienceLevel,
@@ -50,7 +47,6 @@ if (salary && typeof salary === 'object' && 'rate' in salary && 'min' in salary 
             contactEmail,
             contactPhone,
             status: status || "Open", 
-            postedBy: companyId,
         });
 
         await job.save();   

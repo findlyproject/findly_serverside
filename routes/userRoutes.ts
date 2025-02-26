@@ -34,6 +34,7 @@ userRouter
 .get("/getuploadedfiles",userAuthMiddleware,errorCatch(getUploadedFiles))
 .delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
 
+
 .get('/all',AllUsersEmailCheck)
 
 .post("/reportuser",userAuthMiddleware,validateData(ReportSchema),errorCatch(reportuser))

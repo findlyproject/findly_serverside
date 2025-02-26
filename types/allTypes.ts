@@ -41,6 +41,7 @@ export interface IRating extends Document {
   userId?: Types.ObjectId;
   createdAt?: Date;
   isDeleted: boolean;
+  status:boolean
 }
 
 export interface ISubscription extends Document {
@@ -72,6 +73,7 @@ export interface ICompany extends Document {
   }[];
 
   role?: "company" | "premium";
+    type:string
   age?: number;
   IndustryType?: string;
 
@@ -85,6 +87,7 @@ export interface ICompany extends Document {
 
   subscriptionEndDate: Date | null;
   subscriptionStartDate: Date | null;
+  isBlocked?: boolean;
   isDeleted: boolean;
 }
 
@@ -166,6 +169,7 @@ export interface IUser extends Document {
     uploadedAt: Date | null;
   }[];
   role: "user" | "premium";
+  type:string
   subscriptionEndDate: Date | null;
   subscriptionStartDate: Date | null;
 

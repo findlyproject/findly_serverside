@@ -5,7 +5,7 @@ import { JobApplication } from "../../model/JobApplicationSchema";
 
 export const createJobPost = async (req: Request, res: Response): Promise<void> => {
 
-        const companyId = req.company?.id;
+        const companyId = req.user?.id;
 console.log("heyy");
 
 
@@ -190,13 +190,27 @@ export const getAllJobPost = async (req: Request, res: Response): Promise<void> 
     });
 
 }
+export const getJobsByCompanies=async(req:Request,res:Response)=>{
+    const type=req.user &&req.user.type
+    console.log("type",type);
+    
+    if (type !== "Company") {
+         res.status(403).json({ success: false, message: "Unauthorized" })
+         return
+    }
+    let companyId =type==="Company"?req.user?.id:null
+    
+
+
+    const postedJobs=await JobPost.find({postedBy:companyId})
+
+    res.status(200).json({success:true,message:"found it",postedJobs})
+}
 
 export const findAppliedUsers=async(req:Request,res:Response)=>{
-        const companyId=req.company?.id;
-        const appliedUsers=await JobApplication.find({companyId})
-        if(!appliedUsers){
-            throw new CustomError("no applications found",404)
-        }
+        const companyId=req.user?.id;
+        const appliedUsers=await JobApplication.find({companyId}).populate("userId").populate("jobId")
+       
 
         res.status(200).json({success:true,message:"found all applications",appliedUsers})
 }

@@ -4,15 +4,15 @@ import { ICompany } from "../types/allTypes";
 const CompanySchema = new Schema<ICompany>(
   {
     name: { type: String, required: true },
-    logo: { type: String, required: true },
+    logo: { type: String, required: false },
     about: { type: String },
     email: { type: String, required: true, unique: true },
-    password: { type: String },
+    password: { type: String,required: true, },
     contact: { type: Number, required: true },
 
     employees: [
       {
-        employee: { type: Schema.Types.ObjectId, ref: "User", required: true }, 
+        employee: { type: Schema.Types.ObjectId, ref: "User", }, 
         position: { type: String, required: true }, 
       },
     ],
@@ -22,7 +22,7 @@ const CompanySchema = new Schema<ICompany>(
       enum: ["company", "premium"],
       default: "company",
     },
-
+    type:{type:String},
     age: { type: Number, required: false },
     IndustryType: { type: String, required: false },
 
@@ -36,6 +36,7 @@ const CompanySchema = new Schema<ICompany>(
 
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },
+    isBlocked: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }

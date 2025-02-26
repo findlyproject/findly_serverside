@@ -4,6 +4,8 @@ import {
   getPostsByOwner,
   addPost,
   getAllPosts,
+  updatePost,
+  DeletePost,
 } from "../Controller/postController/user";
 import { upload } from "../middleware/upload";
 import { errorCatch } from "../middleware/tryCatch";
@@ -22,7 +24,7 @@ import {
   getRepliesForComment,
   replyToComment,
 } from "../Controller/replyController/user";
-import { LikeOrDislike } from "../Controller/postController/user";
+import { LikeOrDislike } from "../Controller/postController/user";   
 import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, IdSchema, ReplySchema } from "../Utils/zodSchema";
 import { ReportPost } from "../Controller/reportController/user";
@@ -32,7 +34,7 @@ postRouter
 
   //post
   .get("/allposts", getAllPosts)
-  .get("/post/:id", validateData(IdSchema), errorCatch(getpostbyid))
+  .get("/post/:id", errorCatch(getpostbyid))
   .get(
     "/owner/:ownerId",
     userAuthMiddleware,
@@ -45,12 +47,21 @@ postRouter
     upload.fields([{ name: "media", maxCount: 5 }]),
     addPost
   )
+  .patch(
+    "/update/:postId",
+    userAuthMiddleware,
+    upload.fields([{ name: "media", maxCount: 5 }]),
+    errorCatch(updatePost)
+  )
+  .put("/delete/:postId",userAuthMiddleware, errorCatch(DeletePost))
 
   //like & unlike
   .post(
     "/user/likepost/:id",
     userAuthMiddleware,
+
     validateData(undefined,IdSchema),
+
     errorCatch(LikeOrDislike)
   )
 

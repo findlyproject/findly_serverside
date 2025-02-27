@@ -1,16 +1,17 @@
 import express from "express";
 import { EmailUs } from "../Controller/ContactUs";
 import { errorCatch } from "../middleware/tryCatch";
-import { userAuthMiddleware } from "../middleware/userauthantication";
+import { userAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { reportuser } from "../Controller/reportController/user";
-import { refreshAccessToken, resetPasword, sendOtp } from "../Controller/authController/user";
+import { findUsers, refreshAccessToken, resetPasword, sendOtp } from "../Controller/authController/user";
 import { generateSignedUrl } from "../Utils/fileUpload";
 import ressumeupload from '../middleware/ressumeUploading'
 import { validateData } from "../middleware/zodValidation";
-import { IdSchema, LoginSchema, ReportSchema, UserSchema } from "../Utils/zodSchema";
+import { IdSchema, LoginSchema, ReportSchema, SubscriptionSchema, UserSchema, VerificationSchema } from "../Utils/zodSchema";
 import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } from "../Controller/authController/user";
-import { findCurrentUserDetails, getPeopleYouMightKnow, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
+import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
 import { applyToJob } from "../Controller/jobController/user";
+import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 
 const userRouter = express.Router()
 
@@ -51,6 +52,28 @@ userRouter
 
 //apply job
 .post("/applytojob/:jobId", userAuthMiddleware, ressumeupload, errorCatch(applyToJob))
+.get("/allusers",errorCatch(findUsers))
+.get("/getTotalRevenue",errorCatch(getTotalRevenue))
+.get("/findprimeclients",errorCatch(getPrimeClients))
+.post(
+    "/payment/createSubscription",
+    userAuth,
+    validateData(SubscriptionSchema),
+    errorCatch(createSubscription)
+  )
+  .post(
+      "/payment/verifySubscription/:sessionId",
+      userAuth,
+      validateData(undefined, VerificationSchema),
+      errorCatch(verifySubscription)
+    )  
+    .post(
+      "/payment/findsubscriptionbyId/:sessionId",
+      userAuth,
+      validateData(undefined, VerificationSchema),
+      errorCatch(findSubscriptionById)
+    );
 
+   
 
 export {userRouter}

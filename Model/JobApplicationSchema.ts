@@ -1,16 +1,23 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
+import { IJobApplication } from "../types/allTypes";
 
-const jobApplicationSchema = new mongoose.Schema(
+const jobApplicationSchema = new Schema<IJobApplication>(
     {
         jobId: { type: mongoose.Schema.Types.ObjectId, ref: "JobPost", required: true },
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true },
-        resume: { type: String, required: true },
+        resumeName: { type: String, required: true },
+        resumeurl: { type: String, required: true },
         coverLetter: { type: String },
-        introVideo: { type: String, required: false },
-        status: { type: String, enum: ["Pending", "Reviewed", "Accepted", "Rejected"], default: "Pending" },
+        introVideoName: { type: String },
+        introVideoUrl: { type: String },
+        status: { type: String, enum: ["Pending", "Accepted", "Rejected"], default: "Pending" },
+        offerLetter:{ type: String },
     },
     { timestamps: true }
 );
 
-export const JobApplication = mongoose.model("JobApplication", jobApplicationSchema);
+export const JobApplication: Model<IJobApplication> = mongoose.model<IJobApplication>(
+    "JobApplication",
+    jobApplicationSchema
+);

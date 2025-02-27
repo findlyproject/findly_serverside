@@ -1,3 +1,4 @@
+import { SubscriptionPlan } from "../../model/SubscriptionSchema";
 import User from "../../model/UserSchema";
 import { CustomError } from "../../Utils/errorHandler";
 import { Request, Response } from "express";
@@ -292,10 +293,10 @@ export const spacificuserdetails = async (
       return
     }
     const finduserprofile = await User.findOne({_id:userid,isDeleted:false,isBlocked:false}).populate('connecting.connectionID')
-  
+  console.log(finduserprofile)
     
     if(!finduserprofile){
-      res.status(404).json({status:false,message:"cannot find all profile"})
+      res.status(404).json({status:false,message:"cannot find  profile"})
       return
     }
   
@@ -304,4 +305,45 @@ export const spacificuserdetails = async (
       .json({ status: true, message: "All profile finded", finduserprofile });
   };
   
+  export const getTotalRevenue=async(req:Request,res:Response):Promise<void>=>{
+    const revenue=await SubscriptionPlan.aggregate([
+      {
+      $match:{paymentStatus:'completed'}
+      },
+      {
+      $group:{
+        _id:null,
+        totalRevenue: { $sum: "$price" }
+      }
+    }])
+    res.status(200).json({ status:true,message:"total revenue",totalRevenue: revenue.length > 0 ? revenue[0].totalRevenue : 0})
   
+  }
+
+  export const getPrimeClients = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const primeClients = await SubscriptionPlan.find({
+            paymentStatus: "completed",
+            active: true
+        }, {
+            _id: 1, 
+            userId: 1,
+            companyId: 1,
+            price: 1,
+            plan: 1,
+            type: 1,
+            startDate: 1,
+            endDate: 1,
+            createdAt: 1
+        });
+console.log("primeClients",primeClients);
+
+        res.status(200).json({
+            status: true,
+            message: "List of prime clients (Users & Companies)",
+            primeClients
+        });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal server error", error });
+    }
+};

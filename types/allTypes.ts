@@ -239,3 +239,18 @@ export interface IJobPost {
   updatedAt: Date;
 }    
 
+
+export interface IJobApplication extends Document {
+  jobId: Types.ObjectId | { _id: Types.ObjectId; title: string };
+  userId: Types.ObjectId | { _id: Types.ObjectId; email: string; firstName: string };
+  companyId: Types.ObjectId | { _id: Types.ObjectId; name: string }; // Ensuring `_id` in populated data
+  resumeName: string;
+  resumeurl: string;
+  coverLetter?: string;
+  introVideoName?: string;
+  introVideoUrl?: string;
+  status: "Pending" | "Accepted" | "Rejected";
+  createdAt?: Date;
+  updatedAt?: Date;
+  offerLetter?:string;
+}

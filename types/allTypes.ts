@@ -253,7 +253,10 @@ export interface IJobPost {
     min:number,
     max:number
   }
+<<<<<<< HEAD
+=======
 
+>>>>>>> 6e13e2f3e9994f302fed610b4d0570b20d9a024d
   images: string[]; 
   likes: Types.ObjectId[];
   comments: Types.ObjectId[];
@@ -264,6 +267,21 @@ export interface IJobPost {
   updatedAt: Date;
 }    
 
+
+export interface IJobApplication extends Document {
+  jobId: Types.ObjectId | { _id: Types.ObjectId; title: string };
+  userId: Types.ObjectId | { _id: Types.ObjectId; email: string; firstName: string };
+  companyId: Types.ObjectId | { _id: Types.ObjectId; name: string }; // Ensuring `_id` in populated data
+  resumeName: string;
+  resumeurl: string;
+  coverLetter?: string;
+  introVideoName?: string;
+  introVideoUrl?: string;
+  status: "Pending" | "Accepted" | "Rejected";
+  createdAt?: Date;
+  updatedAt?: Date;
+  offerLetter?:string;
+}
 export interface IMessage extends Document {
   sender: mongoose.Types.ObjectId;
   receiver: mongoose.Types.ObjectId;

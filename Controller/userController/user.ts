@@ -21,43 +21,44 @@ export const findCurrentUserDetails = async (
   
     res.status(200).json({ success: true,message:"current user details", currentUserDetails });
   };
-
-  export const getPeopleYouMightKnow = async (
-    req: Request,
-    res: Response
-  ): Promise<void> => {
-    // const userId = req.user?.id;
-    // if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-    //   res.status(400).json({ error: "Valid User ID is required" });
-    //   return;
-    // }
-    // const user = await User.findById(userId).populate("connecting");
-    // if (!user) {
-    //   res.status(404).json({ error: "User not found" });
-    //   return;
-    // }
-    // const potentialConnections = await User.find({
-    //   _id: {
-    //     $ne: userId,
-    //     $nin: user.connecting?.map((conn) => conn._id) || []
-    //   }
-    // }).populate("connecting");
-    // const suggestedPeople = potentialConnections.filter((person) => {
-    //   // Find mutual connections
-    //   const mutualConnections = user.connecting?.filter((conn) =>
-    //     person.connecting?.some((pConn) => pConn._id.equals(conn._id))
-    //   );
-    //   return mutualConnections.length > 0;
-    // });
-    // res.status(200).json({ suggestedPeople });
+  
+  export const getPeopleYouMightKnow = async (req: Request, res: Response): Promise<void> => {
+   
+      const userId = req.user?.id;
+  
+      const loggedInUser = await User.findById(userId).lean();
+  
+      if (!loggedInUser) {
+      throw new CustomError("User not found",404);
+      }
+  
+      const { skills, jobTitle, location, connecting } = loggedInUser;
+  
+      const connectedUserIds = connecting.map(conn => conn.connectionID.toString());
+  
+      const suggestedUsers = await User.find({
+        _id: { $ne: userId, $nin: connectedUserIds }, 
+        isBlocked: false,
+        isDeleted: false,
+        $or: [
+          { skills: { $in: skills } },
+          { jobTitle: { $in: jobTitle } },
+          { "location.country": location?.country, "location.state": location?.state, "location.city": location?.city }
+        ]
+      })
+        .select("firstName lastName profileImage jobTitle location") 
+        .limit(10) 
+        .lean();
+  
+      res.status(200).json({status:true,message:"found", suggestedUsers });
   };
+     
   
   export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
   
-      const userId = req.user?.id; // Assuming `req.user` is set from authentication middleware
+      const userId = req.user?.id; 
       
   
-    // Find user
     const user = await User.findById(userId);
     if (!user) {
       throw new CustomError("User not found",404);
@@ -195,7 +196,6 @@ export const findCurrentUserDetails = async (
   ): Promise<void> => {
   
       const userId = req.user?.id;
-      console.log("user", userId);
   
       if (!userId) {
         throw new CustomError("Unauthorized",401)
@@ -293,10 +293,10 @@ export const spacificuserdetails = async (
       return
     }
     const finduserprofile = await User.findOne({_id:userid,isDeleted:false,isBlocked:false}).populate('connecting.connectionID')
-  
+  console.log(finduserprofile)
     
     if(!finduserprofile){
-      res.status(404).json({status:false,message:"cannot find all profile"})
+      res.status(404).json({status:false,message:"cannot find  profile"})
       return
     }
   

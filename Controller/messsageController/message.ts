@@ -129,14 +129,14 @@ export const joinCommunity =async(req:Request,res:Response):Promise<void>=>{
    const io = res.app.get("io")
    const communityId=req.params.id
   const userId=req.user?.id
-    const community = await Community.findById(communityId);
+    const community = await Community.findById(communityId).populate('members');
     if (!community) {
       res.status(404).json({status:false, message: 'Community not found' });
       return;
     }
 
     const isMember = community.members.some(
-      (member) => member.toString() === userId
+      (member) => member._id.toString() === userId
     );
     if (isMember) {
       res.status(400).json({status:false, message: 'User is already a member' });
@@ -146,10 +146,12 @@ export const joinCommunity =async(req:Request,res:Response):Promise<void>=>{
     community.members.push(new mongoose.Types.ObjectId(userId));
 
     await community.save();
-    console.log("response join",community);
-    io.emit("communtjoin",community)
+    const savedCommunity = await Community.findById(communityId).populate('members');
+    console.log("response join",savedCommunity);
+
+    io.emit("communtjoin",savedCommunity)
     
-    res.status(200).json({status:true, message: 'User joined the community successfully',community});
+    res.status(200).json({status:true, message: 'User joined the community successfully',savedCommunity});
 }
 
 export const CommunitySendMessage = async (req:Request,res:Response):Promise<void>=>{

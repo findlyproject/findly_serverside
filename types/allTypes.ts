@@ -41,7 +41,11 @@ export interface IRating extends Document {
   userId?: Types.ObjectId;
   createdAt?: Date;
   isDeleted: boolean;
-  status:boolean
+  status:boolean;
+  companyId:Types.ObjectId
+  targetCompanyId:Types.ObjectId
+  name:string,
+  email:string
 }
 
 export interface ISubscription extends Document {
@@ -66,7 +70,8 @@ export interface ICompany extends Document {
   email: string;
   contact: number;
   password: string;
-
+  banner?: string;
+  startingDate:Date
   employees: {
     employee: string; 
     position: string; 
@@ -76,7 +81,7 @@ export interface ICompany extends Document {
     type:string
   age?: number;
   IndustryType?: string;
-
+  founder:string
   address: {
     pincode: string;
     landmark?: string;
@@ -84,11 +89,25 @@ export interface ICompany extends Document {
     state: string;
     country: string;
   };
+  socialMedia:{
+    facebook:string
+    instagram:string
+    linkedin:string
+    twitter:string
+  }
+  workHours:{
+    start:string,
+    end:string
+  }
+  services:string[]
 
   subscriptionEndDate: Date | null;
   subscriptionStartDate: Date | null;
   isBlocked?: boolean;
   isDeleted: boolean;
+  headquarters: string;
+  foundedAt: string;
+  
 }
 
 
@@ -229,6 +248,10 @@ export interface IJobPost {
     min:number,
     max:number
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6e13e2f3e9994f302fed610b4d0570b20d9a024d
   images: string[]; 
   likes: Types.ObjectId[];
   comments: Types.ObjectId[];

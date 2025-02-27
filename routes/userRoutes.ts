@@ -12,6 +12,7 @@ import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } 
 import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
 import { applyToJob } from "../Controller/jobController/user";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
+import { createCompanyRating } from "../Controller/ratingController/user";
 
 const userRouter = express.Router()
 
@@ -72,8 +73,9 @@ userRouter
       userAuth,
       validateData(undefined, VerificationSchema),
       errorCatch(findSubscriptionById)
-    );
+    )
 
+    .post("/companyrating/:targetedId",userAuth,errorCatch(createCompanyRating))
    
 
-export {userRouter}
+export {userRouter} 

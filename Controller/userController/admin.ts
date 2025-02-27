@@ -412,6 +412,8 @@ export const allCompanies = async (req: Request, res: Response): Promise<void> =
 
 
 
+
+
  export const getDailyuser= async (req:Request, res:Response):Promise<void> => {
   
     const revenueData = await SubscriptionPlan.aggregate([

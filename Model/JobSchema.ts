@@ -4,7 +4,11 @@ import { Schema, model } from "mongoose";
 const JobPostSchema = new Schema<IJobPost>(
   {
     title: { type: String, required: true, maxlength: 100 },
+<<<<<<< HEAD
     company: { type: Schema.Types.ObjectId, ref: "Company"},
+=======
+    company:{ type: Schema.Types.ObjectId, ref: "Company", required: true },
+>>>>>>> 6e13e2f3e9994f302fed610b4d0570b20d9a024d
     location: { type: String, required: true },
     jobType: { 
       type: String, 

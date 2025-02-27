@@ -18,8 +18,19 @@ const ratingSchema = new mongoose.Schema<IRating>(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      
     },
+    companyId:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Company",
+      
+    },
+    targetCompanyId:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Company"
+    },
+     name:{type:String},
+     email:{type:String},
 
     createdAt: {
       type: Date,

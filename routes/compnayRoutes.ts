@@ -10,6 +10,9 @@ import { companyAuth, userAuthMiddleware } from "../middleware/userauthanticatio
 import { sendOtp } from "../Controller/authController/company";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 import { allCompanies } from "../Controller/userController/admin";
+import { spacificCompanyDetails } from "../Controller/userController/company";
+import { createCompanyRating } from "../Controller/ratingController/user";
+import { deleteReview, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
 import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/user";
 const companyRouter = express.Router();
 
@@ -44,6 +47,7 @@ companyRouter
   .post("/sendotp/:email",errorCatch(sendOtp))
   .post("/resetpassword/:email/:password",errorCatch(resetPasword))
   .get("/allcompanies",errorCatch(allCompanies))
+  .get("/findcompany/:companyId",errorCatch(spacificCompanyDetails))
   .post(
       "/payment/createSubscription",
       companyAuth,
@@ -63,7 +67,9 @@ companyRouter
         errorCatch(findSubscriptionById)
       )
       .get("/getjobs",companyAuth,errorCatch(getJobsByCompanies))
-
+      .post("/companyrating/:targetedId",companyAuth,errorCatch(createCompanyRating))
+      .delete("/deletereview/:id",companyAuth,errorCatch(deleteReview))
+      .get("/findrating/:targetedId",companyAuth,errorCatch(findreviewsByTargetedId))
 
 
 

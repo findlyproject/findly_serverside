@@ -41,7 +41,11 @@ export interface IRating extends Document {
   userId?: Types.ObjectId;
   createdAt?: Date;
   isDeleted: boolean;
-  status:boolean
+  status:boolean;
+  companyId:Types.ObjectId
+  targetCompanyId:Types.ObjectId
+  name:string,
+  email:string
 }
 
 export interface ISubscription extends Document {
@@ -67,6 +71,12 @@ export interface ICompany extends Document {
   contact: number;
   password: string;
 
+  followers:mongoose.Types.ObjectId[]
+
+
+  banner?: string;
+  startingDate:Date
+
   employees: {
     employee: string; 
     position: string; 
@@ -76,7 +86,7 @@ export interface ICompany extends Document {
     type:string
   age?: number;
   IndustryType?: string;
-
+  founder:string
   address: {
     pincode: string;
     landmark?: string;
@@ -84,11 +94,25 @@ export interface ICompany extends Document {
     state: string;
     country: string;
   };
+  socialMedia:{
+    facebook:string
+    instagram:string
+    linkedin:string
+    twitter:string
+  }
+  workHours:{
+    start:string,
+    end:string
+  }
+  services:string[]
 
   subscriptionEndDate: Date | null;
   subscriptionStartDate: Date | null;
   isBlocked?: boolean;
   isDeleted: boolean;
+  headquarters: string;
+  foundedAt: string;
+  
 }
 
 
@@ -160,7 +184,7 @@ export interface IUser extends Document {
     status: boolean;
     createdAt: Date;
   }[];
-
+  following:mongoose.Types.ObjectId[]
   about?: string;
 
   resume?: {
@@ -211,7 +235,7 @@ export interface ITitles extends Document{
 
 export interface IJobPost {
   title: string;
-  company: string;
+  company: Types.ObjectId;
   location: string;
   jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
   experienceLevel:"Entry" | "Mid" | "Senior" | "Expert";
@@ -229,7 +253,7 @@ export interface IJobPost {
     min:number,
     max:number
   }
-  postedBy: Types.ObjectId;
+
   images: string[]; 
   likes: Types.ObjectId[];
   comments: Types.ObjectId[];

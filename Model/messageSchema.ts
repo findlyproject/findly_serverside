@@ -28,6 +28,7 @@ const CommunitySchema = new Schema<ICommunity>(
         
 
     },
+    
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,

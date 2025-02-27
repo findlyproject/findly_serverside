@@ -4,7 +4,7 @@ import { Schema, model } from "mongoose";
 const JobPostSchema = new Schema<IJobPost>(
   {
     title: { type: String, required: true, maxlength: 100 },
-    company: { type: String, required: true },
+    company:{ type: Schema.Types.ObjectId, ref: "Company", required: true },
     location: { type: String, required: true },
     jobType: { 
       type: String, 
@@ -30,7 +30,6 @@ const JobPostSchema = new Schema<IJobPost>(
     benefits: [{ type: String }],
     contactEmail: { type: String, required: true },
     contactPhone: { type: String },
-    postedBy: { type: Schema.Types.ObjectId, ref: "Company", required: true },
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }], 
     reports: [{ type: Schema.Types.ObjectId, ref: "User" }], 

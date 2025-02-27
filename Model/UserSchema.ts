@@ -83,6 +83,7 @@ const UserSchema = new Schema<IUser>(
         default: Date.now,
       }
     }],
+    following:[{type:mongoose.Schema.Types.ObjectId,ref:"Company"}],
 
     about: { type: String },
 

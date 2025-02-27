@@ -12,9 +12,14 @@ import errorHandler from "./middleware/customClassMiddleware";
 import postRouter from "./routes/postRoutes";
 import { connectionRouter } from "./routes/connectionRoutes";
 import { companyRouter } from "./routes/compnayRoutes";
-dotenv.config();
-const app = express();
+import { app, server } from "./socket";
+import { messageRoute } from "./routes/messageRoute";
 
+
+
+
+dotenv.config();
+// const app = express();
 
 app.use(express.json({ limit: "50mb" })); // Increase JSON payload size
 app.use(express.urlencoded({ extended: true, limit: "50mb" })); // Increase URL-encoded payload size
@@ -31,14 +36,14 @@ app.use(cors({
   app.use("/api/connecting",connectionRouter)
   app.use("/api/admin",adminRouter)
   app.use("/api/company",companyRouter)
-
-
+app.use("/api/message",messageRoute)
   app.use(errorHandler);
+
+
 
 connectMongodb()
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
-

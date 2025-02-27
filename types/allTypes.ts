@@ -239,6 +239,7 @@ export interface IJobPost {
   updatedAt: Date;
 }    
 
+<<<<<<< HEAD
 
 export interface IJobApplication extends Document {
   jobId: Types.ObjectId | { _id: Types.ObjectId; title: string };
@@ -254,3 +255,38 @@ export interface IJobApplication extends Document {
   updatedAt?: Date;
   offerLetter?:string;
 }
+=======
+export interface IMessage extends Document {
+  sender: mongoose.Types.ObjectId;
+  receiver: mongoose.Types.ObjectId;
+  type:string;
+  seen:boolean;
+  message: string;
+  isDeleted:boolean;
+  timestamp: Date;
+}
+
+export interface IConversation extends Document {
+  participants: mongoose.Types.ObjectId[];
+  messages: IMessage[];
+  lastUpdated: Date;
+}
+
+export interface ICommunity extends Document{
+  name: string;
+  profile:string;
+  description: string;
+  members: mongoose.Types.ObjectId[];
+  createdBy: mongoose.Types.ObjectId;
+  timestamp:Date;
+}
+
+export interface ICommunityMessage extends Document{
+  communityId : mongoose.Types.ObjectId
+  sender:mongoose.Types.ObjectId
+  message:string;
+  type:string;
+  isDelete:boolean;
+  timestamp:Date
+}
+>>>>>>> 6714708f1a3ca47bc65771f6a82a18873457fe73

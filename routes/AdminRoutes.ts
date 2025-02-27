@@ -3,8 +3,6 @@ import { login, logout,ProfileEdit } from "../Controller/authController/admin";
 import { adminAuthentication } from "../middleware/adminAuthentication";
 import { validateData } from "../middleware/zodValidation";
 import { IdSchema, LoginSchema } from "../Utils/zodSchema";
-
-
 import { allUsers, blockAndUnblock ,getDailyRevenue,getDailyUsers,createSkills, createTitles, AllSkills, RemoveSkills, AllTitles, RemoveTitle, EditSkill, ApproveSkill, EditTitle, ApproveTitle,createTitlesbyUser, allCompanies, getTotalUserRevenue, getDailyCompanies, getTotalCompanyRevenue, getTotalRevenue, getDailycompany, getDailyuser, AllTitlesAdmin} from "../Controller/userController/admin";
 
 import { deletePost, dismissReports, getReports } from "../Controller/postController/admin";

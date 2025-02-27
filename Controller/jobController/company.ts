@@ -246,6 +246,7 @@ import { application, Request, Response } from "express";
 import { JobPost } from "../../model/JobSchema";
 import { CustomError } from "../../Utils/errorHandler";
 import { JobApplication } from "../../model/JobApplicationSchema";
+import nodemailer from "nodemailer";
 
 export const createJobPost = async (req: Request, res: Response): Promise<void> => {
 
@@ -396,7 +397,7 @@ export const getJobsById = async (req: Request, res: Response): Promise<void> =>
     if(!findJob){
         throw new CustomError("job not found", 404);
     }
-    res.status(200).json({status:true,message:"get jobs by id",findJob})
+    res.status(200).json({status:true,message:"get jobs by id",findJob})  
     
 };
 
@@ -459,13 +460,12 @@ export const findAppliedUsers=async(req:Request,res:Response)=>{
 export const findUserApplication = async (req: Request, res: Response) => {
 
         const { userId, jobId } = req.params; 
-
         if (!userId || !jobId) {
             throw new CustomError("User ID and Job ID are required", 400);
         }
 
    
-        const application = await JobApplication.findOne({ userId, jobId });
+        const application = await JobApplication.findOne({ userId, jobId }).populate("userId").populate("jobId")
 
         if (!application) {
             throw new CustomError("No application found for this user and job", 404);
@@ -477,4 +477,124 @@ export const findUserApplication = async (req: Request, res: Response) => {
             application
         });
    
+};
+
+// Function to reject a job application
+
+export const rejectJobApplication = async (req: Request, res: Response) => {
+        const { userId, jobId } = req.params;
+        console.log(userId, jobId)
+
+        if (!userId || !jobId) {
+            throw new CustomError("User ID and Job ID are required", 400);
+        }
+
+        // Find the application and populate userId and jobId fields
+        const application = await JobApplication.findOne({ userId, jobId })
+            .populate("userId", "email firstName")
+            .populate("jobId", "title");
+
+        if (!application) {
+            throw new CustomError("No application found for this user and job", 404);
+        }
+
+        // Ensure userId and jobId are populated objects
+        if (!("email" in application.userId) || !("firstName" in application.userId)) {
+            throw new CustomError("User data is not populated correctly", 500);
+        }
+
+        if (!("title" in application.jobId)) {
+            throw new CustomError("Job data is not populated correctly", 500);
+        }
+
+        // Update status
+        application.status = "Rejected";
+        await application.save();
+
+        // Send email notification
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.APP_EMAIL,
+                pass: process.env.APP_PASSWORD,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.APP_EMAIL,
+            to: application.userId.email,  // ✅ Safe access after checking
+            subject: "Job Application Update",
+            text: `Dear ${application.userId.firstName},\n\nWe regret to inform you that your application for the position of ${application.jobId.title} has been rejected.\n\nThank you for your interest.\n\nBest regards,\nCompany Team`,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(200).json({
+            success: true,
+            message: "Application rejected and email sent to the user",
+        });
+
+   
+};
+
+export const approveJobApplication = async (req: Request, res: Response): Promise<void> => {
+    const { userId, jobId } = req.params;
+    const { offerLetter } = req.body; 
+
+    if (!userId || !jobId || !offerLetter) {
+         res.status(400).json({ success: false, message: "User ID, Job ID, and offer letter are required" });
+         return
+    }
+
+    const application = await JobApplication.findOne({ userId, jobId })
+        .populate("userId", "email firstName")
+        .populate("jobId", "title");
+
+    if (!application) {
+         res.status(404).json({ success: false, message: "No application found for this user and job" });
+         return
+    }
+
+    if (!("email" in application.userId) || !("firstName" in application.userId)) {
+         res.status(500).json({ success: false, message: "User data is not populated correctly" });
+         return
+    }
+
+    if (!("title" in application.jobId)) {
+         res.status(500).json({ success: false, message: "Job data is not populated correctly" });
+         return
+    }
+
+    application.status = "Accepted";
+    application.offerLetter = offerLetter; 
+    await application.save();
+
+    // Email configuration
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: process.env.APP_EMAIL,
+            pass: process.env.APP_PASSWORD,
+        },
+    });
+
+    const mailOptions = {
+        from: process.env.APP_EMAIL,
+        to: application.userId.email,
+        subject: "Job Offer Letter",
+        text: `Dear ${application.userId.firstName},\n\nCongratulations! Your application for the position of ${application.jobId.title} has been approved. Please find your offer letter attached.\n\nBest regards,\nCompany Team`,
+        attachments: [
+            {
+                filename: "Offer_Letter.pdf",
+                content: offerLetter, // Assuming the offer letter is in text format, convert if needed
+            },
+        ],
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+        success: true,
+        message: "Application approved and offer letter sent via email",
+    });
 };

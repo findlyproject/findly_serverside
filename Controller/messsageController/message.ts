@@ -244,7 +244,7 @@ export const LeaveCommunity=async(req:Request,res:Response):Promise<void>=>{
   //Community Details
   export const CommunityDetails=async(req:Request,res:Response):Promise<void>=>{
   const communityID=req.params.id
-  const community=await Community.findById(communityID)
+  const community=await Community.findById(communityID).populate('members').populate('createdBy')
   if(!community){
     throw new CustomError(`community not found`,404)
   }

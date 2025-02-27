@@ -70,9 +70,12 @@ export interface ICompany extends Document {
   email: string;
   contact: number;
   password: string;
-  banner?: string;
-  startingDate:Date  
+
   followers:mongoose.Types.ObjectId[]
+
+
+  banner?: string;
+  startingDate:Date
 
   employees: {
     employee: string; 

@@ -41,7 +41,9 @@ const CompanySchema = new Schema<ICompany>(
       state: { type: String, required: true },
       country: { type: String, required: true },
     },
+
     followers:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
+
 
     socialMedia: {
       facebook: { type: String, default: "" },
@@ -49,6 +51,7 @@ const CompanySchema = new Schema<ICompany>(
       linkedin: { type: String, default: "" },
       twitter: { type: String, default: "" },
     },
+
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },
     isBlocked: { type: Boolean, default: false },

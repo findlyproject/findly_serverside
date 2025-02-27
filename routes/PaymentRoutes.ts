@@ -14,7 +14,7 @@ const paymentRouter = express.Router();
 paymentRouter
 
   .post(
-    "/createSubscription",
+    "/createSubscription", 
     userAuthMiddleware,
     validateData(SubscriptionSchema),
     errorCatch(createSubscription)

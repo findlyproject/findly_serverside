@@ -388,7 +388,7 @@ res.status(200).json({status:true,message:'approved',title})
 
 }
 
-}
+
 
 
 
@@ -409,6 +409,8 @@ export const allCompanies = async (req: Request, res: Response): Promise<void> =
       totalcompanies,
     });
 };
+
+
 
 
 

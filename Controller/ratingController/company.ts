@@ -18,8 +18,6 @@ export const findreviewsByTargetedId=async(req:Request,res:Response)=>{
 export const deleteReview = async (req: Request, res: Response) => {
 
         const reviewId = req.params.id;
-
-       
         const review = await Rating.findById(reviewId);
         if (!review) {
              res.status(404).json({ success: false, message: "Review not found" });
@@ -31,3 +29,24 @@ export const deleteReview = async (req: Request, res: Response) => {
          res.status(200).json({ success: true, message: "Review soft deleted successfully" });
 
 };
+
+
+export const deleteReviews=async(req:Request,res:Response):Promise<void>=>{
+  const {id}=req.params
+
+  
+  let companyId = req.user?.id
+
+  const review=await Rating.findOne({_id:id,companyId})
+  if (!review) {
+     res.status(404).json({ success: false, message: "Review not found" });
+     return
+  }
+
+
+  review.isDeleted = true;
+  await review.save();
+
+  res.json({ success: true, message: "Review deleted", review });
+}
+

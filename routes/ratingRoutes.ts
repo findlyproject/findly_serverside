@@ -21,6 +21,7 @@ ratingRouter
   )
   .get("/findreviews",companyAuth,errorCatch(findreviewsBycompany))
   .get("/findallreviews", errorCatch(getAllRatings))
+  
   .get(
     "/:userId",
     userAuthMiddleware,

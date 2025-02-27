@@ -12,7 +12,7 @@ import { createSubscription, findSubscriptionById, verifySubscription } from "..
 import { allCompanies } from "../Controller/userController/admin";
 import { spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
-import { deleteReview, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
+import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
 const companyRouter = express.Router();
 
 companyRouter
@@ -68,6 +68,7 @@ companyRouter
       .get("/getjobs",companyAuth,errorCatch(getJobsByCompanies))
       .post("/companyrating/:targetedId",companyAuth,errorCatch(createCompanyRating))
       .delete("/deletereview/:id",companyAuth,errorCatch(deleteReview))
+      .delete("/deleteReview/:id",companyAuth,errorCatch(deleteReviews))
       .get("/findrating/:targetedId",companyAuth,errorCatch(findreviewsByTargetedId))
 
 export { companyRouter };

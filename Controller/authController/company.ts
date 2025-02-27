@@ -148,7 +148,9 @@ export const finalRegister = async (req: Request, res: Response): Promise<void> 
   
 export const login=async(req:Request,res:Response)=>{
     const {email,password}=req.body;
-    const company=await Company.findOne({email})
+    const company=await Company.findOne({email}).populate("employees.employee")
+    console.log("company",company);
+    
     if (!company) {
         throw new CustomError(`No account found for ${email}`,401);
     }
@@ -156,6 +158,7 @@ export const login=async(req:Request,res:Response)=>{
          if (!verfyPassword) {
            throw new CustomError("password is wrong", 404);
          }
+
          const currentDate = new Date();
          if (company.role === "premium" && company.subscriptionEndDate) {
            if (company.subscriptionEndDate < currentDate) {

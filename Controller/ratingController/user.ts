@@ -26,6 +26,42 @@ export const createRating = async (
     .json({ success: true, message: "Rating created successfully", newRating });
 };
 
+  export const createCompanyRating=async(req:Request,res:Response)=>{
+         
+           const {targetedId}=req.params
+           console.log("targetedId",targetedId);
+           
+           const { review, starsRating,name,email } = req.body;
+           const type=req.user &&req.user.type
+           console.log("type",type);
+           
+           let userId = type==="User"?req.user?.id:null
+           let companyId =type==="Company"?req.user?.id:null
+           if (!review || !starsRating ) {
+            throw new CustomError("All fields are required.", 400);
+          }
+          
+          if(!targetedId){
+            res.status(404).json({success:false,message:"targetId is  not fount"})
+            return
+          }
+          const newRating = new Rating({
+            review,
+            starsRating,
+            userId:userId||null,
+            companyId:companyId||null,
+            targetCompanyId:targetedId,
+            name,
+            email
+          });
+        
+          await newRating.save();
+
+          res.status(201).json({success:true,message:"rating posted"})
+  }  
+
+
+ 
 //get user rating
 export const getUserRatings = async (req: Request, res: Response) => {
   const userId = req.user?.id;

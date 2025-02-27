@@ -5,9 +5,10 @@ import {
   getUserRatings,
 } from "../Controller/ratingController/user";
 import { errorCatch } from "../middleware/tryCatch";
-import { userAuthMiddleware } from "../middleware/userauthantication";
+import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { validateData } from "../middleware/zodValidation";
 import { IdSchema, RatingSchema } from "../Utils/zodSchema";
+import { deleteReview, findreviewsBycompany } from "../Controller/ratingController/company";
 const ratingRouter = express.Router();
 
 ratingRouter
@@ -18,7 +19,7 @@ ratingRouter
     validateData(RatingSchema),
     errorCatch(createRating)
   )
-
+  .get("/findreviews",companyAuth,errorCatch(findreviewsBycompany))
   .get("/findallreviews", errorCatch(getAllRatings))
   .get(
     "/:userId",
@@ -26,5 +27,7 @@ ratingRouter
     validateData(undefined, IdSchema),
     errorCatch(getUserRatings)
   )
+  
+  
 
 export { ratingRouter };

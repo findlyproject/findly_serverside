@@ -45,7 +45,7 @@ export const applyToJob = async (req: Request, res: Response): Promise<void> => 
         userId,
         coverLetter,
         status: "Pending",
-        companyId: job.postedBy,
+        companyId: job.company,
         resumeName: resumeName ? resumeName : resumdocument?.fileName,
         resumeurl: resumeUrl ? resumeUrl : resumdocument?.fileUrl,
         introVideoName: resumeVideoName ? resumeVideoName : resumVideoFile?.fileName,

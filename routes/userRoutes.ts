@@ -12,7 +12,11 @@ import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } 
 import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
 import { applyToJob } from "../Controller/jobController/user";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
+<<<<<<< HEAD
 import { createCompanyRating, deleteReview } from "../Controller/ratingController/user";
+=======
+import { createCompanyRating } from "../Controller/ratingController/user";
+>>>>>>> e6501b5a2aa3b6fb5f90a34c361dedf35e68053d
 import { findreviewsByTargetedId } from "../Controller/ratingController/company";
 
 const userRouter = express.Router()
@@ -37,6 +41,7 @@ userRouter
 .get("/getuploadedfiles",userAuthMiddleware,errorCatch(getUploadedFiles))
 .delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
 
+
 .get('/all',AllUsersEmailCheck)
 
 .post("/reportuser",userAuthMiddleware,validateData(ReportSchema),errorCatch(reportuser))
@@ -46,7 +51,12 @@ userRouter
 
 .post("/resetpasword/:email/:password", errorCatch(resetPasword))
 .post("/sendotp/:email", errorCatch(sendOtp))
+<<<<<<< HEAD
 .delete("/deletereview/:id",userAuth,errorCatch(deleteReview))
+=======
+
+.get("/findrating/:targetedId",userAuth,errorCatch(findreviewsByTargetedId))
+>>>>>>> e6501b5a2aa3b6fb5f90a34c361dedf35e68053d
 
 
 

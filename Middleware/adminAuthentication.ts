@@ -11,7 +11,7 @@ declare module "express-serve-static-core" {
 
 export interface JwtDecoded extends JwtPayload {
     id: string;
-    name: string;
+    name: string;   
     email: string;
     isBlocked: boolean;
 }

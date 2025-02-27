@@ -8,6 +8,7 @@ dotenv.config();
 export const generateSignedUrl = async (req: Request, res: Response): Promise<void> => {
   try {
     const { fileType } = req.query as { fileType?: string };
+console.log("fileType",fileType);
 
     if (!fileType) {
       res.status(400).json({ status: false, message: "File type is required" });

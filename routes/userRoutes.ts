@@ -13,6 +13,7 @@ import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTota
 import { applyToJob } from "../Controller/jobController/user";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 import { createCompanyRating } from "../Controller/ratingController/user";
+import { findreviewsByTargetedId } from "../Controller/ratingController/company";
 
 const userRouter = express.Router()
 
@@ -47,6 +48,7 @@ userRouter
 .post("/resetpasword/:email/:password", errorCatch(resetPasword))
 .post("/sendotp/:email", errorCatch(sendOtp))
 
+.get("/findrating/:targetedId",userAuth,errorCatch(findreviewsByTargetedId))
 
 
 

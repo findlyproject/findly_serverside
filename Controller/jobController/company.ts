@@ -443,10 +443,7 @@ export const getJobsByCompanies=async(req:Request,res:Response)=>{
 
 
     const postedJobs=await JobPost.find({company:companyId})
-<<<<<<< HEAD
-=======
 console.log("postedJobs",postedJobs);
->>>>>>> 6e13e2f3e9994f302fed610b4d0570b20d9a024d
 
     res.status(200).json({success:true,message:"found it",postedJobs})
 }
@@ -480,7 +477,6 @@ export const findUserApplication = async (req: Request, res: Response) => {
             application
         });
    
-<<<<<<< HEAD
 };
 
 // Function to reject a job application
@@ -570,7 +566,7 @@ export const approveJobApplication = async (req: Request, res: Response): Promis
     }
 
     application.status = "Accepted";
-    application.offerLetter = offerLetter; // Assuming there's an offerLetter field in JobApplication schema
+    application.offerLetter = offerLetter; 
     await application.save();
 
     // Email configuration
@@ -602,6 +598,3 @@ export const approveJobApplication = async (req: Request, res: Response): Promis
         message: "Application approved and offer letter sent via email",
     });
 };
-=======
-};
->>>>>>> 6e13e2f3e9994f302fed610b4d0570b20d9a024d

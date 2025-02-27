@@ -70,8 +70,13 @@ export interface ICompany extends Document {
   email: string;
   contact: number;
   password: string;
+
+  followers:mongoose.Types.ObjectId[]
+
+
   banner?: string;
   startingDate:Date
+
   employees: {
     employee: string; 
     position: string; 
@@ -179,7 +184,7 @@ export interface IUser extends Document {
     status: boolean;
     createdAt: Date;
   }[];
-
+  following:mongoose.Types.ObjectId[]
   about?: string;
 
   resume?: {

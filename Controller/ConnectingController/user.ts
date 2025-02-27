@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import User from "../../model/UserSchema";
 import { IUser } from "../../types/allTypes";
 import { CustomError } from "../../Utils/errorHandler";
+import { Company } from "../../model/CompanySchema";
 
 //CONNECTION REQUEST
 export const userconnections = async (
@@ -268,3 +269,45 @@ export const ignoreConnectionRequest = async (
     .status(200)
     .json({ status: true, message: "Connection request ignored successfully" });
 };
+
+
+
+
+export const FollowAndUnfollowCompany=async(req:Request,res:Response):Promise<void>=>{
+
+  const userId = req.user?.id; // Assumes authentication middleware is setting user ID
+  const companyId = req.params.id;
+
+
+  const company = await Company.findById(companyId);
+  if (!company) {
+    res.status(404).json({ message: "Company not found" });
+    return;
+  }
+
+  
+  const user = await User.findById(userId);
+  if (!user) {
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
+
+  
+  const isFollowing = user.following.some((id) => id.toString() === companyId);
+
+  if (isFollowing) {
+   
+    user.following = user.following.filter((id) => id.toString() !== companyId);
+    company.followers = company.followers.filter((id) => id.toString() !== userId);
+    await user.save();
+    await company.save()
+    res.status(200).json({ message: "Company unfollowed successfully", following: user.following });
+  } else {
+   
+    user.following.push(new mongoose.Types.ObjectId(companyId));
+    company.followers.push(new mongoose.Types.ObjectId(userId));
+    await user.save();
+    await company.save()
+    res.status(200).json({ message: "Company followed successfully", following: user.following });
+  }
+}

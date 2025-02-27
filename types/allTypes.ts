@@ -239,7 +239,6 @@ export interface IJobPost {
   updatedAt: Date;
 }    
 
-<<<<<<< HEAD
 
 export interface IJobApplication extends Document {
   jobId: Types.ObjectId | { _id: Types.ObjectId; title: string };
@@ -255,7 +254,6 @@ export interface IJobApplication extends Document {
   updatedAt?: Date;
   offerLetter?:string;
 }
-=======
 export interface IMessage extends Document {
   sender: mongoose.Types.ObjectId;
   receiver: mongoose.Types.ObjectId;
@@ -289,4 +287,3 @@ export interface ICommunityMessage extends Document{
   isDelete:boolean;
   timestamp:Date
 }
->>>>>>> 6714708f1a3ca47bc65771f6a82a18873457fe73

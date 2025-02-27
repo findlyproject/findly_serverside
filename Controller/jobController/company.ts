@@ -149,26 +149,12 @@ export const getJobsById = async (req: Request, res: Response): Promise<void> =>
     if(!jobId){
     throw new CustomError("job Id is required", 400);
     }
-<<<<<<< HEAD
-    const findJob = await JobPost.findById(jobId);
-    console.log(findJob)
-    if(!findJob){
-        throw new CustomError("job not found", 404);
-    }
-    res.status(200).json({
-        status: true,
-        message: "job fetched successfully",
-        
-        findJob
-    });
-=======
     const findJob = await JobPost.findOne({_id:jobId,isDeleted:false}).populate("postedBy");
     if(!findJob){
         throw new CustomError("job not found", 404);
     }
-    res.status(200).json({status:true,message:"get jobs by id",findJob})
+    res.status(200).json({status:true,message:"get jobs by id",findJob})  
     
->>>>>>> 6714708f1a3ca47bc65771f6a82a18873457fe73
 };
 
 

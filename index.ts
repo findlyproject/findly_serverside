@@ -12,9 +12,8 @@ import errorHandler from "./middleware/customClassMiddleware";
 import postRouter from "./routes/postRoutes";
 import { connectionRouter } from "./routes/connectionRoutes";
 import { companyRouter } from "./routes/compnayRoutes";
-import messageRouter from "./routes/MessageRoutes";
 import { app, server } from "./socket";
-import { communityRouter } from "./routes/CommunityRoutes";
+import { messageRoute } from "./routes/messageRoute";
 
 
 
@@ -37,8 +36,7 @@ app.use(cors({
   app.use("/api/connecting",connectionRouter)
   app.use("/api/admin",adminRouter)
   app.use("/api/company",companyRouter)
-app.use("/api/message",messageRouter)
-app.use("/api/community",communityRouter)
+app.use("/api/message",messageRoute)
   app.use(errorHandler);
 
 
@@ -47,6 +45,5 @@ connectMongodb()
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });
-

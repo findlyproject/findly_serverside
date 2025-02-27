@@ -1,5 +1,14 @@
-import { ICommunity, ICommunityMessage } from "./../types/allTypes";
 import mongoose, { Schema } from "mongoose";
+import { ICommunity, ICommunityMessage, IConversation, IMessage } from "../types/allTypes";
+
+
+const ConversationSchema = new Schema<IConversation>({
+  participants: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
+  messages: [{ type: Schema.Types.ObjectId, ref: "Message" }], 
+  lastUpdated: { type: Date, default: Date.now }
+});
+
+
 
 const CommunitySchema = new Schema<ICommunity>(
   {
@@ -19,6 +28,7 @@ const CommunitySchema = new Schema<ICommunity>(
         
 
     },
+    
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -57,5 +67,17 @@ const CommunityMessageSchema=new Schema<ICommunityMessage>({
       },
 })
 
-export const CommunityMessage=mongoose.model<ICommunityMessage>("CommunityMessage",CommunityMessageSchema)
-export const Community = mongoose.model<ICommunity>("Community", CommunitySchema);
+
+const MessageSchema: Schema = new Schema<IMessage>({
+  sender: { type: Schema.Types.ObjectId, ref: "User", required: true},
+  receiver: { type: Schema.Types.ObjectId, ref: "User", required: true},
+  type:{type:String},
+  seen:{type:Boolean,default:false},
+  isDeleted:{type:Boolean,default:false},
+  message: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now }
+});
+export const Conversation = mongoose.model("Conversation", ConversationSchema);
+export const Message = mongoose.model("Message",MessageSchema);
+export const CommunityMessage=mongoose.model("CommunityMessage",CommunityMessageSchema)
+export const Community = mongoose.model("Community", CommunitySchema);

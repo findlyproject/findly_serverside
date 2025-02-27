@@ -1,41 +1,41 @@
+
 import { Request, Response } from "express";
 import cloudinary from "cloudinary";
-import { CustomError } from "./errorHandler";
+import dotenv from "dotenv";
 
-export const generateSignedUrl =async (req: Request, res: Response):Promise<void>=> {
-  console.log("hhhhhh");
-  
+dotenv.config();
+
+export const generateSignedUrl = async (req: Request, res: Response): Promise<void> => {
   try {
     const { fileType } = req.query as { fileType?: string };
 console.log("fileType",fileType);
 
     if (!fileType) {
-      throw new CustomError("Missing fileType parameter",400);
-
+      res.status(400).json({ status: false, message: "File type is required" });
+      return;
     }
 
-    const timestamp: number = Math.round(new Date().getTime() / 1000);
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const folder = "uploads";
 
-    const paramsToSign = {
-      timestamp,
-      folder: "uploads",
-    };
+    if (!process.env.CLOUDINARY_API_SECRET || !process.env.CLOUDINARY_API_KEY) {
+      throw new Error("Cloudinary API credentials are missing");
+    }
 
- 
-    const signature: string = cloudinary.v2.utils.api_sign_request(
-      paramsToSign,
-      process.env.CLOUDINARY_API_SECRET || ""
-    );
+    // Generate the correct signature
+    const paramsToSign = { timestamp, folder };
+    const signature = cloudinary.v2.utils.api_sign_request(paramsToSign, process.env.CLOUDINARY_API_SECRET);
 
     res.json({
-      status:true,
+      status: true,
       api_key: process.env.CLOUDINARY_API_KEY,
       cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-      folder: "uploads",
+      folder,
       timestamp,
-      signature, 
+      signature,
     });
   } catch (error) {
-    throw new CustomError("Internal Server Error",500);
+    console.error("Cloudinary signature error:", error);
+    res.status(500).json({ status: false, message: "Internal Server Error" });
   }
 };

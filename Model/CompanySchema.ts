@@ -33,6 +33,7 @@ const CompanySchema = new Schema<ICompany>(
       state: { type: String, required: true },
       country: { type: String, required: true },
     },
+    followers:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
 
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },

@@ -10,6 +10,7 @@ import { companyAuth, userAuthMiddleware } from "../middleware/userauthanticatio
 import { sendOtp } from "../Controller/authController/company";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 import { allCompanies } from "../Controller/userController/admin";
+import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/user";
 const companyRouter = express.Router();
 
 companyRouter
@@ -64,4 +65,7 @@ companyRouter
       .get("/getjobs",companyAuth,errorCatch(getJobsByCompanies))
 
 
+
+
+      .post(`/follow/:id`,userAuthMiddleware,errorCatch(FollowAndUnfollowCompany))
 export { companyRouter };

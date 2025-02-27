@@ -66,6 +66,7 @@ export interface ICompany extends Document {
   email: string;
   contact: number;
   password: string;
+  followers:mongoose.Types.ObjectId[]
 
   employees: {
     employee: string; 

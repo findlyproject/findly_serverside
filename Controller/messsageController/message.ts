@@ -218,7 +218,7 @@ io.emit("undeletedMessages",findMessage)
 res.status(200).json({ status:true, message:"delete successfully"})
 }
 
-
+//leave community
 export const LeaveCommunity=async(req:Request,res:Response):Promise<void>=>{
   const communityid=req.params.id
   const userid=req.user?.id

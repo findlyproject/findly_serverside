@@ -4,7 +4,9 @@ import { CustomError } from "../../Utils/errorHandler";
 import { SubscriptionPlan } from "../../model/SubscriptionSchema";
 import { Skill } from "../../model/SkillSchema";
 import { Title } from "../../model/JobTitleSchema";
+
 import { Company } from "../../model/CompanySchema";
+
 //user block and unblock
 export const blockAndUnblock = async (
   req: Request,
@@ -61,9 +63,13 @@ export const getDailyUsers=async(req:Request,res:Response):Promise<void>=>{
   
   const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0));
   const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999));
+
+
+
   const TodayUsers = await User.find({
     createdAt: { $gte: startOfDay, $lt: endOfDay }
   });
+
   
   const users = await User.aggregate([
     {
@@ -82,7 +88,8 @@ export const getDailyUsers=async(req:Request,res:Response):Promise<void>=>{
     },
   ]);
 
- 
+
+
   res.json({ dailyUserCount: users.length > 0 ? users[0].count : 0 ,TodayUsers});
 
 }
@@ -119,6 +126,7 @@ export const getDailyCompanies=async(req:Request,res:Response):Promise<void>=>{
  
   res.json({ dailyCompanyCount: companies.length > 0 ? companies[0].count : 0 ,Todaycompanies});
 
+
 }
 
 //daily revenue
@@ -148,6 +156,8 @@ export const getDailyRevenue=async(req:Request,res:Response):Promise<void>=>{
   ]);
   res.json({ dailyRevenue: revenue.length > 0 ? revenue[0].dailyRevenue : 0 });
 }
+
+
 //total revenue
 export const getTotalRevenue=async(req:Request,res:Response):Promise<void>=>{
   const revenue=await SubscriptionPlan.aggregate([
@@ -183,6 +193,7 @@ export const getTotalUserRevenue=async(req:Request,res:Response):Promise<void>=>
   res.status(200).json({status:true,message:'users revenue',TotaluserRevenue: userRevenue.length>0?userRevenue[0].totalRevenue : 0})
 
 }
+
 
 
 
@@ -321,7 +332,9 @@ export const createTitlesbyUser=async(req:Request,res:Response):Promise<void>=>{
 
 export const AllTitles=async(req:Request,res:Response):Promise<void>=>{
 
+
   const titles=await Title.find({isDeleted:false,status:true})
+
   res.status(200).json({status:true,message:'all titles ',titles})
 
 }
@@ -372,7 +385,11 @@ export const ApproveTitle=async(req:Request,res:Response)=>{
   title.status=true
 await title.save()
 res.status(200).json({status:true,message:'approved',title})
+
 }
+
+}
+
 
 
 

@@ -14,12 +14,7 @@ import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/use
 
 import { spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
-<<<<<<< HEAD
 import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
-=======
-import { deleteReview, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
-
->>>>>>> e6501b5a2aa3b6fb5f90a34c361dedf35e68053d
 const companyRouter = express.Router();
 
 companyRouter
@@ -28,7 +23,7 @@ companyRouter
     
   .post(
     "/send-otp",
-    // validateData(CompanySchema),
+    // validateData(CompanySchema), 
     errorCatch(initialRegister)
   )
   .post(

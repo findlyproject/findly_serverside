@@ -1,6 +1,6 @@
 import express from "express";
 import { errorCatch } from "../middleware/tryCatch";
-import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, } from "../Controller/authController/company";
+import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, requestDeleteAccount, verifyOtp, } from "../Controller/authController/company";
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
 import { CompanySchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
@@ -14,12 +14,7 @@ import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/use
 
 import { spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
-<<<<<<< HEAD
 import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
-=======
-import { deleteReview, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
-
->>>>>>> e6501b5a2aa3b6fb5f90a34c361dedf35e68053d
 const companyRouter = express.Router();
 
 companyRouter
@@ -28,7 +23,7 @@ companyRouter
     
   .post(
     "/send-otp",
-    // validateData(CompanySchema),
+    // validateData(CompanySchema), 
     errorCatch(initialRegister)
   )
   .post(
@@ -83,4 +78,9 @@ companyRouter
 
 
       .post(`/follow/:id`,userAuthMiddleware,errorCatch(FollowAndUnfollowCompany))
+
+
+      //delete account
+      .post("/accountdeletionreqst",companyAuth,errorCatch(requestDeleteAccount))
+      .post("/verifyOtp",companyAuth,errorCatch(verifyOtp))
 export { companyRouter };

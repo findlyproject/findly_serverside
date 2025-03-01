@@ -3,7 +3,7 @@ import { EmailUs } from "../Controller/ContactUs";
 import { errorCatch } from "../middleware/tryCatch";
 import { userAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { reportuser } from "../Controller/reportController/user";
-import { findUsers, refreshAccessToken, resetPasword, sendOtp } from "../Controller/authController/user";
+import { findUsers, refreshAccessToken, requestDeleteAccount, resetPasword, sendOtp, verifyOtp } from "../Controller/authController/user";
 import { generateSignedUrl } from "../Utils/fileUpload";
 import ressumeupload from '../middleware/ressumeUploading'
 import { validateData } from "../middleware/zodValidation";
@@ -12,11 +12,7 @@ import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } 
 import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
 import { applydeJobs, applyToJob, getsavedjobs, saveJobs } from "../Controller/jobController/user";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
-<<<<<<< HEAD
 import { createCompanyRating, deleteReview } from "../Controller/ratingController/user";
-=======
-import { createCompanyRating } from "../Controller/ratingController/user";
->>>>>>> e6501b5a2aa3b6fb5f90a34c361dedf35e68053d
 import { findreviewsByTargetedId } from "../Controller/ratingController/company";
 
 const userRouter = express.Router()
@@ -51,12 +47,8 @@ userRouter
 
 .post("/resetpasword/:email/:password", errorCatch(resetPasword))
 .post("/sendotp/:email", errorCatch(sendOtp))
-<<<<<<< HEAD
-.delete("/deletereview/:id",userAuth,errorCatch(deleteReview))
-=======
 
 .get("/findrating/:targetedId",userAuth,errorCatch(findreviewsByTargetedId))
->>>>>>> e6501b5a2aa3b6fb5f90a34c361dedf35e68053d
 
 
 
@@ -92,4 +84,9 @@ userRouter
     .post("/companyrating/:targetedId",userAuth,errorCatch(createCompanyRating))
    
     .get("/findrating/:targetedId",userAuth,errorCatch(findreviewsByTargetedId))
+    .post("/accountdeletionreqst",userAuth,errorCatch(requestDeleteAccount))
+    .post("/verifyOtp",userAuth,errorCatch(verifyOtp))
+
+
+
 export {userRouter} 

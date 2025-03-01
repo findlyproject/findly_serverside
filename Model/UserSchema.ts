@@ -19,6 +19,7 @@ const UserSchema = new Schema<IUser>(
       stateName:{type: String},
       city: {type:String}
     },
+    deletionReasons:[{type:String}],
     reports: [{ type: Schema.Types.ObjectId, ref: "Report" }],
 
     gender: { type: String, enum: ["Male", "Female", "Other"] },

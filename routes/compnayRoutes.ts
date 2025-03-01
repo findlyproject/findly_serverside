@@ -1,6 +1,6 @@
 import express from "express";
 import { errorCatch } from "../middleware/tryCatch";
-import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, } from "../Controller/authController/company";
+import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, requestDeleteAccount, verifyOtp, } from "../Controller/authController/company";
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
 import { CompanySchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
@@ -78,4 +78,9 @@ companyRouter
 
 
       .post(`/follow/:id`,userAuthMiddleware,errorCatch(FollowAndUnfollowCompany))
+
+
+      //delete account
+      .post("/accountdeletionreqst",companyAuth,errorCatch(requestDeleteAccount))
+      .post("/verifyOtp",companyAuth,errorCatch(verifyOtp))
 export { companyRouter };

@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
 
+
+
 export const sendOTP = async (email: string, otp: string): Promise<void> => {
   const transporter = nodemailer.createTransport({
     service: 'gmail', // Use your email service (e.g., 'gmail', 'outlook', etc.)
@@ -10,10 +12,10 @@ export const sendOTP = async (email: string, otp: string): Promise<void> => {
   });
 
   const mailOptions = {
-    from: process.env.APP_EMAIL, // sender address
-    to: email, // recipient's email
-    subject: 'Your OTP Code', // email subject
-    text: `Your OTP code is: ${otp}`, // email body (plain text)
+    from: process.env.APP_EMAIL, 
+    to: email, 
+    subject: 'Your OTP Code', 
+    text: `Your OTP code is: ${otp}`,
   };
 
   try {

@@ -112,7 +112,7 @@ export interface ICompany extends Document {
   isDeleted: boolean;
   headquarters: string;
   foundedAt: string;
-  
+  deletionReasons:string[]
 }
 
 
@@ -123,6 +123,7 @@ export interface IUser extends Document {
   password: string;
   phoneNumber?: string;
   dateOfBirth?: Date;
+  deletionReasons:string[]
   location?: {
     country: string;
     countryName: string;
@@ -253,10 +254,6 @@ export interface IJobPost {
     min:number,
     max:number
   }
-<<<<<<< HEAD
-=======
-
->>>>>>> 6e13e2f3e9994f302fed610b4d0570b20d9a024d
   images: string[]; 
   likes: Types.ObjectId[];
   comments: Types.ObjectId[];

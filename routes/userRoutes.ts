@@ -3,7 +3,7 @@ import { EmailUs } from "../Controller/ContactUs";
 import { errorCatch } from "../middleware/tryCatch";
 import { userAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { reportuser } from "../Controller/reportController/user";
-import { findUsers, refreshAccessToken, resetPasword, sendOtp } from "../Controller/authController/user";
+import { findUsers, refreshAccessToken, requestDeleteAccount, resetPasword, sendOtp, verifyOtp } from "../Controller/authController/user";
 import { generateSignedUrl } from "../Utils/fileUpload";
 import ressumeupload from '../middleware/ressumeUploading'
 import { validateData } from "../middleware/zodValidation";
@@ -80,4 +80,9 @@ userRouter
     .post("/companyrating/:targetedId",userAuth,errorCatch(createCompanyRating))
    
     .get("/findrating/:targetedId",userAuth,errorCatch(findreviewsByTargetedId))
+    .post("/accountdeletionreqst",userAuth,errorCatch(requestDeleteAccount))
+    .post("/verifyOtp",userAuth,errorCatch(verifyOtp))
+
+
+
 export {userRouter} 

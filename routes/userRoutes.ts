@@ -10,7 +10,7 @@ import { validateData } from "../middleware/zodValidation";
 import { IdSchema, LoginSchema, ReportSchema, SubscriptionSchema, UserSchema, VerificationSchema } from "../Utils/zodSchema";
 import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } from "../Controller/authController/user";
 import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
-import { applyToJob } from "../Controller/jobController/user";
+import { applydeJobs, applyToJob, getsavedjobs, saveJobs } from "../Controller/jobController/user";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 import { createCompanyRating, deleteReview } from "../Controller/ratingController/user";
 import { findreviewsByTargetedId } from "../Controller/ratingController/company";
@@ -54,10 +54,14 @@ userRouter
 
 
 //apply job
-.post("/applytojob/:jobId", userAuthMiddleware, ressumeupload, errorCatch(applyToJob))
+.post("/applytojob/:jobId", userAuth, ressumeupload, errorCatch(applyToJob))
+.get("/applyedjobs", userAuth, errorCatch(applydeJobs))
 .get("/allusers",errorCatch(findUsers))
 .get("/getTotalRevenue",errorCatch(getTotalRevenue))
 .get("/findprimeclients",errorCatch(getPrimeClients))
+.post("/saveJobs/:id",userAuth,errorCatch(saveJobs))
+.get("/getsavedjobs", userAuth, errorCatch(getsavedjobs))
+
 .post(
     "/payment/createSubscription",
     userAuth,

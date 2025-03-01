@@ -11,10 +11,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+console.log("ddd",process.env.APP_EMAIL);
+
+
 // Function to send OTP via email
 export const sendOTP = async (email: string, otp: string): Promise<void> => {
   const mailOptions = {
-    from: process.env.APP_EMAIL, // sender address
+    from: process.env.APP_EMAIL, 
     to: email,                   // recipient address
     subject: "Your OTP for Registration",  // Email subject
     text: `Your OTP is: ${otp}. Please use this to complete your registration.`, // Email body

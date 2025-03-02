@@ -4,6 +4,7 @@ import { JobApplication } from "../../model/JobApplicationSchema"
 import User from "../../model/UserSchema";
 import { CustomError } from "../../Utils/errorHandler";
 import { JobSave } from "../../model/JobSaveScheema";
+import { Company } from "../../model/CompanySchema";
 
 
 export const applyToJob = async (req: Request, res: Response): Promise<void> => {
@@ -159,4 +160,45 @@ export const getsavedjobs = async (req:Request,res:Response):Promise<void>=>{
         data: savedJobs
     });
     
+}
+
+/// get simular jobs and same company jobs
+
+export const similarjobs = async (req:Request,res:Response):Promise<void>=>{
+    const { jobType, companyName } = req.params;
+console.log({ jobType, companyName });
+
+const page = Number(req.query.page) || 1;
+const limit = 4;
+const skip = (page - 1) * limit;
+
+const totalJobs = await JobPost.countDocuments({ 
+    jobType, 
+});
+console.log("totalJobs,totalJobs",totalJobs);
+
+const jobs = await JobPost.find({ 
+    jobType, 
+})
+    .populate("company")
+    .skip(skip)
+    .limit(limit);
+
+    const allJobs = await JobPost.find()
+        .populate("company")
+        .skip(skip)
+        .limit(limit);
+    const filteredJobs = allJobs.filter(job => job?.company?.name == companyName);
+    
+    res.status(200).json({
+    success: true,
+    message: "Jobs filtered successfully",
+    similarjobs:jobs,
+    similarcompany:filteredJobs,
+    currentPage: page,
+    totalPages: Math.ceil(totalJobs / limit),
+    totalJobs,
+    hasMore: page * limit < totalJobs,
+});
+
 }

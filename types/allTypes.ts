@@ -235,7 +235,7 @@ export interface ITitles extends Document{
 
 export interface IJobPost {
   title: string;
-  company: Types.ObjectId;
+  company: ICompany;
   location: string;
   jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
   experienceLevel:"Entry" | "Mid" | "Senior" | "Expert";
@@ -253,10 +253,6 @@ export interface IJobPost {
     min:number,
     max:number
   }
-<<<<<<< HEAD
-=======
-
->>>>>>> 6e13e2f3e9994f302fed610b4d0570b20d9a024d
   images: string[]; 
   likes: Types.ObjectId[];
   comments: Types.ObjectId[];

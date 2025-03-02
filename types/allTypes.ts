@@ -112,7 +112,7 @@ export interface ICompany extends Document {
   isDeleted: boolean;
   headquarters: string;
   foundedAt: string;
-  
+  deletionReasons:string[]
 }
 
 
@@ -123,6 +123,7 @@ export interface IUser extends Document {
   password: string;
   phoneNumber?: string;
   dateOfBirth?: Date;
+  deletionReasons:string[]
   location?: {
     country: string;
     countryName: string;

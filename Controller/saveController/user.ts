@@ -3,6 +3,7 @@ import { Post } from "../../model/PostSchema";
 import { CustomError } from "../../Utils/errorHandler";
 import { Save } from "../../model/SaveSchema";
 
+//saved controller
 export const SaveandUnsavePost=async(req:Request,res:Response):Promise<void>=>{
     const userId=req.user?.id
     const postId=req.params.id

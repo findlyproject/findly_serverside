@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { ISavePost } from "../types/allTypes";
-
+//save schema
 const SaveSchema=new Schema<ISavePost>({
     postId:{type:Schema.Types.ObjectId,ref:"Post"},
     userId:{type:Schema.Types.ObjectId,ref:"User"},

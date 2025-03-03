@@ -118,7 +118,7 @@ postRouter
 
 
 
-  //save
+  //save routes
   .post("/user/save/:id",userAuthMiddleware,errorCatch(SaveandUnsavePost))
   .get("/user/saveds",userAuthMiddleware,errorCatch(AllSaved))
   .get("/user/all",userAuthMiddleware,errorCatch(All))

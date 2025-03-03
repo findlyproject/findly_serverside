@@ -1,11 +1,10 @@
 import express from "express";
 import { errorCatch } from "../middleware/tryCatch";
-import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, } from "../Controller/authController/company";
+import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, requestDeleteAccount, verifyOtp, } from "../Controller/authController/company";
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
 import { CompanySchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
-import { companyAuthMiddleware } from "../middleware/companyAuthentication";
-import { createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, updateJobPost } from "../Controller/jobController/company";
+import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
@@ -15,7 +14,11 @@ import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/use
 
 import { spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
-import { deleteReview, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
+
+
+
+
+import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
 
 const companyRouter = express.Router();
 
@@ -25,7 +28,7 @@ companyRouter
     
   .post(
     "/send-otp",
-    // validateData(CompanySchema),
+    // validateData(CompanySchema), 
     errorCatch(initialRegister)
   )
   .post(
@@ -41,12 +44,14 @@ companyRouter
   .post("/login",validateData(LoginSchema),errorCatch(login))
   .post("/logout",companyAuth, errorCatch(logOut))
   .post("/jobposting",companyAuth,validateData(jobPostSchema),errorCatch(createJobPost))
-  .patch("/updatejobs/:jobId",companyAuthMiddleware,errorCatch(updateJobPost))
-  .delete("/deletejobpost/:jobId",companyAuthMiddleware,errorCatch(deleteJobPost))
+  .patch("/updatejobs/:jobId",companyAuth,errorCatch(updateJobPost))
+  .delete("/deletejobpost/:jobId",companyAuth,errorCatch(deleteJobPost))
   .get("/getalljobs",userAuthMiddleware,errorCatch(getAllJobPost))
   .get("/getJobsById/:id",userAuthMiddleware,errorCatch(getJobsById))
   .get("/findapplications",companyAuth,errorCatch(findAppliedUsers))
-  .get("/findapplications/:userId/:jobId",companyAuthMiddleware,errorCatch(findUserApplication))
+  .get("/findapplications/:userId/:jobId",companyAuth,errorCatch(findUserApplication))
+  .put("/reject-application/:userId/:jobId", companyAuth, errorCatch(rejectJobApplication))
+  .put("/approve/:userId/:jobId", companyAuth,errorCatch(approveJobApplication))
   .post("/sendotp/:email",errorCatch(sendOtp))
   .post("/resetpassword/:email/:password",errorCatch(resetPasword))
   .get("/allcompanies",errorCatch(allCompanies))
@@ -60,7 +65,7 @@ companyRouter
     .post(
         "/payment/verifySubscription/:sessionId",
         companyAuth,
-        validateData(undefined, VerificationSchema),
+        validateData(undefined, VerificationSchema), 
         errorCatch(verifySubscription)
       )  
       .post(
@@ -72,9 +77,18 @@ companyRouter
       .get("/getjobs",companyAuth,errorCatch(getJobsByCompanies))
       .post("/companyrating/:targetedId",companyAuth,errorCatch(createCompanyRating))
       .delete("/deletereview/:id",companyAuth,errorCatch(deleteReview))
+      .delete("/deleteReview/:id",companyAuth,errorCatch(deleteReviews))
       .get("/findrating/:targetedId",companyAuth,errorCatch(findreviewsByTargetedId))
 
 
 
       .post(`/follow/:id`,userAuthMiddleware,errorCatch(FollowAndUnfollowCompany))
+
+
+
+
+      //delete account
+      .post("/accountdeletionreqst",companyAuth,errorCatch(requestDeleteAccount))
+      .post("/verifyOtp",companyAuth,errorCatch(verifyOtp))
+
 export { companyRouter };

@@ -1,7 +1,7 @@
 import mongoose, {connection, Schema } from "mongoose";
 import { IUser } from "../types/allTypes";
 const profile = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735360/profile_jtwxaj.png"
-const banner = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735269/banner_ozuamb.png"
+const banner = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1740220803/linkedinheaders-desktop_fw5iio.jpg"
 
 
 const UserSchema = new Schema<IUser>(
@@ -19,6 +19,7 @@ const UserSchema = new Schema<IUser>(
       stateName:{type: String},
       city: {type:String}
     },
+    deletionReasons:[{type:String}],
     reports: [{ type: Schema.Types.ObjectId, ref: "Report" }],
 
     gender: { type: String, enum: ["Male", "Female", "Other"] },

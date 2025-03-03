@@ -112,7 +112,7 @@ export interface ICompany extends Document {
   isDeleted: boolean;
   headquarters: string;
   foundedAt: string;
-  
+  deletionReasons:string[]
 }
 
 
@@ -123,6 +123,7 @@ export interface IUser extends Document {
   password: string;
   phoneNumber?: string;
   dateOfBirth?: Date;
+  deletionReasons:string[]
   location?: {
     country: string;
     countryName: string;
@@ -235,7 +236,7 @@ export interface ITitles extends Document{
 
 export interface IJobPost {
   title: string;
-  company: Types.ObjectId;
+  company: ICompany;
   location: string;
   jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
   experienceLevel:"Entry" | "Mid" | "Senior" | "Expert";
@@ -253,7 +254,6 @@ export interface IJobPost {
     min:number,
     max:number
   }
-
   images: string[]; 
   likes: Types.ObjectId[];
   comments: Types.ObjectId[];
@@ -264,6 +264,21 @@ export interface IJobPost {
   updatedAt: Date;
 }    
 
+
+export interface IJobApplication extends Document {
+  jobId: Types.ObjectId | { _id: Types.ObjectId; title: string };
+  userId: Types.ObjectId | { _id: Types.ObjectId; email: string; firstName: string };
+  companyId: Types.ObjectId | { _id: Types.ObjectId; name: string }; // Ensuring `_id` in populated data
+  resumeName: string;
+  resumeurl: string;
+  coverLetter?: string;
+  introVideoName?: string;
+  introVideoUrl?: string;
+  status: "Pending" | "Accepted" | "Rejected";
+  createdAt?: Date;
+  updatedAt?: Date;
+  offerLetter?:string;
+}
 export interface IMessage extends Document {
   sender: mongoose.Types.ObjectId;
   receiver: mongoose.Types.ObjectId;

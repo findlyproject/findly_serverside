@@ -1,6 +1,8 @@
+import { SubscriptionPlan } from './../../model/SubscriptionSchema';
+import { subscription } from './../../../findly_clientside/src/lib/store/features/actions/subscriptionActions';
 import { Request, Response } from "express";
 import Stripe from "stripe";
-import { SubscriptionPlan } from "../../model/SubscriptionSchema";
+
 import User from "../../model/UserSchema";
 import { Company } from "../../model/CompanySchema";
 import jwt from "jsonwebtoken";
@@ -196,3 +198,13 @@ export const findSubscriptionById = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "Completed", subscription });
 };
 
+export const PremiumDetailsOfActiveUser=async(req:Request,res:Response):Promise<void>=>{
+  const userId=req.user?.id
+  const subscription=await SubscriptionPlan.find({userId:userId})
+  if(!subscription){
+    throw new CustomError("subscription user not found",404)
+
+
+  }
+res.status(200).json({status:true,message:"subscription details",subscription})
+}

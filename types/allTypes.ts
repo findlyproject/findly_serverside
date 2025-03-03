@@ -253,10 +253,6 @@ export interface IJobPost {
     min:number,
     max:number
   }
-<<<<<<< HEAD
-=======
-
->>>>>>> 6e13e2f3e9994f302fed610b4d0570b20d9a024d
   images: string[]; 
   likes: Types.ObjectId[];
   comments: Types.ObjectId[];
@@ -314,4 +310,12 @@ export interface ICommunityMessage extends Document{
   type:string;
   isDelete:boolean;
   timestamp:Date
+}
+
+
+export interface ISavePost extends Document{
+  postId:mongoose.Types.ObjectId
+  userId:mongoose.Types.ObjectId
+  timestamp:Date
+
 }

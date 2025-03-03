@@ -411,22 +411,24 @@ interface Ifilter {
 }
 
 export const getAllJobPost = async (req: Request, res: Response): Promise<void> => {
-    const page = Number(req.query.page) || 1;  
-    const limit = 10;
-    const skip = (page - 1) * limit;
+    const page = Math.max(1, Number(req.query.page) || 1); // Ensures page is at least 1
+const limit = 10;
+const skip = (page - 1) * limit;
 
-    let filters: Record<string, any> = { isDeleted: false };
+let filters: Record<string, any> = { isDeleted: false };
 
-    const parseQueryParam = (param: any): string[] => {
-        if (!param) return [];
-        return Array.isArray(param) ? param.map(String) : String(param).split(",");
-    };
+const parseQueryParam = (param: any): string[] => {
+    if (!param) return [];
+    return Array.isArray(param) ? param.map(String) : String(param).split(",");
+};
 
-    const filterKeys = ["title", "experienceLevel", "industry", "jobType"];
-    filterKeys.forEach((key) => {
-        const values = parseQueryParam(req.query[key]);
-        if (values.length) filters[key] = { $in: values };
-    });
+const filterKeys = ["title", "experienceLevel", "industry", "jobType"];
+filterKeys.forEach((key) => {
+    const values = parseQueryParam(req.query[key]).filter(Boolean); // Removes empty strings
+    if (values.length > 0) {
+        filters[key] = { $in: values };
+    }
+});
 
     const jobs = await JobPost.find(filters)
         .populate("company")
@@ -440,12 +442,10 @@ export const getAllJobPost = async (req: Request, res: Response): Promise<void> 
         success: true,
         message: "All jobs fetched successfully",
         jobs,
-
         currentPage: page,
         totalPages: Math.ceil(totalJobs / limit),
         totalJobs,
         hasMore: page * limit < totalJobs,
-
     });
 };
 

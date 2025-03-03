@@ -112,7 +112,7 @@ export interface ICompany extends Document {
   isDeleted: boolean;
   headquarters: string;
   foundedAt: string;
-  
+  deletionReasons:string[]
 }
 
 
@@ -123,6 +123,7 @@ export interface IUser extends Document {
   password: string;
   phoneNumber?: string;
   dateOfBirth?: Date;
+  deletionReasons:string[]
   location?: {
     country: string;
     countryName: string;
@@ -235,7 +236,7 @@ export interface ITitles extends Document{
 
 export interface IJobPost {
   title: string;
-  company: Types.ObjectId;
+  company: ICompany;
   location: string;
   jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
   experienceLevel:"Entry" | "Mid" | "Senior" | "Expert";

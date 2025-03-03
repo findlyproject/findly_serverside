@@ -5,6 +5,17 @@ import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
 import { CustomError } from "../../Utils/errorHandler";
 import { IUser } from "../../types/allTypes";
 import nodemailer from "nodemailer";
+import { generateOTP } from "../../Utils/otpGenerator";
+// import { sendOTP } from "../../Utils/mailer";
+import { sendOTP } from "../../Utils/otpService";
+
+
+
+interface OTPStore{
+  [key:string]:{otp:string;createdAt:number};
+}
+const OTP_EXPIRATION_TIME = 2 * 60 * 1000;
+const otpStore:OTPStore={}
 
 //Registration
 export const RegistrationUser = async (
@@ -28,7 +39,7 @@ export const RegistrationUser = async (
     throw new CustomError("Invalid email format", 400);
   }
 
-  const existingUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email,isDeleted:false });
   if (existingUser) {
     throw new CustomError("User already exists", 400);
   }
@@ -49,12 +60,12 @@ export const RegistrationUser = async (
   await user.save();
 
   const token = jwt.sign(
-    { id: user._id, email: user.email },
+    { id: user._id, email: user.email,type:"User", },
     process.env.USER_SECRETKEY!,
     { expiresIn: "1d" }
   );
   const refreshToken = jwt.sign(
-    { id: user._id, email: user.email },
+    { id: user._id, email: user.email,type:"User", },
     process.env.USER_SECRETKEY!,
     { expiresIn: "7d" }
   );
@@ -87,7 +98,7 @@ export const RegistrationUser = async (
 //login
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
-  const logeduser = await User.findOne({ email });
+  const logeduser = await User.findOne({ email,isDeleted:false });
   if (!logeduser) {
     throw new CustomError("email id is wrong", 404);
   }
@@ -122,7 +133,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       maxAge: 24 * 60 * 60 * 1000,
     });
     const refreshToken = jwt.sign(
-      { id: logeduser._id, email: logeduser.email },
+      { id: logeduser._id, email: logeduser.email,type:"User", },
       process.env.USER_SECRETKEY!,
       { expiresIn: "7d" }
     );
@@ -528,3 +539,97 @@ export const findUsers=async(req:Request,res:Response)=>{
   const allUsers=await User.find()
  res.status(200).json({success:true,message:"users found it ",allUsers})
 } 
+
+export const requestDeleteAccount=async(req:Request,res:Response)=>{
+  const userId=req.user?.id;
+
+  const user=await User.findById(userId)
+  if(!user){
+    res.status(404).json({success:false,message:"user not found"})
+    return
+  }
+
+
+ let email=user.email
+const otp=generateOTP()
+console.log("otp",otp);
+
+otpStore[email]={otp,createdAt:Date.now()}
+try {
+  console.log("otpinn",otp);
+  console.log("email",email);
+  await sendOTP(email,otp)
+ 
+  res.status(200).json({
+    message: "OTP sent to your email. Please verify to proceed.",otp
+  });
+} catch (error) {
+  console.error('Error sending OTP:', error);
+      throw new CustomError("Error sending OTP. Please try again later.", 500);
+}
+
+  
+}
+
+export const  verifyOtp=async(req:Request,res:Response)=>{
+         const userId=req.user?.id
+         const {otp,reasons}= req.body
+       
+         
+         const user=await User.findById(userId)
+         if(!user){
+          res.status(404).json({success:false,message:"user not found"})
+          return
+        }
+        const email=user?.email
+        
+         
+     if (Date.now() - otpStore[email]?.createdAt > OTP_EXPIRATION_TIME) {
+        
+            delete otpStore[email]; 
+            res.status(400).json({success:false,message:'OTP has expired. Please request a new one.'})
+             return 
+          }
+          if (otpStore[email]?.otp !== otp.toString()) {
+            throw new CustomError("Invalid OTP. Please try again.", 400);
+          }
+
+          if (user && user.role === "premium" && user.subscriptionEndDate) {
+            const currentDate = new Date();
+      
+            if (user.subscriptionEndDate < currentDate) {
+              user.role = "user";
+              user.subscriptionStartDate = null;
+              user.subscriptionEndDate = null;
+              await user.save();
+            }
+          }
+          user.isDeleted=true
+          user.deletionReasons=reasons
+
+          
+          res.clearCookie("token", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+          });
+          res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+          });
+        
+          res.clearCookie("subscriptionToken", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+          });
+          res.clearCookie("type", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+          });
+          await user.save()
+          res.status(200).json({success:true,message:"successfully deleted"})
+         
+}

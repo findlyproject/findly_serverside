@@ -3,14 +3,14 @@ import { EmailUs } from "../Controller/ContactUs";
 import { errorCatch } from "../middleware/tryCatch";
 import { userAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { reportuser } from "../Controller/reportController/user";
-import { findUsers, refreshAccessToken, resetPasword, sendOtp } from "../Controller/authController/user";
+import { findUsers, refreshAccessToken, requestDeleteAccount, resetPasword, sendOtp, verifyOtp } from "../Controller/authController/user";
 import { generateSignedUrl } from "../Utils/fileUpload";
 import ressumeupload from '../middleware/ressumeUploading'
 import { validateData } from "../middleware/zodValidation";
 import { IdSchema, LoginSchema, ReportSchema, SubscriptionSchema, UserSchema, VerificationSchema } from "../Utils/zodSchema";
 import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } from "../Controller/authController/user";
 import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
-import { applydeJobs, applyToJob, getsavedjobs, saveJobs } from "../Controller/jobController/user";
+import { applydeJobs, applyToJob, getsavedjobs, saveJobs, similarjobs } from "../Controller/jobController/user";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 import { createCompanyRating, deleteReview } from "../Controller/ratingController/user";
 import { findreviewsByTargetedId } from "../Controller/ratingController/company";
@@ -47,7 +47,6 @@ userRouter
 
 .post("/resetpasword/:email/:password", errorCatch(resetPasword))
 .post("/sendotp/:email", errorCatch(sendOtp))
-.delete("/deletereview/:id",userAuth,errorCatch(deleteReview))
 
 .get("/findrating/:targetedId",userAuth,errorCatch(findreviewsByTargetedId))
 
@@ -85,4 +84,11 @@ userRouter
     .post("/companyrating/:targetedId",userAuth,errorCatch(createCompanyRating))
    
     .get("/findrating/:targetedId",userAuth,errorCatch(findreviewsByTargetedId))
+    .post("/accountdeletionreqst",userAuth,errorCatch(requestDeleteAccount))
+    .post("/verifyOtp",userAuth,errorCatch(verifyOtp))
+
+
+
+    .get("/similarjobs/:jobType/:companyName",userAuth,errorCatch(similarjobs))
+
 export {userRouter} 

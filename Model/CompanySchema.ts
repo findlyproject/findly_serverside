@@ -24,7 +24,7 @@ const CompanySchema = new Schema<ICompany>(
         position: { type: String, required: true }, 
       },
     ],
-
+    deletionReasons:[{type:String}],
     role: {
       type: String,
       enum: ["company", "premium"],

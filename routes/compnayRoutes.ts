@@ -14,7 +14,12 @@ import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/use
 
 import { spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
+
+
+
+
 import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
+
 const companyRouter = express.Router();
 
 companyRouter
@@ -80,7 +85,10 @@ companyRouter
       .post(`/follow/:id`,userAuthMiddleware,errorCatch(FollowAndUnfollowCompany))
 
 
+
+
       //delete account
       .post("/accountdeletionreqst",companyAuth,errorCatch(requestDeleteAccount))
       .post("/verifyOtp",companyAuth,errorCatch(verifyOtp))
+
 export { companyRouter };

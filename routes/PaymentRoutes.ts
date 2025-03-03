@@ -4,6 +4,7 @@ import { errorCatch } from "../middleware/tryCatch";
 import {
   createSubscription,
   findSubscriptionById,
+  PremiumDetailsOfActiveUser,
   verifySubscription,
 } from "../Controller/subscriptionController/user";
 import { SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
@@ -30,6 +31,7 @@ paymentRouter
     userAuthMiddleware,
     validateData(undefined, VerificationSchema),
     errorCatch(findSubscriptionById)
-  );
+  )
 
+  .get("/subscriptiondetails",userAuthMiddleware,errorCatch(PremiumDetailsOfActiveUser))
 export { paymentRouter };

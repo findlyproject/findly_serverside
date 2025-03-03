@@ -312,3 +312,11 @@ export interface ICommunityMessage extends Document{
   isDelete:boolean;
   timestamp:Date
 }
+
+
+export interface ISavePost extends Document{
+  postId:mongoose.Types.ObjectId
+  userId:mongoose.Types.ObjectId
+  timestamp:Date
+
+}

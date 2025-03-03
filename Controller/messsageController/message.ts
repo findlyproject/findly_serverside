@@ -289,7 +289,11 @@ export const LeaveCommunity=async(req:Request,res:Response):Promise<void>=>{
     throw new CustomError(`query is required`,400)
   }
 
+<<<<<<< HEAD
+  // const community=await Community.find({name:{ $regex: query, $options: "i" }})
+=======
   const community=await Community.find({name:{ $regex: query, $options: "i" }})
+>>>>>>> 583ad22a9078412c6a72ba2969c9cf00a2606c28
 
   const community=await Community.find({name:{ $regex: query, $options: "i" }}).populate('members');
 

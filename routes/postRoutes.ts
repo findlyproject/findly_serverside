@@ -28,6 +28,7 @@ import { LikeOrDislike } from "../Controller/postController/user";
 import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, IdSchema, ReplySchema } from "../Utils/zodSchema";
 import { ReportPost } from "../Controller/reportController/user";
+import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
 const postRouter = express.Router();
 
 postRouter
@@ -36,9 +37,9 @@ postRouter
   .get("/allposts", getAllPosts)
   .get("/post/:id", errorCatch(getpostbyid))
   .get(
-    "/owner/:ownerId",
+    "/owner",
     userAuthMiddleware,
-    validateData(IdSchema),
+    // validateData(IdSchema),
     errorCatch(getPostsByOwner)
   )
   .post(
@@ -113,6 +114,12 @@ postRouter
   )
 
   //report
-  .post("/user/reportpost", userAuthMiddleware, errorCatch(ReportPost));
+  .post("/user/reportpost", userAuthMiddleware, errorCatch(ReportPost))
 
+
+
+  //save routes
+  .post("/user/save/:id",userAuthMiddleware,errorCatch(SaveandUnsavePost))
+  .get("/user/saveds",userAuthMiddleware,errorCatch(AllSaved))
+  .get("/user/all",userAuthMiddleware,errorCatch(All))
 export default postRouter;

@@ -6,7 +6,7 @@ const banner = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735269/ba
 const CompanySchema = new Schema<ICompany>(
   {
     name: { type: String, required: true },
-    logo: { type: String, required: false },
+    logo: { type: String, required: true },
     about: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String,required: true, },
@@ -16,7 +16,7 @@ const CompanySchema = new Schema<ICompany>(
       default: banner,
     },
     founder:{type:String,require:true},
-    foundedAt:{type:String},
+    foundedAt:{type:Date},
     headquarters:{type:String},
     employees: [
       {
@@ -31,32 +31,26 @@ const CompanySchema = new Schema<ICompany>(
       default: "company",
     },
     type:{type:String},
-    age: { type: Number, required: false },
     IndustryType: { type: String, required: false },
 
     address: {
-      pincode: { type: String, required: true },
+      pincode: { type: String,},
       landmark: { type: String },
-      city: { type: String, required: true },
-      state: { type: String, required: true },
+      city: { type: String,},
+      state: { type: String, },
       country: { type: String, required: true },
     },
-
     followers:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
-
-
     socialMedia: {
       facebook: { type: String, default: "" },
       instagram: { type: String, default: "" },
       linkedin: { type: String, default: "" },
       twitter: { type: String, default: "" },
     },
-
     subscriptionEndDate: { type: Date, default: null },
     subscriptionStartDate: { type: Date, default: null },
     isBlocked: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
-    startingDate:{ type: Date, default: null },
     services:[
       {type:String,require}
     ],

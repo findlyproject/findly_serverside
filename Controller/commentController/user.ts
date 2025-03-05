@@ -37,6 +37,7 @@ export const addCommentToPost = async (
   const newComment = new Comment({
     user: req.user?.id,
     comment,
+    userModel:req.user?.type==='Company'?'Company':'User',
   });
 
   await newComment.save();
@@ -126,7 +127,8 @@ export const getCommentById = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const comment = await Comment.findById(req.params.id);
+  console.log("req.params.id", req.params.id);
+  const comment = await Comment.findById(req.params.id).populate("user");
 
   if (!comment) {
     throw new CustomError("No post found containing this comment", 404);

@@ -1,10 +1,11 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 
+
 export interface IReport extends Document {
   reportedBy: Types.ObjectId;
   reason: string;
   reportedAt: Date;
-  isDeleted: boolean;
+  isDeleted: boolean;  
 }
 
 export interface IReply extends Document {
@@ -17,6 +18,7 @@ export interface IReply extends Document {
 
 export interface IComment extends Document {
   user: Types.ObjectId;
+  userModel: "User" | "Company"; 
   comment: string;
   commentedAt: Date;
   replies: Types.ObjectId[];
@@ -75,7 +77,6 @@ export interface ICompany extends Document {
 
 
   banner?: string;
-  startingDate:Date
 
   employees: {
     employee: string; 
@@ -84,7 +85,6 @@ export interface ICompany extends Document {
 
   role?: "company" | "premium";
     type:string
-  age?: number;
   IndustryType?: string;
   founder:string
   address: {
@@ -111,7 +111,7 @@ export interface ICompany extends Document {
   isBlocked?: boolean;
   isDeleted: boolean;
   headquarters: string;
-  foundedAt: string;
+  foundedAt: Date;
   deletionReasons:string[]
 }
 

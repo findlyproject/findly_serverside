@@ -107,7 +107,7 @@ export interface ICompany extends Document {
   services:string[]
 
   subscriptionEndDate: Date | null;
-  subscriptionStartDate: Date | null;
+  subscriptionStartDate: Date | null|undefined;
   isBlocked?: boolean;
   isDeleted: boolean;
   headquarters: string;

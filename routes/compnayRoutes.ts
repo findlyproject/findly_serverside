@@ -68,7 +68,7 @@ companyRouter
         validateData(undefined, VerificationSchema), 
         errorCatch(verifySubscription)
       )  
-      .post(
+      .get(
         "/payment/findsubscriptionbyId/:sessionId",
         companyAuth,
         validateData(undefined, VerificationSchema),

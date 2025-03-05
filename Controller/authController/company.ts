@@ -113,12 +113,12 @@ export const finalRegister = async (req: Request, res: Response): Promise<void> 
   
     // Generate JWT tokens
     const token = jwt.sign(
-        { id: company._id, email: company.email,type:"User", },
+        { id: company._id, email: company.email,type:"Company", },
         process.env.USER_SECRETKEY!,   
         { expiresIn: "1d" }
     );
     const refreshToken = jwt.sign(
-        { id: company._id, email: company.email,type:"User", },
+        { id: company._id, email: company.email,type:"Company", },
         process.env.USER_SECRETKEY!,
         { expiresIn: "7d" }
     );

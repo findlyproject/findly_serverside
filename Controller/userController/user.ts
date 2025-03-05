@@ -8,7 +8,7 @@ export const findCurrentUserDetails = async (
     res: Response
   ): Promise<void> => {
     const userId = req.user?.id;
-    if (!userId) {
+    if (!userId) {  
       throw new CustomError("User ID is missing",404);
     }
   

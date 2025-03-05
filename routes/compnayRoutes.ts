@@ -24,7 +24,6 @@ companyRouter
     
   .post(
     "/send-otp",
-    // validateData(CompanySchema),
     errorCatch(initialRegister)
   )
   .post(
@@ -33,8 +32,8 @@ companyRouter
   )
   .post(
     "/final-register",
-    // validateData(CompanySchema),
     upload.single("logo"),
+    validateData(CompanySchema),
     errorCatch(finalRegister)
   )
   .post("/login",validateData(LoginSchema),errorCatch(login))

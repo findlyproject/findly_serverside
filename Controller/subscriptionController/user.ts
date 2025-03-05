@@ -1,6 +1,8 @@
+import { SubscriptionPlan } from './../../model/SubscriptionSchema';
+import { subscription } from './../../../findly_clientside/src/lib/store/features/actions/subscriptionActions';
 import { Request, Response } from "express";
 import Stripe from "stripe";
-import { SubscriptionPlan } from "../../model/SubscriptionSchema";
+
 import User from "../../model/UserSchema";
 import { Company } from "../../model/CompanySchema";
 import jwt from "jsonwebtoken";
@@ -39,6 +41,7 @@ export const createSubscription = async (
   }
 const route=userId?"user":"company"
 console.log("route",route);
+console.log("plan",plan);
 
   const amountInINR = price * 100;
 
@@ -78,6 +81,21 @@ console.log("route",route);
     ? "UserSubscription"
     : "CompanySubscription";
 
+
+
+    const getEndDate = (plan: string): Date => {
+      const startDate = new Date();
+      switch (plan.toLowerCase()) {
+        case "one month":
+          return new Date(startDate.setMonth(startDate.getMonth() + 1));
+        case "six month":
+          return new Date(startDate.setMonth(startDate.getMonth() + 6));
+        case "one year":
+          return new Date(startDate.setMonth(startDate.getMonth() + 12));
+        default:
+          throw new CustomError("Invalid subscription plan", 400);
+      }
+    };
   let subscription = await SubscriptionPlan.findOne({
     $or: [{ userId }, { companyId }],
   });
@@ -91,11 +109,13 @@ console.log("route",route);
     type: setType,
     sessionId: session.id,
     startDate: new Date(),
-    endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+    endDate: getEndDate(plan)
   });
+  console.log("subscription.endDate",subscription.endDate);
+  
 
   await subscription.save();
-
+  console.log("subscription.endDate saved",subscription.endDate);
   subscription.features = featuresString;
   await subscription.save();
   res.status(200).json({
@@ -111,6 +131,9 @@ export const verifySubscription = async (req: Request, res: Response) => {
   if (!subscription) {
     throw new CustomError("Payment not found", 404);
   }
+
+  console.log("subscription",subscription);
+  
   let accountInfo = null;
   let accountType = ""; 
 
@@ -128,49 +151,65 @@ export const verifySubscription = async (req: Request, res: Response) => {
   if (!accountInfo) {
     throw new CustomError("User or Company not found", 404);
   }
+console.log("accountInfo",accountInfo);
 
   if (subscription.paymentStatus === "completed") {
     throw new CustomError("Payment has already been processed", 404);
   }
 
   const startDate = new Date();
-  let durationDays = 0;
-
-  if (subscription.plan === "one month") {
-    durationDays = 30;
-  } else if (subscription.plan === "six months") {
-    durationDays = 180;
-  } else if (subscription.plan === "one year") {
-    durationDays = 360;
-  }
-
-  const endDate = new Date();
-  endDate.setDate(startDate.getDate() + durationDays);
-
   subscription.paymentStatus = "completed";
-  await subscription.save();
+ 
+
+  const getEndDate = (plan: string|undefined): Date => {
+    const startDate = new Date();
+    switch (plan?.toLowerCase()) {
+      case "one month":
+        return new Date(startDate.setMonth(startDate.getMonth() + 1));
+      case "six month":
+        return new Date(startDate.setMonth(startDate.getMonth() + 6));
+      case "one year":
+        return new Date(startDate.setMonth(startDate.getMonth() + 12));
+      default:
+        throw new CustomError("Invalid subscription plan", 400);
+    }
+  };
+  const plan=subscription?.plan
+  subscription.startDate=startDate
+  subscription.endDate=getEndDate(plan)
 
   accountInfo.subscriptionStartDate = startDate;
-  accountInfo.subscriptionEndDate = endDate;  
+  accountInfo.subscriptionEndDate = getEndDate(plan)
   accountInfo.role = "premium";
-
+  
   await accountInfo.save();
+  await subscription.save();
 console.log("accountInfo",accountInfo);
 
-  const payload = {
-    userId: accountInfo._id,
-    email: accountInfo.email,
-  };
+ 
+const payload = {   
+  userId: accountInfo._id,
+  email: accountInfo.email,
+};
 
-  const secretKey = process.env.USER_SECRETKEY!;
-  const subscriptionToken = jwt.sign(payload, secretKey, {
-    expiresIn: `${durationDays}d`,
-  });
+const durationDays =
+  accountInfo.subscriptionEndDate && accountInfo.subscriptionStartDate
+    ? (accountInfo.subscriptionEndDate.getTime() - accountInfo.subscriptionStartDate.getTime()) /
+      (1000 * 60 * 60 * 24)
+    : 1; 
 
-  if (!subscriptionToken) {
-    throw new CustomError("Error creating subscription token", 400);
-  }
+console.log("Duration (days):", durationDays);
 
+const secretKey = process.env.USER_SECRETKEY;
+if (!secretKey) throw new CustomError("Secret key is missing", 500);
+
+const expiresIn=durationDays
+
+const subscriptionToken = jwt.sign(payload, secretKey, { expiresIn });
+
+if (!subscriptionToken) {
+  throw new CustomError("Error creating subscription token", 400);
+}
   res.cookie("subscriptionToken", subscriptionToken, {
     httpOnly: false,
     secure: true,
@@ -196,3 +235,13 @@ export const findSubscriptionById = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "Completed", subscription });
 };
 
+export const PremiumDetailsOfActiveUser=async(req:Request,res:Response):Promise<void>=>{
+  const userId=req.user?.id
+  const subscription=await SubscriptionPlan.find({userId:userId})
+  if(!subscription){
+    throw new CustomError("subscription user not found",404)
+
+
+  }
+res.status(200).json({status:true,message:"subscription details",subscription})
+}

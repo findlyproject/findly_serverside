@@ -63,7 +63,7 @@
 
 //         const jobId = req.params.jobId;
 //         const companyId = req.company?.id;
-        
+
 //         const {
 //             title,
 //             location,
@@ -100,7 +100,7 @@
 //         if (salary && typeof salary === "object" && "rate" in salary && "min" in salary && "max" in salary) {
 //             updatedFields.salary = salary;
 //             console.log("ddd");
-            
+
 //         } else if (salary) {
 //             res.status(400).json({ message: "Invalid salary format. Expected an object with rate, min, and max." });
 //             return;
@@ -193,13 +193,13 @@
 // export const getJobsByCompanies=async(req:Request,res:Response)=>{
 //     const type=req.user &&req.user.type
 //     console.log("type",type);
-    
+
 //     if (type !== "Company") {
 //          res.status(403).json({ success: false, message: "Unauthorized" })
 //          return
 //     }
 //     let companyId =type==="Company"?req.user?.id:null
-    
+
 // console.log("companyId",companyId);
 
 
@@ -211,7 +211,7 @@
 // export const findAppliedUsers=async(req:Request,res:Response)=>{
 //         const companyId=req.user?.id;
 //         const appliedUsers=await JobApplication.find({companyId}).populate("userId").populate("jobId")
-       
+
 
 //         res.status(200).json({success:true,message:"found all applications",appliedUsers})
 // }
@@ -225,7 +225,7 @@
 //             throw new CustomError("User ID and Job ID are required", 400);
 //         }
 
-   
+
 //         const application = await JobApplication.findOne({ userId, jobId });
 
 //         if (!application) {
@@ -237,7 +237,7 @@
 //             message: "Application found",
 //             application
 //         });
-   
+
 // };
 
 
@@ -247,117 +247,117 @@ import { JobPost } from "../../model/JobSchema";
 import { CustomError } from "../../Utils/errorHandler";
 import { JobApplication } from "../../model/JobApplicationSchema";
 import nodemailer from "nodemailer";
-
+import { ParsedQs } from "qs";
 export const createJobPost = async (req: Request, res: Response): Promise<void> => {
 
-        const companyId = req.user?.id;
-console.log("heyy");
+    const companyId = req.user?.id;
+    console.log("heyy");
 
 
-        const {
-            title,
-            location,
-            jobType,
-            experienceLevel,
-            industry,
-            description,
-            requirements,
-            jobResponsibilities,
-            salary,
-            applicationDeadline,
-            benefits,
-            contactEmail,
-            contactPhone,
-            status
-        } = req.body;
+    const {
+        title,
+        location,
+        jobType,
+        experienceLevel,
+        industry,
+        description,
+        requirements,
+        jobResponsibilities,
+        salary,
+        applicationDeadline,
+        benefits,
+        contactEmail,
+        contactPhone,
+        status
+    } = req.body;
 
-if (salary && typeof salary === 'object' && 'rate' in salary && 'min' in salary && 'max' in salary) {
-} else {
-    res.status(400).json({ message: "Invalid salary format. Expected an object with rate, min, and max." });
-    return;
-}
+    if (salary && typeof salary === 'object' && 'rate' in salary && 'min' in salary && 'max' in salary) {
+    } else {
+        res.status(400).json({ message: "Invalid salary format. Expected an object with rate, min, and max." });
+        return;
+    }
 
-        const job = new JobPost({
-            title,
-            company:companyId,
-            location,
-            jobType,
-            experienceLevel,
-            industry,
-            description,
-            requirements,
-            jobResponsibilities,
-            salary,
-            applicationDeadline,
-            benefits,
-            contactEmail,
-            contactPhone,
-            status: status || "Open", 
-        });
+    const job = new JobPost({
+        title,
+        company: companyId,
+        location,
+        jobType,
+        experienceLevel,
+        industry,
+        description,
+        requirements,
+        jobResponsibilities,
+        salary,
+        applicationDeadline,
+        benefits,
+        contactEmail,
+        contactPhone,
+        status: status || "Open",
+    });
 
-        await job.save();   
-        res.status(201).json({ message: "Job post created successfully", job });
+    await job.save();
+    res.status(201).json({ message: "Job post created successfully", job });
 
 };
 
 
 export const updateJobPost = async (req: Request, res: Response): Promise<void> => {
 
-        const jobId = req.params.jobId;
-        const companyId = req.company?.id;
-        
-        const {
-            title,
-            location,
-            jobType,
-            experienceLevel,
-            industry,
-            description,
-            requirements,
-            jobResponsibilities,
-            salary,
-            applicationDeadline,
-            benefits,
-            contactEmail,
-            contactPhone,
-            status
-        } = req.body;
+    const jobId = req.params.jobId;
+    const companyId = req.company?.id;
 
-        const job = await JobPost.findOne({ _id: jobId, company: companyId });
+    const {
+        title,
+        location,
+        jobType,
+        experienceLevel,
+        industry,
+        description,
+        requirements,
+        jobResponsibilities,
+        salary,
+        applicationDeadline,
+        benefits,
+        contactEmail,
+        contactPhone,
+        status
+    } = req.body;
 
-        if (!job) {
-            res.status(404).json({ message: "Job post not found or you do not have permission to edit it" });
-            return;
-        }
-        const updatedFields: Record<string, any> = {};
+    const job = await JobPost.findOne({ _id: jobId, company: companyId });
 
-        if (title) updatedFields.title = title;
-        if (location) updatedFields.location = location;
-        if (jobType) updatedFields.jobType = jobType;
-        if (experienceLevel) updatedFields.experienceLevel = experienceLevel;
-        if (industry) updatedFields.industry = industry;
-        if (description) updatedFields.description = description;
-        if (requirements) updatedFields.requirements = requirements;
-        if (jobResponsibilities) updatedFields.jobResponsibilities = jobResponsibilities;
-        if (salary && typeof salary === "object" && "rate" in salary && "min" in salary && "max" in salary) {
-            updatedFields.salary = salary;
-            console.log("ddd");
-            
-        } else if (salary) {
-            res.status(400).json({ message: "Invalid salary format. Expected an object with rate, min, and max." });
-            return;
-        }  
-        if (applicationDeadline) updatedFields.applicationDeadline = applicationDeadline;
-        if (benefits) updatedFields.benefits = benefits;
-        if (contactEmail) updatedFields.contactEmail = contactEmail;
-        if (contactPhone) updatedFields.contactPhone = contactPhone;
-        if (status) updatedFields.status = status;
-        Object.assign(job, updatedFields);
-        await job.save();
-        res.status(200).json({
-            message: "Job post updated successfully",
-            updatedFields
-        });
+    if (!job) {
+        res.status(404).json({ message: "Job post not found or you do not have permission to edit it" });
+        return;
+    }
+    const updatedFields: Record<string, any> = {};
+
+    if (title) updatedFields.title = title;
+    if (location) updatedFields.location = location;
+    if (jobType) updatedFields.jobType = jobType;
+    if (experienceLevel) updatedFields.experienceLevel = experienceLevel;
+    if (industry) updatedFields.industry = industry;
+    if (description) updatedFields.description = description;
+    if (requirements) updatedFields.requirements = requirements;
+    if (jobResponsibilities) updatedFields.jobResponsibilities = jobResponsibilities;
+    if (salary && typeof salary === "object" && "rate" in salary && "min" in salary && "max" in salary) {
+        updatedFields.salary = salary;
+        console.log("ddd");
+
+    } else if (salary) {
+        res.status(400).json({ message: "Invalid salary format. Expected an object with rate, min, and max." });
+        return;
+    }
+    if (applicationDeadline) updatedFields.applicationDeadline = applicationDeadline;
+    if (benefits) updatedFields.benefits = benefits;
+    if (contactEmail) updatedFields.contactEmail = contactEmail;
+    if (contactPhone) updatedFields.contactPhone = contactPhone;
+    if (status) updatedFields.status = status;
+    Object.assign(job, updatedFields);
+    await job.save();
+    res.status(200).json({
+        message: "Job post updated successfully",
+        updatedFields
+    });
 
 
 };
@@ -366,21 +366,21 @@ export const updateJobPost = async (req: Request, res: Response): Promise<void> 
 
 export const deleteJobPost = async (req: Request, res: Response): Promise<void> => {
 
-        const jobId = req.params.jobId; 
-        const companyId = req.company?.id; 
+    const jobId = req.params.jobId;
+    const companyId = req.company?.id;
 
 
-        const job = await JobPost.findOne({ _id: jobId, company: companyId });
+    const job = await JobPost.findOne({ _id: jobId, company: companyId });
 
-        if (!job) {
-            res.status(404).json({ message: "Job post not found or you do not have permission to delete it" });
-            return;
-        }
+    if (!job) {
+        res.status(404).json({ message: "Job post not found or you do not have permission to delete it" });
+        return;
+    }
 
-        job.isDeleted = true;
-        await job.save();
+    job.isDeleted = true;
+    await job.save();
 
-        res.status(200).json({ message: "Job post soft deleted successfully" });
+    res.status(200).json({ message: "Job post soft deleted successfully" });
 
 };
 
@@ -389,161 +389,181 @@ export const deleteJobPost = async (req: Request, res: Response): Promise<void> 
 
 export const getJobsById = async (req: Request, res: Response): Promise<void> => {
     const jobId = req.params.id;
-    
-    if(!jobId){
-    throw new CustomError("job Id is required", 400);
+    if (!jobId) {
+        throw new CustomError("job Id is required", 400);
     }
-    const findJob = await JobPost.findOne({_id:jobId,isDeleted:false}).populate("postedBy");
-    if(!findJob){
+    const findJob = await JobPost.findOne({ _id: jobId, isDeleted: false }).populate("company");
+    if (!findJob) {
         throw new CustomError("job not found", 404);
     }
-    res.status(200).json({status:true,message:"get jobs by id",findJob})  
-    
+    res.status(200).json({ status: true, message: "get jobs by id", findJob })
+
 };
-
-
-
-
 
 ////// get all job post 
 
+interface Ifilter {
+    isDeleted: boolean;
+    workingSchedule?: { $in: string[] };
+    employmentType?: { $in: string[] };
+    salaryType?: { $in: string[] };
+    jobLocation?: { $in: string[] };
+}
+
 export const getAllJobPost = async (req: Request, res: Response): Promise<void> => {
+    const page = Math.max(1, Number(req.query.page) || 1); // Ensures page is at least 1
+const limit = 10;
+const skip = (page - 1) * limit;
 
-    const page = parseInt(req.query.page as string) || 1;  
-    const limit = 10; 
-    const skip = (page - 1) * limit;    
+let filters: Record<string, any> = { isDeleted: false };
 
-    const jobs = await JobPost.find({ isDeleted: false })
+const parseQueryParam = (param: any): string[] => {
+    if (!param) return [];
+    return Array.isArray(param) ? param.map(String) : String(param).split(",");
+};
+
+const filterKeys = ["title", "experienceLevel", "industry", "jobType"];
+filterKeys.forEach((key) => {
+    const values = parseQueryParam(req.query[key]).filter(Boolean); // Removes empty strings
+    if (values.length > 0) {
+        filters[key] = { $in: values };
+    }
+});
+
+    const jobs = await JobPost.find(filters)
         .populate("company")
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
 
-    const totalJobs = await JobPost.countDocuments({ isDeleted: false });
+    const totalJobs = await JobPost.countDocuments(filters);
 
     res.status(200).json({
-        status: true,
+        success: true,
         message: "All jobs fetched successfully",
         jobs,
         currentPage: page,
         totalPages: Math.ceil(totalJobs / limit),
-        totalJobs
+        totalJobs,
+        hasMore: page * limit < totalJobs,
     });
+};
 
-}
-export const getJobsByCompanies=async(req:Request,res:Response)=>{
-    const type=req.user &&req.user.type
-    console.log("type",type);
-    
+
+// jobs by id //
+
+
+export const getJobsByCompanies = async (req: Request, res: Response) => {
+    const type = req.user && req.user.type
+
     if (type !== "Company") {
-         res.status(403).json({ success: false, message: "Unauthorized" })
-         return
+        res.status(403).json({ success: false, message: "Unauthorized" })
+        return
     }
-    let companyId =type==="Company"?req.user?.id:null
-    
+    let companyId = type === "Company" ? req.user?.id : null
 
 
-    const postedJobs=await JobPost.find({company:companyId})
-console.log("postedJobs",postedJobs);
 
-    res.status(200).json({success:true,message:"found it",postedJobs})
+    const postedJobs = await JobPost.find({ company: companyId })
+
+    res.status(200).json({ success: true, message: "found it", postedJobs })
 }
 
-export const findAppliedUsers=async(req:Request,res:Response)=>{
-        const companyId=req.user?.id;
-        const appliedUsers=await JobApplication.find({companyId}).populate("userId").populate("jobId")
-       
+export const findAppliedUsers = async (req: Request, res: Response) => {
+    const companyId = req.user?.id;
+    const appliedUsers = await JobApplication.find({ companyId }).populate("userId").populate("jobId")
 
-        res.status(200).json({success:true,message:"found all applications",appliedUsers})
+
+    res.status(200).json({ success: true, message: "found all applications", appliedUsers })
 }
 
 
 export const findUserApplication = async (req: Request, res: Response) => {
 
-        const { userId, jobId } = req.params; 
-        if (!userId || !jobId) {
-            throw new CustomError("User ID and Job ID are required", 400);
-        }
+    const { userId, jobId } = req.params;
+    if (!userId || !jobId) {
+        throw new CustomError("User ID and Job ID are required", 400);
+    }
 
-   
-        const application = await JobApplication.findOne({ userId, jobId }).populate("userId").populate("jobId")
 
-        if (!application) {
-            throw new CustomError("No application found for this user and job", 404);
-        }
+    const application = await JobApplication.findOne({ userId, jobId }).populate("userId").populate("jobId")
 
-        res.status(200).json({
-            success: true,
-            message: "Application found",
-            application
-        });
-   
+    if (!application) {
+        throw new CustomError("No application found for this user and job", 404);
+    }
+
+    res.status(200).json({
+        success: true,
+        message: "Application found",
+        application
+    });
+
 };
 
 // Function to reject a job application
 
 export const rejectJobApplication = async (req: Request, res: Response) => {
-        const { userId, jobId } = req.params;
-        console.log(userId, jobId)
+    const { userId, jobId } = req.params;
 
-        if (!userId || !jobId) {
-            throw new CustomError("User ID and Job ID are required", 400);
-        }
+    if (!userId || !jobId) {
+        throw new CustomError("User ID and Job ID are required", 400);
+    }
 
-        // Find the application and populate userId and jobId fields
-        const application = await JobApplication.findOne({ userId, jobId })
-            .populate("userId", "email firstName")
-            .populate("jobId", "title");
+    // Find the application and populate userId and jobId fields
+    const application = await JobApplication.findOne({ userId, jobId })
+        .populate("userId", "email firstName")
+        .populate("jobId", "title");
 
-        if (!application) {
-            throw new CustomError("No application found for this user and job", 404);
-        }
+    if (!application) {
+        throw new CustomError("No application found for this user and job", 404);
+    }
 
-        // Ensure userId and jobId are populated objects
-        if (!("email" in application.userId) || !("firstName" in application.userId)) {
-            throw new CustomError("User data is not populated correctly", 500);
-        }
+    // Ensure userId and jobId are populated objects
+    if (!("email" in application.userId) || !("firstName" in application.userId)) {
+        throw new CustomError("User data is not populated correctly", 500);
+    }
 
-        if (!("title" in application.jobId)) {
-            throw new CustomError("Job data is not populated correctly", 500);
-        }
+    if (!("title" in application.jobId)) {
+        throw new CustomError("Job data is not populated correctly", 500);
+    }
 
-        // Update status
-        application.status = "Rejected";
-        await application.save();
+    // Update status
+    application.status = "Rejected";
+    await application.save();
 
-        // Send email notification
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.APP_EMAIL,
-                pass: process.env.APP_PASSWORD,
-            },
-        });
+    // Send email notification
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: process.env.APP_EMAIL,
+            pass: process.env.APP_PASSWORD,
+        },
+    });
 
-        const mailOptions = {
-            from: process.env.APP_EMAIL,
-            to: application.userId.email,  // ✅ Safe access after checking
-            subject: "Job Application Update",
-            text: `Dear ${application.userId.firstName},\n\nWe regret to inform you that your application for the position of ${application.jobId.title} has been rejected.\n\nThank you for your interest.\n\nBest regards,\nCompany Team`,
-        };
+    const mailOptions = {
+        from: process.env.APP_EMAIL,
+        to: application.userId.email,  
+        subject: "Job Application Update",
+        text: `Dear ${application.userId.firstName},\n\nWe regret to inform you that your application for the position of ${application.jobId.title} has been rejected.\n\nThank you for your interest.\n\nBest regards,\nCompany Team`,
+    };
 
-        await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 
-        res.status(200).json({
-            success: true,
-            message: "Application rejected and email sent to the user",
-        });
+    res.status(200).json({
+        success: true,
+        message: "Application rejected and email sent to the user",
+    });
 
-   
+
 };
 
 export const approveJobApplication = async (req: Request, res: Response): Promise<void> => {
     const { userId, jobId } = req.params;
-    const { offerLetter } = req.body; 
+    const { offerLetter } = req.body;
 
     if (!userId || !jobId || !offerLetter) {
-         res.status(400).json({ success: false, message: "User ID, Job ID, and offer letter are required" });
-         return
+        res.status(400).json({ success: false, message: "User ID, Job ID, and offer letter are required" });
+        return
     }
 
     const application = await JobApplication.findOne({ userId, jobId })
@@ -551,22 +571,22 @@ export const approveJobApplication = async (req: Request, res: Response): Promis
         .populate("jobId", "title");
 
     if (!application) {
-         res.status(404).json({ success: false, message: "No application found for this user and job" });
-         return
+        res.status(404).json({ success: false, message: "No application found for this user and job" });
+        return
     }
 
     if (!("email" in application.userId) || !("firstName" in application.userId)) {
-         res.status(500).json({ success: false, message: "User data is not populated correctly" });
-         return
+        res.status(500).json({ success: false, message: "User data is not populated correctly" });
+        return
     }
 
     if (!("title" in application.jobId)) {
-         res.status(500).json({ success: false, message: "Job data is not populated correctly" });
-         return
+        res.status(500).json({ success: false, message: "Job data is not populated correctly" });
+        return
     }
 
     application.status = "Accepted";
-    application.offerLetter = offerLetter; 
+    application.offerLetter = offerLetter;
     await application.save();
 
     // Email configuration

@@ -84,3 +84,23 @@ export const getAllRatings = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "found it ", allratings });
 };
 
+
+export const deleteReview=async(req:Request,res:Response):Promise<void>=>{
+  const {id}=req.params
+
+  
+  let userId = req.user?.id
+
+  const review=await Rating.findOne({_id:id,userId})
+  if (!review) {
+     res.status(404).json({ success: false, message: "Review not found" });
+     return
+  }
+
+
+  review.isDeleted = true;
+  await review.save();
+
+  res.json({ success: true, message: "Review deleted", review });
+}
+

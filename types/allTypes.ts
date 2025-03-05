@@ -18,6 +18,7 @@ export interface IReply extends Document {
 
 export interface IComment extends Document {
   user: Types.ObjectId;
+  userModel: "User" | "Company"; 
   comment: string;
   commentedAt: Date;
   replies: Types.ObjectId[];
@@ -106,12 +107,12 @@ export interface ICompany extends Document {
   services:string[]
 
   subscriptionEndDate: Date | null;
-  subscriptionStartDate: Date | null;
+  subscriptionStartDate: Date | null|undefined;
   isBlocked?: boolean;
   isDeleted: boolean;
   headquarters: string;
   foundedAt: Date;
-  
+  deletionReasons:string[]
 }
 
 
@@ -122,6 +123,7 @@ export interface IUser extends Document {
   password: string;
   phoneNumber?: string;
   dateOfBirth?: Date;
+  deletionReasons:string[]
   location?: {
     country: string;
     countryName: string;
@@ -234,7 +236,7 @@ export interface ITitles extends Document{
 
 export interface IJobPost {
   title: string;
-  company: Types.ObjectId;
+  company: ICompany;
   location: string;
   jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
   experienceLevel:"Entry" | "Mid" | "Senior" | "Expert";
@@ -252,10 +254,6 @@ export interface IJobPost {
     min:number,
     max:number
   }
-<<<<<<< HEAD
-=======
-
->>>>>>> 6e13e2f3e9994f302fed610b4d0570b20d9a024d
   images: string[]; 
   likes: Types.ObjectId[];
   comments: Types.ObjectId[];
@@ -313,4 +311,12 @@ export interface ICommunityMessage extends Document{
   type:string;
   isDelete:boolean;
   timestamp:Date
+}
+
+
+export interface ISavePost extends Document{
+  postId:mongoose.Types.ObjectId
+  userId:mongoose.Types.ObjectId
+  timestamp:Date
+
 }

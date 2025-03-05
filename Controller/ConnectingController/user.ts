@@ -308,6 +308,6 @@ export const FollowAndUnfollowCompany=async(req:Request,res:Response):Promise<vo
     company.followers.push(new mongoose.Types.ObjectId(userId));
     await user.save();
     await company.save()
-    res.status(200).json({ message: "Company followed successfully", following: user.following });
+    res.status(200).json({ message: "Company followed successfully", following: user.following ,company});
   }
 }

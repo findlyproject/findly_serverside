@@ -15,7 +15,7 @@ export function validateData(bodySchema?: AnyZodObject, paramSchema?: AnyZodObje
 	  } catch (error) {
 		if (error instanceof ZodError) {
 		  throw new CustomError(
-			`Invalid data, ${error.errors[0].path}: ${error.errors[0].message}`,
+			`Invalid data!!!!!!!!!!, ${error.errors[0].path}: ${error.errors[0].message}`,
 			400
 		  );
 		}

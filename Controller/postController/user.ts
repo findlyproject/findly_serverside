@@ -154,7 +154,7 @@ export const getPostsByOwner = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { ownerId } = req.params;
+  const ownerId  = req.user?.id
 
   const posts = await Post.find({ owner: ownerId }).populate("owner");
 

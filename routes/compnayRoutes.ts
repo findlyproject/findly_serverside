@@ -1,9 +1,9 @@
 import express from "express";
 import { errorCatch } from "../middleware/tryCatch";
-import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, } from "../Controller/authController/company";
+import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, requestDeleteAccount, verifyOtp, } from "../Controller/authController/company";
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
-import { CompanySchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
+import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
 import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
@@ -14,7 +14,12 @@ import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/use
 
 import { spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
-import { deleteReview, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
+
+
+
+
+import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
+import { addCommentToPost, deleteComment, editComment, getCommentById } from "../Controller/commentController/user";
 
 const companyRouter = express.Router();
 
@@ -63,7 +68,7 @@ companyRouter
         validateData(undefined, VerificationSchema), 
         errorCatch(verifySubscription)
       )  
-      .post(
+      .get(
         "/payment/findsubscriptionbyId/:sessionId",
         companyAuth,
         validateData(undefined, VerificationSchema),
@@ -72,9 +77,38 @@ companyRouter
       .get("/getjobs",companyAuth,errorCatch(getJobsByCompanies))
       .post("/companyrating/:targetedId",companyAuth,errorCatch(createCompanyRating))
       .delete("/deletereview/:id",companyAuth,errorCatch(deleteReview))
+      .delete("/deleteReview/:id",companyAuth,errorCatch(deleteReviews))
       .get("/findrating/:targetedId",companyAuth,errorCatch(findreviewsByTargetedId))
 
 
 
       .post(`/follow/:id`,userAuthMiddleware,errorCatch(FollowAndUnfollowCompany))
+
+
+.get(
+    "/viewcomment/:id",
+    companyAuth,
+    errorCatch(getCommentById)
+  )
+  .post(
+    "/comment",
+    companyAuth,
+    validateData(CommentSchema),
+    errorCatch(addCommentToPost)
+  )
+  .put(
+    "/edit-comment/:commentId",
+    companyAuth,
+    errorCatch(editComment)
+  )
+  .post(
+    "/delete-comment/:commentId",
+    companyAuth,
+    errorCatch(deleteComment)
+  )
+
+      //delete account
+      .post("/accountdeletionreqst",companyAuth,errorCatch(requestDeleteAccount))
+      .post("/verifyOtp",companyAuth,errorCatch(verifyOtp))
+
 export { companyRouter };

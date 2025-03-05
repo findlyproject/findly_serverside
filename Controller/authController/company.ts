@@ -14,7 +14,7 @@ import { ICompany } from "../../types/allTypes";
 interface OTPStore {
   [key: string]: { otp: string; createdAt: number };
 }
-
+const OTP_EXPIRATION_TIME = 2 * 60 * 1000;
 const otpStore: OTPStore = {};
 
 export const initialRegister = async (
@@ -375,11 +375,100 @@ export const resetPasword = async (
   findCompany.password = hashedPassword;
 
   const updatedUser = await findCompany.save();
-  res
-    .status(200)
-    .json({
-      status: true,
-      message: "password updated successfully",
-      updatedUser,
-    });
-};
+  res.status(200).json({ status: true, message: "password updated successfully", updatedUser })
+}
+
+
+
+export const requestDeleteAccount=async(req:Request,res:Response)=>{
+  const comapanyId=req.user?.id;
+
+  const company=await Company.findById(comapanyId)
+  if(!company){
+    res.status(404).json({success:false,message:"company not found"})
+    return
+  }
+
+
+ let email=company.email
+const otp=generateOTP()
+console.log("otp",otp);
+
+otpStore[email]={otp,createdAt:Date.now()}
+try {
+  console.log("otpinn",otp);
+  console.log("email",email);
+  console.log("otpStore[email]",otpStore[email]);
+  await sendOTP(email,otp)
+ 
+  res.status(200).json({
+    message: "OTP sent to your email. Please verify to proceed.",otp
+  });
+} catch (error) {
+  console.error('Error sending OTP:', error);
+      throw new CustomError("Error sending OTP. Please try again later.", 500);
+}
+
+  
+}
+
+export const  verifyOtp=async(req:Request,res:Response)=>{
+         const companyId=req.user?.id
+         const {otp,reasons}= req.body
+         
+         
+         const company=await Company.findById(companyId)
+         if(!company){
+          res.status(404).json({success:false,message:"company not found"})
+          return
+        }
+        const email=company?.email
+
+      if (Date.now() - otpStore[email]?.createdAt > OTP_EXPIRATION_TIME) {
+    
+        delete otpStore[email]; 
+        res.status(400).json({success:false,message:'OTP has expired. Please request a new one.'})
+         return 
+      }
+      if (otpStore[email]?.otp !== otp.toString()) {
+        throw new CustomError("Invalid OTP. Please try again.", 400);
+      }
+          if (company && company.role === "premium" && company.subscriptionEndDate) {
+            const currentDate = new Date();
+      
+            if (company.subscriptionEndDate < currentDate) {
+              company.role = "company";
+              company.subscriptionStartDate = null;
+              company.subscriptionEndDate = null;
+              await company.save();
+            }
+          }
+          company.isDeleted=true
+          company.deletionReasons=reasons
+
+          
+          res.clearCookie("token", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+          });
+          res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+          });
+        
+          res.clearCookie("subscriptionToken", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+          });
+          res.clearCookie("type", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+          });
+          await company.save()
+          res.status(200).json({success:true,message:"successfully deleted"})
+         
+}

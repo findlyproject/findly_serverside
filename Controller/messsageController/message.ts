@@ -288,7 +288,10 @@ export const LeaveCommunity=async(req:Request,res:Response):Promise<void>=>{
   if(!query){
     throw new CustomError(`query is required`,400)
   }
-  const community=await Community.find({name:{ $regex: query, $options: "i" }}).populate('members')
+
+
+  const community=await Community.find({name:{ $regex: query, $options: "i" }}).populate('members');
+
   if(!community){
     throw new CustomError(`community not found`,404)  
   }

@@ -19,8 +19,8 @@ import { createCompanyRating } from "../Controller/ratingController/user";
 
 
 import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
-import { addCommentToPost, deleteComment, editComment, getCommentById } from "../Controller/commentController/user";
 import { getPostsByOwner } from "../Controller/postController/company";
+import { addCommentToPost, deleteComment, editComment, getCommentById } from "../Controller/commentController/user";
 
 const companyRouter = express.Router();
 
@@ -88,6 +88,28 @@ companyRouter
       //GET POSTS
       .get("/findposts",companyAuth,errorCatch(getPostsByOwner))
 
+
+.get(
+    "/viewcomment/:id",
+    companyAuth,
+    errorCatch(getCommentById)
+  )
+  .post(
+    "/comment",
+    companyAuth,
+    validateData(CommentSchema),
+    errorCatch(addCommentToPost)
+  )
+  .put(
+    "/edit-comment/:commentId",
+    companyAuth,
+    errorCatch(editComment)
+  )
+  .post(
+    "/delete-comment/:commentId",
+    companyAuth,
+    errorCatch(deleteComment)
+  )
 
       //delete account
       .post("/accountdeletionreqst",companyAuth,errorCatch(requestDeleteAccount))

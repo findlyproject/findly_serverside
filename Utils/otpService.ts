@@ -2,39 +2,28 @@
 import nodemailer from "nodemailer";
 import { generateOTP } from "./otpGenerator";
 
-// Setup Nodemailer transporter
-
-console.log("Email:", process.env.APP_EMAIL);
-console.log("Password:", process.env.APP_PASSWORD ? "Exists" : "Not found");
-console.log("STRIPE_KEY:", process.env.STRIPE_KEY? "Existshjhjhjjdfdfkj" : "Not found");
-
-
-console.log("ddd",process.env.APP_EMAIL);
-
-
-// Function to send OTP via email
 export const sendOTP = async (email: string, otp: string): Promise<void> => {
 
   const transporter = nodemailer.createTransport({
   
   
-    service: "gmail",  // You can change this to any email provider
+    service: "gmail",  
     auth: {
-      user: process.env.APP_EMAIL, // Your email (e.g., "your-email@gmail.com")
-      pass: process.env.APP_PASSWORD, // Your email password or app-specific password
+      user: process.env.APP_EMAIL, 
+      pass: process.env.APP_PASSWORD, 
     },
   });
   const mailOptions = {
     from: process.env.APP_EMAIL, 
-    to: email,                   // recipient address
-    subject: "Your OTP for Registration",  // Email subject
-    text: `Your OTP is: ${otp}. Please use this to complete your registration.`, // Email body
+    to: email,          
+    subject: "Your OTP for Registration",  
+    text: `Your OTP is: ${otp}. Please use this to complete your registration.`, 
   };
 
   try {
     // Send the email
     await transporter.sendMail(mailOptions);
-    console.log(`OTP sent to ${email}`);
+   
   } catch (error) {
     console.error("Error sending OTP email:", error);
     throw new Error("Failed to send OTP. Please try again later.");

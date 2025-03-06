@@ -453,21 +453,64 @@ filterKeys.forEach((key) => {
 // jobs by id //
 
 
+// export const getJobsByCompanies = async (req: Request, res: Response) => {
+//     const type = req.user && req.user.type
+
+//     if (type !== "Company") {
+//         res.status(403).json({ success: false, message: "Unauthorized" })
+//         return
+//     }
+//     let companyId = type === "Company" ? req.user?.id : null
+
+
+
+//     const postedJobs = await JobPost.find({ company: companyId }).populate("company")
+
+//     res.status(200).json({ success: true, message: "found it", postedJobs })
+// }
+
 export const getJobsByCompanies = async (req: Request, res: Response) => {
-    const type = req.user && req.user.type
+    const type = req.user && req.user.type;
 
     if (type !== "Company") {
-        res.status(403).json({ success: false, message: "Unauthorized" })
-        return
+         res.status(403).json({ success: false, message: "Unauthorized" });
+         return
     }
-    let companyId = type === "Company" ? req.user?.id : null
+
+    const companyId = req.user?.id;
 
 
+    let page = parseInt(req.query.page as string) || 1;
+    let limit = parseInt(req.query.limit as string) || 6;
+    let skip = (page - 1) * limit;
 
-    const postedJobs = await JobPost.find({ company: companyId })
+    console.log("page",page);
+    console.log("limit",limit);
+    console.log("skip",skip);
+    
 
-    res.status(200).json({ success: true, message: "found it", postedJobs })
-}
+
+       
+        const postedJobs = await JobPost.find({ company: companyId })
+            .populate("company")
+            .skip(skip)
+            .limit(limit);
+
+       
+        const totalJobs = await JobPost.countDocuments({ company: companyId });
+        console.log("totalJobs",totalJobs);
+        res.status(200).json({
+            success: true,
+            message: "Jobs fetched successfully",
+            totalPages: Math.ceil(totalJobs / limit),
+            currentPage: page,
+            totalJobs,
+            jobsPerPage: postedJobs.length,
+            postedJobs,
+        });
+
+};
+
 
 export const findAppliedUsers = async (req: Request, res: Response) => {
     const companyId = req.user?.id;

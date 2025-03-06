@@ -3,7 +3,7 @@ import { errorCatch } from "../middleware/tryCatch";
 import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, requestDeleteAccount, verifyOtp, } from "../Controller/authController/company";
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
-import { CompanySchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
+import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
 import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
@@ -19,6 +19,7 @@ import { createCompanyRating } from "../Controller/ratingController/user";
 
 
 import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
+import { addCommentToPost, deleteComment, editComment, getCommentById } from "../Controller/commentController/user";
 import { getPostsByOwner } from "../Controller/postController/company";
 
 const companyRouter = express.Router();
@@ -29,7 +30,6 @@ companyRouter
     
   .post(
     "/send-otp",
-    // validateData(CompanySchema), 
     errorCatch(initialRegister)
   )
   .post(
@@ -38,8 +38,8 @@ companyRouter
   )
   .post(
     "/final-register",
-    // validateData(CompanySchema),
     upload.single("logo"),
+    validateData(CompanySchema),
     errorCatch(finalRegister)
   )
   .post("/login",validateData(LoginSchema),errorCatch(login))

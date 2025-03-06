@@ -13,7 +13,17 @@ const ReplySchema = new Schema<IReply>(
 
 const CommentSchema = new Schema<IComment>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+     
+    user: { 
+      type: Schema.Types.ObjectId, 
+      required: true, 
+      refPath: "ownerModel" // 🔹 Dynamic reference field
+    },
+    userModel: { 
+      type: String, 
+      required: true, 
+      enum: ["User", "Company"] // 🔹 Specify allowed models
+    },
     comment: { type: String, required: true },
     replies: [{ type: Schema.Types.ObjectId, ref: "Reply" }],
     isDeleted:{type:Boolean,default:false},

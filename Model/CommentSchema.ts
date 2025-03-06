@@ -17,7 +17,7 @@ const CommentSchema = new Schema<IComment>(
     user: { 
       type: Schema.Types.ObjectId, 
       required: true, 
-      refPath: "ownerModel" // 🔹 Dynamic reference field
+      refPath: "userModel" // 🔹 Dynamic reference field
     },
     userModel: { 
       type: String, 

@@ -19,7 +19,7 @@ export const getAllPosts = async (
       match: { isDeleted: false },
       populate: {
         path: "user",
-        select: "firstName lastName profileImage ",
+       
       },
     });
   const totalPosts = await Post.countDocuments();

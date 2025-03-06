@@ -5,30 +5,7 @@ import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 import { CustomError } from "../../Utils/errorHandler";
 
-// Get all posts
-// export const getAllPosts = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   const posts = await Post.find({isDeleted: false})
-//     .populate("owner")
-//     .populate("reports")
-//     .populate("likedBy", "firstName lastName profileImage")
-//     .populate({
-//       path: "comments",
-//       match: { isDeleted: false },
-//       populate: {
-//         path: "user",
-//       },
-//     });
-//   const totalPosts = await Post.countDocuments();
-//   res.status(200).json({
-//     status: true,
-//     message: "Got all the posts and count",
-//     posts,
-//     totalPosts,
-//   });
-// };
+
 export const getAllPosts = async (req: Request, res: Response): Promise<void> => {
   try {
     const { page = 1, limit = 5 } = req.query; 

@@ -11,12 +11,12 @@ const PostSchema = new Schema <IPost>(
     likedBy: [{ 
       type: Schema.Types.ObjectId, 
       required: true, 
-      refPath: "userModel" // 🔹 Dynamic reference field
+      refPath: "userModel" 
     }],
     userModel: { 
       type: String, 
-      required: true, 
-      enum: ["User", "Company"] // 🔹 Specify allowed models
+      // required: true, 
+      enum: ["User", "Company"] 
     },
     reports: [{ type: Schema.Types.ObjectId, ref: "Report" }], 
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],

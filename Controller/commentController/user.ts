@@ -24,7 +24,7 @@ export const addCommentToPost = async (
   res: Response
 ): Promise<void> => {
   const { postId, comment } = req.body;
-
+console.log(req.body)
   if (!comment || comment.trim() === "") {
     throw new CustomError("Comment cannot be empty", 400);
   }

@@ -27,6 +27,7 @@ export const replyToComment = async (
     user: userId,
     reply: replyText,
     repliedAt: new Date(),
+    userModel:req.user?.type==='Company'?'Company':'User',
   });
   await reply.save();
   comment.replies.push(reply.id);
@@ -53,8 +54,6 @@ export const getRepliesForComment = async (
     model: Reply,
     populate: {
       path: "user",
-      model: User,
-      select: "_id name profileImage email firstName",
     },
   });
 

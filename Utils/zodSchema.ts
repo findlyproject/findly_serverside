@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { date, z } from "zod";
 import mongoose from "mongoose";
 
 const ObjectIdSchema = z
@@ -217,14 +217,17 @@ export const CompanySchema = z.object({
   age: z.number().optional(), 
   IndustryType: z.string().optional(),
   about: z.string().min(10, "About must be at least 10 characters long").optional(),
-  role: z.string().default("company"),
+  founder:z.string().min(4, "founder is required"),
+  foundedAt:z.string(),
+  type: z.string().default("company"),
   address: z.object({
+    landmark:z.string().min(2, "landmark is required"),
     country: z.string().min(2, "Country is required"),  
-    state: z.string().min(2, "State is required"),
-    city: z.string().min(2, "City is required"),
-    pincode: z.number().min(4, "Pincode is required"),
+    state: z.string().optional(),
+    city: z.string().optional(),
+    pincode: z.string().optional(),
   }),
-  logo: z.string().optional(), 
+   
 });
 export type CompanyType = z.infer<typeof CompanySchema>;
 

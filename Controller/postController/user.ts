@@ -5,30 +5,40 @@ import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 import { CustomError } from "../../Utils/errorHandler";
 
-// Get all posts
-export const getAllPosts = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const posts = await Post.find({isDeleted: false})
-    .populate("owner")
-    .populate("reports")
-    .populate("likedBy", "firstName lastName profileImage")
-    .populate({
-      path: "comments",
-      match: { isDeleted: false },
-      populate: {
-        path: "user",
-        select: "firstName lastName profileImage ",
-      },
+
+export const getAllPosts = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { page = 1, limit = 5 } = req.query; 
+
+    const pageNumber = parseInt(page as string, 10);
+    const limitNumber = parseInt(limit as string, 10);
+
+    const posts = await Post.find({ isDeleted: false })
+      .populate("owner")
+      .populate("reports")
+      .populate("likedBy", "firstName lastName profileImage")
+      .populate({
+        path: "comments",
+        match: { isDeleted: false },
+        populate: { path: "user" },
+      })
+      .sort({ createdAt: -1 }) // Sort by newest
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber);
+
+    const totalPosts = await Post.countDocuments({ isDeleted: false });
+
+    res.status(200).json({
+      status: true,
+      message: "Got paginated posts",
+      posts,
+      totalPosts,
+      currentPage: pageNumber,
+      totalPages: Math.ceil(totalPosts / limitNumber),
     });
-  const totalPosts = await Post.countDocuments();
-  res.status(200).json({
-    status: true,
-    message: "Got all the posts and count",
-    posts,
-    totalPosts,
-  });
+  } catch (error) {
+    res.status(500).json({ status: false, message: "Server error" });
+  }
 };
 
 export const addPost = async (req: Request, res: Response): Promise<void> => {
@@ -151,7 +161,7 @@ console.log(req.params)
 
 
 //  Get Posts by user
-export const getPostsByOwner = async (
+export const getPostsByOwners = async (
   req: Request,
   res: Response
 ): Promise<void> => {

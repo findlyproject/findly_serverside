@@ -1,7 +1,7 @@
 import express from "express";
 import {
   getpostbyid,
-  getPostsByOwner,
+  getPostsByOwners,
   addPost,
   getAllPosts,
   updatePost,
@@ -16,7 +16,7 @@ import {
   deleteComment,
   getAllComments,
 } from "../Controller/commentController/user";
-import { userAuthMiddleware } from "../middleware/userauthantication";
+import { userAuth } from "../middleware/userauthantication";
 import {
   deleteReply,
   editReply,
@@ -38,88 +38,31 @@ postRouter
   .get("/post/:id", errorCatch(getpostbyid))
   .get(
     "/owner",
-    userAuthMiddleware,
-    // validateData(IdSchema),
-    errorCatch(getPostsByOwner)
+    userAuth,
+    errorCatch(getPostsByOwners)
   )
   .post(
     "/upload",
-    userAuthMiddleware,
+    userAuth,
     upload.fields([{ name: "media", maxCount: 5 }]),
     addPost
   )
   .patch(
     "/update/:postId",
-    userAuthMiddleware,
+    userAuth,
     upload.fields([{ name: "media", maxCount: 5 }]),
     errorCatch(updatePost)
   )
-  .put("/delete/:postId",userAuthMiddleware, errorCatch(DeletePost))
+  .put("/delete/:postId",userAuth, errorCatch(DeletePost))
 
-  //like & unlike
-  .post(
-    "/user/likepost/:id",
-    userAuthMiddleware,
-
-    validateData(undefined,IdSchema),
-
-    errorCatch(LikeOrDislike)
-  )
-
-  //comment
-  .get("/allcomments", errorCatch(getAllComments))
-  .get(
-    "/viewcomment/:id",
-    userAuthMiddleware,
-    validateData(IdSchema),
-    errorCatch(getCommentById)
-  )
-  .post(
-    "/comment",
-    userAuthMiddleware,
-    validateData(CommentSchema),
-    errorCatch(addCommentToPost)
-  )
-  .put(
-    "/edit-comment/:commentId",
-    userAuthMiddleware,
-    validateData(CommentSchema, IdSchema),
-    errorCatch(editComment)
-  )
-  .post(
-    "/delete-comment/:commentId",
-    userAuthMiddleware,
-    validateData(IdSchema),
-    errorCatch(deleteComment)
-  )
-
-  //reply
-  .post(
-    "/user/postreplay",
-    userAuthMiddleware,
-    validateData(ReplySchema),
-    errorCatch(replyToComment)
-  )
-  .get(
-    "/user/findreply/:commentId",
-    userAuthMiddleware,
-    errorCatch(getRepliesForComment)
-  )
-  .put("/user/editreplay", userAuthMiddleware, errorCatch(editReply))
-  .delete("/user/deletereplay", userAuthMiddleware, errorCatch(deleteReply))
-  .get(
-    "/user/getcommentswithreplies",
-    userAuthMiddleware,
-    errorCatch(getCommentsWithReplies)
-  )
-
+  
   //report
-  .post("/user/reportpost", userAuthMiddleware, errorCatch(ReportPost))
+  .post("/user/reportpost", userAuth, errorCatch(ReportPost))
 
 
 
   //save routes
-  .post("/user/save/:id",userAuthMiddleware,errorCatch(SaveandUnsavePost))
-  .get("/user/saveds",userAuthMiddleware,errorCatch(AllSaved))
-  .get("/user/all",userAuthMiddleware,errorCatch(All))
+  .post("/user/save/:id",userAuth,errorCatch(SaveandUnsavePost))
+  .get("/user/saveds",userAuth,errorCatch(AllSaved))
+  .get("/user/all",userAuth,errorCatch(All))
 export default postRouter;

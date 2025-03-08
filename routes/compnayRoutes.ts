@@ -3,7 +3,7 @@ import { errorCatch } from "../middleware/tryCatch";
 import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, requestDeleteAccount, verifyOtp, } from "../Controller/authController/company";
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
-import { CompanySchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
+import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, ReplySchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
 import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
@@ -19,9 +19,13 @@ import { createCompanyRating } from "../Controller/ratingController/user";
 
 
 import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
+import { getPostsByOwner } from "../Controller/postController/company";
+import { addCommentToPost, deleteComment, editComment, getCommentById } from "../Controller/commentController/user";
+import { deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../Controller/replyController/user";
+import { LikeOrDislike } from "../Controller/postController/user";
 
 import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
-import { getpostbyid, getPostsByOwner } from "../Controller/postController/user";
+import { getpostbyid, getPostsByOwners } from "../Controller/postController/user";
 import { communitymesgById, CommunitySendMessage, createCommunity, deletecommunitymessage, SendMessage } from "../Controller/messsageController/message";
 
 const companyRouter = express.Router();
@@ -32,7 +36,6 @@ companyRouter
     
   .post(
     "/send-otp",
-    // validateData(CompanySchema), 
     errorCatch(initialRegister)
   )
   .post(
@@ -41,8 +44,8 @@ companyRouter
   )
   .post(
     "/final-register",
-    // validateData(CompanySchema),
     upload.single("logo"),
+    validateData(CompanySchema),
     errorCatch(finalRegister)
   )
   .post("/login",validateData(LoginSchema),errorCatch(login))
@@ -72,7 +75,7 @@ companyRouter
         validateData(undefined, VerificationSchema), 
         errorCatch(verifySubscription)
       )  
-      .post(
+      .get(
         "/payment/findsubscriptionbyId/:sessionId",
         companyAuth,
         validateData(undefined, VerificationSchema),
@@ -88,12 +91,70 @@ companyRouter
 
       .post(`/follow/:id`,userAuthMiddleware,errorCatch(FollowAndUnfollowCompany))
 
+      //GET POSTS
+      .get("/findposts",companyAuth,errorCatch(getPostsByOwner))
 
 
+.get(
+    "/viewcomment/:id",
+    companyAuth,
+    errorCatch(getCommentById)
+  )
+  .post(
+    "/comment",
+    companyAuth,
+    validateData(CommentSchema),
+    errorCatch(addCommentToPost)
+  )
+  .put(
+    "/edit-comment/:commentId",
+    companyAuth,
+    errorCatch(editComment)
+  )
+  .post(
+    "/delete-comment/:commentId",
+    companyAuth,
+    errorCatch(deleteComment)
+  )
+
+  //like & unlike
+  .post(
+    "/likepost/:id",
+    companyAuth,
+    errorCatch(LikeOrDislike)
+  )
+
+ 
+
+  //reply
+  .post(
+    "/postreplay",
+    companyAuth,
+    validateData(ReplySchema),
+    errorCatch(replyToComment)
+  )
+  .get(
+    "/findreply/:commentId",
+    companyAuth,
+    errorCatch(getRepliesForComment)
+  )
+  .put("/editreplay", companyAuth, errorCatch(editReply))
+  .delete("/deletereplay", companyAuth, errorCatch(deleteReply))
+  .get(
+    "/getcommentswithreplies",
+    companyAuth,
+    errorCatch(getCommentsWithReplies)
+  )
 
       //delete account
       .post("/accountdeletionreqst",companyAuth,errorCatch(requestDeleteAccount))
       .post("/verifyOtp",companyAuth,errorCatch(verifyOtp))
+       .get(
+          "/owner",
+          companyAuth,
+        
+          errorCatch(getPostsByOwners)
+        )
 
 
       //edit profile

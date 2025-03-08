@@ -14,8 +14,7 @@ const PostSchema = new Schema <IPost>(
       refPath: "ownerModel" 
     },
     ownerModel: { 
-      type: String, 
-      required: true, 
+      type: String,  
       enum: ["User", "Company"] 
     },
   

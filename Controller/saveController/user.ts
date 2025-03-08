@@ -31,7 +31,12 @@ export const SaveandUnsavePost=async(req:Request,res:Response):Promise<void>=>{
 
 export const AllSaved=async(req:Request,res:Response):Promise<void>=>{
     const userid=req.user?.id
-    const saved=await Save.find({userId:userid}).populate('postId')
+    const saved=await Save.find({userId:userid}) .populate({
+        path: 'postId',
+        populate: {
+            path: 'owner', // Populate the 'owner' field inside 'postId'
+        },
+    });
 
     res.status(200).json({ status:true,message:'saveds',saved})
 

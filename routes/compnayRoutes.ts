@@ -12,13 +12,17 @@ import { allCompanies } from "../Controller/userController/admin";
 
 import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/user";
 
-import { spacificCompanyDetails } from "../Controller/userController/company";
+import { allUsersforCompany, BannerOfCompany, EditCompany, LogoOfCompany, spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
 
 
 
 
 import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
+
+import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
+import { getpostbyid, getPostsByOwner } from "../Controller/postController/user";
+import { communitymesgById, CommunitySendMessage, createCommunity, deletecommunitymessage, SendMessage } from "../Controller/messsageController/message";
 
 const companyRouter = express.Router();
 
@@ -91,4 +95,38 @@ companyRouter
       .post("/accountdeletionreqst",companyAuth,errorCatch(requestDeleteAccount))
       .post("/verifyOtp",companyAuth,errorCatch(verifyOtp))
 
+
+      //edit profile
+      .patch("/edit/:id",errorCatch(EditCompany))
+      .patch("/edit/logo/:id",upload.single('logo'),errorCatch(LogoOfCompany))
+      .patch("/edit/banner/:id",upload.single('banner'),errorCatch(BannerOfCompany))
+      .get(`/users`,errorCatch(allUsersforCompany))
+
+
+
+      
+      
+        //save routes
+        .post("/save/:id",companyAuth,errorCatch(SaveandUnsavePost))
+        .get("/saveds",companyAuth,errorCatch(AllSaved))
+        .get("/all",companyAuth,errorCatch(All))
+
+        //post by owner
+        .get(
+            "/owner",
+            companyAuth,
+            errorCatch(getPostsByOwner)
+          )
+
+
+          .get("/post/:id",errorCatch(getpostbyid))
+
+//community
+
+.post("/create", companyAuth,errorCatch(createCommunity))
+
+
+.post('/communtyMessage/:id',companyAuth,errorCatch(CommunitySendMessage))
+.get('/getCommuntyMessage/:id',companyAuth,errorCatch(communitymesgById))
+.post('/deletCommuntyMessage/:id',companyAuth,errorCatch(deletecommunitymessage))
 export { companyRouter };

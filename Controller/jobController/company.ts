@@ -464,7 +464,7 @@ export const getJobsByCompanies = async (req: Request, res: Response) => {
 
 
 
-    const postedJobs = await JobPost.find({ company: companyId })
+    const postedJobs = await JobPost.find({ company: companyId }).populate('company')
 
     res.status(200).json({ success: true, message: "found it", postedJobs })
 }

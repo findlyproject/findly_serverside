@@ -26,6 +26,7 @@ export interface IComment extends Document {
 export interface IPost extends Document {
   description?: string;
   owner: Types.ObjectId;
+  ownerModel:string
   images?: string[];
   video?: string;
   lists: Types.ObjectId[];
@@ -299,14 +300,23 @@ export interface ICommunity extends Document{
   name: string;
   profile:string;
   description: string;
-  members: mongoose.Types.ObjectId[];
+  memberType:string;
+  members: {
+    
+            memberId: mongoose.Types.ObjectId,
+              
+          
+            memberModel: string,
+             }[]
   createdBy: mongoose.Types.ObjectId;
+  isDeleted:boolean;
   timestamp:Date;
 }
 
 export interface ICommunityMessage extends Document{
   communityId : mongoose.Types.ObjectId
   sender:mongoose.Types.ObjectId
+  senderModel:string;
   message:string;
   type:string;
   isDelete:boolean;

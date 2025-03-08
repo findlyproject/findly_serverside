@@ -65,6 +65,7 @@ export const addPost = async (req: Request, res: Response): Promise<void> => {
   const newPost = new Post({
     description,
     owner: req.user.id,
+    ownerModel:req.user.type==='Company'?'Company':'User',
     images: uploadedImages,
     video: uploadedVideo,
   });
@@ -155,8 +156,9 @@ export const getPostsByOwner = async (
   res: Response
 ): Promise<void> => {
   const ownerId  = req.user?.id
+console.log("ownerId",ownerId);
 
-  const posts = await Post.find({ owner: ownerId }).populate("owner");
+  const posts = await Post.find({ owner: ownerId }).populate('owner')
 
   if (!posts || posts.length === 0) {
     throw new CustomError("No posts found for this owner", 404);
@@ -174,6 +176,7 @@ export const getpostbyid = async (
   res: Response
 ): Promise<void> => {
   const onepost = await Post.findById(req.params.id).populate("comments owner");
+console.log("onepost",onepost);
 
   res.status(200).json({ status: true, message: "Got post by ID", onepost });
 };

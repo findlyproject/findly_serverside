@@ -20,8 +20,8 @@ const CompanySchema = new Schema<ICompany>(
     headquarters:{type:String},
     employees: [
       {
-        employee: { type: Schema.Types.ObjectId, ref: "User", }, 
-        position: { type: String, required: true }, 
+        employee: { type: String}, 
+        position: { type: String}, 
       },
     ],
     deletionReasons:[{type:String}],

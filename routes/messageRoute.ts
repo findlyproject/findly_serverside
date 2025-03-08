@@ -1,6 +1,7 @@
+import { upload } from './../middleware/upload';
 import express from 'express'
-import { userAuthMiddleware } from '../middleware/userauthantication'
-import { AllCommunities, communitymesgById, CommunitySendMessage, CommunityDetails, createCommunity, deletecommunitymessage, GetConversation, joinCommunity, LeaveCommunity, SearchCommunity, SendMessage } from '../Controller/messsageController/message'
+import { companyAuth, userAuthMiddleware } from '../middleware/userauthantication'
+import { AllCommunities, communitymesgById, CommunitySendMessage, CommunityDetails, createCommunity, deletecommunitymessage, GetConversation, joinCommunity, LeaveCommunity, SearchCommunity, SendMessage, DeleteCommunity, UpdateDescriptionCommunity, UpdateNameCommunity, ProfileOfCommunity } from '../Controller/messsageController/message'
 import { errorCatch } from '../middleware/tryCatch'
 
 const messageRoute=express.Router()
@@ -14,6 +15,12 @@ messageRoute
 .patch("/join/:id",userAuthMiddleware,errorCatch(joinCommunity))
 .get(`/search`,SearchCommunity)
 .patch(`/leave/:id`,userAuthMiddleware,errorCatch(LeaveCommunity))
+.patch(`/update/:id`,companyAuth,errorCatch(UpdateDescriptionCommunity))
+.patch(`/updatename/:id`,companyAuth,errorCatch(UpdateNameCommunity))
+.patch(`/updateprofile/:id`,companyAuth,upload.single('profile'),errorCatch(ProfileOfCommunity))
+.patch(`/delete/:id`,companyAuth,errorCatch(DeleteCommunity))
+
+
 
 .post('/send/:senderId/:receiverId',userAuthMiddleware,errorCatch(SendMessage))
 .get('/conversation/:senderId/:receiverId', GetConversation)

@@ -10,7 +10,7 @@ import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, IdSchema, LoginSchema, ReplySchema, ReportSchema, SubscriptionSchema, UserSchema, VerificationSchema } from "../Utils/zodSchema";
 import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } from "../Controller/authController/user";
 import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
-import { applydeJobs, applyToJob, getsavedjobs, saveJobs, similarjobs } from "../Controller/jobController/user";
+import { applydeJobs, applyToJob, getRecommendedJobs, getsavedjobs, saveJobs, similarjobs } from "../Controller/jobController/user";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 import { createCompanyRating, deleteReview } from "../Controller/ratingController/user";
 import { findreviewsByTargetedId } from "../Controller/ratingController/company";
@@ -64,7 +64,7 @@ userRouter
 .get("/findprimeclients",errorCatch(getPrimeClients))
 .post("/saveJobs/:id",userAuth,errorCatch(saveJobs))
 .get("/getsavedjobs", userAuth, errorCatch(getsavedjobs))
-
+.get("/recommended",userAuth, errorCatch(getRecommendedJobs))
 .post(
     "/payment/createSubscription",
     userAuth,

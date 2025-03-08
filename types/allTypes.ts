@@ -10,6 +10,7 @@ export interface IReport extends Document {
 
 export interface IReply extends Document {
   user: Types.ObjectId;
+  userModel: "User" | "Company"; 
   reply: string;
   repliedAt: Date;
   isDeleted: boolean;
@@ -32,6 +33,7 @@ export interface IPost extends Document {
   video?: string;
   lists: Types.ObjectId[];
   likedBy: Types.ObjectId[];
+  userModel: "User" | "Company";
   reports: IReport[];
   comments: IComment[];
   isDeleted: boolean;

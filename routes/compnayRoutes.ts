@@ -3,7 +3,7 @@ import { errorCatch } from "../middleware/tryCatch";
 import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, requestDeleteAccount, verifyOtp, } from "../Controller/authController/company";
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
-import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
+import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, ReplySchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
 import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
@@ -21,6 +21,8 @@ import { createCompanyRating } from "../Controller/ratingController/user";
 import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
 import { getPostsByOwner } from "../Controller/postController/company";
 import { addCommentToPost, deleteComment, editComment, getCommentById } from "../Controller/commentController/user";
+import { deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../Controller/replyController/user";
+import { LikeOrDislike } from "../Controller/postController/user";
 
 const companyRouter = express.Router();
 
@@ -109,6 +111,35 @@ companyRouter
     "/delete-comment/:commentId",
     companyAuth,
     errorCatch(deleteComment)
+  )
+
+  //like & unlike
+  .post(
+    "/likepost/:id",
+    companyAuth,
+    errorCatch(LikeOrDislike)
+  )
+
+ 
+
+  //reply
+  .post(
+    "/postreplay",
+    companyAuth,
+    validateData(ReplySchema),
+    errorCatch(replyToComment)
+  )
+  .get(
+    "/findreply/:commentId",
+    companyAuth,
+    errorCatch(getRepliesForComment)
+  )
+  .put("/editreplay", companyAuth, errorCatch(editReply))
+  .delete("/deletereplay", companyAuth, errorCatch(deleteReply))
+  .get(
+    "/getcommentswithreplies",
+    companyAuth,
+    errorCatch(getCommentsWithReplies)
   )
 
       //delete account

@@ -10,7 +10,7 @@ export const getPostsByOwner = async (
     const ownerId  = req.user?.id
     
   
-    const posts = await Post.find({ owner: ownerId }).populate({path:"owner",match:{type:"Company"}});
+    const posts = await Post.find({ owner: ownerId }).populate({path:"owner",match:{type:"Company"}});  
 
      
     console.log("posts",posts);

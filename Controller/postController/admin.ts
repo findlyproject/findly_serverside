@@ -68,3 +68,29 @@ export const deletePost = async (
       updatedPost,
     });
 };
+
+export const getAllPosts = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const posts = await Post.find({isDeleted: false})
+    .populate("owner")
+    .populate("reports")
+    .populate("likedBy", "firstName lastName profileImage")
+    .populate({
+      path: "comments",
+      match: { isDeleted: false },
+      populate: {
+        path: "user",
+        select: "firstName lastName profileImage ",
+      },
+    });
+  const totalPosts = await Post.countDocuments();
+  res.status(200).json({
+    status: true,
+    message: "Got all the posts and count",
+    posts,
+    totalPosts,
+  });
+};
+

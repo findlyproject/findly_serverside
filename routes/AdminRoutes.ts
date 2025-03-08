@@ -5,7 +5,7 @@ import { validateData } from "../middleware/zodValidation";
 import { IdSchema, LoginSchema } from "../Utils/zodSchema";
 import { allUsers, blockAndUnblock ,getDailyRevenue,getDailyUsers,createSkills, createTitles, AllSkills, RemoveSkills, AllTitles, RemoveTitle, EditSkill, ApproveSkill, EditTitle, ApproveTitle,createTitlesbyUser, allCompanies, getTotalUserRevenue, getDailyCompanies, getTotalCompanyRevenue, getTotalRevenue, getDailycompany, getDailyuser, AllTitlesAdmin} from "../Controller/userController/admin";
 
-import { deletePost, dismissReports, getReports } from "../Controller/postController/admin";
+import { deletePost, dismissReports, getAllPosts, getReports } from "../Controller/postController/admin";
 import { errorCatch } from "../middleware/tryCatch";
 import { upload } from "../middleware/upload";
 import { approveRating, deleteRating,getRatings } from "../Controller/ratingController/admin";
@@ -17,7 +17,7 @@ adminRouter
 //auth
   .post("/login", validateData(LoginSchema), errorCatch(login))
   .post("/logout", adminAuthentication, errorCatch(logout))
-
+   .get("/findallposts",errorCatch(getAllPosts))
   //user
   .patch(
     "/blockandunblock/:id",

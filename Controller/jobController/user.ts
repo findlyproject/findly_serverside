@@ -7,6 +7,10 @@ import { JobSave } from "../../model/JobSaveScheema";
 import { Company } from "../../model/CompanySchema";
 
 
+
+
+
+
 export const applyToJob = async (req: Request, res: Response): Promise<void> => {
 
     const { jobId } = req.params;

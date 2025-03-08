@@ -55,35 +55,7 @@ postRouter
   )
   .put("/delete/:postId",userAuth, errorCatch(DeletePost))
 
-  //like & unlike
-  .post(
-    "/user/likepost/:id",
-    userAuth,
-    errorCatch(LikeOrDislike)
-  )
-
- 
-
-  //reply
-  .post(
-    "/user/postreplay",
-    userAuth,
-    validateData(ReplySchema),
-    errorCatch(replyToComment)
-  )
-  .get(
-    "/user/findreply/:commentId",
-    userAuth,
-    errorCatch(getRepliesForComment)
-  )
-  .put("/user/editreplay", userAuth, errorCatch(editReply))
-  .delete("/user/deletereplay", userAuth, errorCatch(deleteReply))
-  .get(
-    "/user/getcommentswithreplies",
-    userAuth,
-    errorCatch(getCommentsWithReplies)
-  )
-
+  
   //report
   .post("/user/reportpost", userAuth, errorCatch(ReportPost))
 

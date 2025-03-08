@@ -7,7 +7,19 @@ const PostSchema = new Schema <IPost>(
     description: { type: String, maxlength: 500 },
     images: [{ type: String }],
     video: { type: String }, 
-    owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
+   
+    owner: { 
+      type: Schema.Types.ObjectId, 
+      required: true, 
+      refPath: "ownerModel" 
+    },
+    ownerModel: { 
+      type: String, 
+      required: true, 
+      enum: ["User", "Company"] 
+    },
+  
+   
     likedBy: [{ 
       type: Schema.Types.ObjectId, 
       required: true, 
@@ -15,7 +27,6 @@ const PostSchema = new Schema <IPost>(
     }],
     userModel: { 
       type: String, 
-      // required: true, 
       enum: ["User", "Company"] 
     },
     reports: [{ type: Schema.Types.ObjectId, ref: "Report" }], 

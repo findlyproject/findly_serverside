@@ -25,6 +25,7 @@ const storage = new CloudinaryStorage({
 console.log("files,files",file);
 
     const uploadConfig: Record<string, { folder: string; resource_type: string; allowed_formats: string[] }> = {
+      profile: { folder: "users/profile", resource_type: "image", allowed_formats: ["png", "jpg", "jpeg"] }, 
       profileImage: {
         folder: "users/profile",
         resource_type: "image",

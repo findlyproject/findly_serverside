@@ -1,7 +1,7 @@
 import express from "express";
 import {
   getpostbyid,
-  getPostsByOwner,
+  getPostsByOwners,
   addPost,
   getAllPosts,
   updatePost,
@@ -39,7 +39,7 @@ postRouter
   .get(
     "/owner",
     userAuth,
-    errorCatch(getPostsByOwner)
+    errorCatch(getPostsByOwners)
   )
   .post(
     "/upload",

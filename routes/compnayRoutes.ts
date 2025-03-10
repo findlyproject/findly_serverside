@@ -3,8 +3,8 @@ import { errorCatch } from "../middleware/tryCatch";
 import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, requestDeleteAccount, verifyOtp, } from "../Controller/authController/company";
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
-import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
-import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobPost } from "../Controller/jobController/company";
+import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, ReplySchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
+import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobDeadline, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
@@ -12,7 +12,7 @@ import { allCompanies } from "../Controller/userController/admin";
 
 import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/user";
 
-import { spacificCompanyDetails } from "../Controller/userController/company";
+import { allUsersforCompany, BannerOfCompany, EditCompany, LogoOfCompany, spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
 
 
@@ -21,6 +21,12 @@ import { createCompanyRating } from "../Controller/ratingController/user";
 import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargetedId } from "../Controller/ratingController/company";
 import { getPostsByOwner } from "../Controller/postController/company";
 import { addCommentToPost, deleteComment, editComment, getCommentById } from "../Controller/commentController/user";
+import { deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../Controller/replyController/user";
+import { LikeOrDislike } from "../Controller/postController/user";
+
+import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
+import { getpostbyid, getPostsByOwners } from "../Controller/postController/user";
+import { communitymesgById, CommunitySendMessage, createCommunity, deletecommunitymessage, SendMessage } from "../Controller/messsageController/message";
 
 const companyRouter = express.Router();
 
@@ -45,6 +51,7 @@ companyRouter
   .post("/login",validateData(LoginSchema),errorCatch(login))
   .post("/logout",companyAuth, errorCatch(logOut))
   .post("/jobposting",companyAuth,validateData(jobPostSchema),errorCatch(createJobPost))
+  .post("/editdeadline/:jobId",companyAuth,errorCatch(updateJobDeadline))
   .patch("/updatejobs/:jobId",companyAuth,errorCatch(updateJobPost))
   .delete("/deletejobpost/:jobId",companyAuth,errorCatch(deleteJobPost))
   .get("/getalljobs",userAuthMiddleware,errorCatch(getAllJobPost))
@@ -111,6 +118,35 @@ companyRouter
     errorCatch(deleteComment)
   )
 
+  //like & unlike
+  .post(
+    "/likepost/:id",
+    companyAuth,
+    errorCatch(LikeOrDislike)
+  )
+
+ 
+
+  //reply
+  .post(
+    "/postreplay",
+    companyAuth,
+    validateData(ReplySchema),
+    errorCatch(replyToComment)
+  )
+  .get(
+    "/findreply/:commentId",
+    companyAuth,
+    errorCatch(getRepliesForComment)
+  )
+  .put("/editreplay", companyAuth, errorCatch(editReply))
+  .delete("/deletereplay", companyAuth, errorCatch(deleteReply))
+  .get(
+    "/getcommentswithreplies",
+    companyAuth,
+    errorCatch(getCommentsWithReplies)
+  )
+
       //delete account
       .post("/accountdeletionreqst",companyAuth,errorCatch(requestDeleteAccount))
       .post("/verifyOtp",companyAuth,errorCatch(verifyOtp))
@@ -118,7 +154,41 @@ companyRouter
           "/owner",
           companyAuth,
         
-          errorCatch(getPostsByOwner)
+          errorCatch(getPostsByOwners)
         )
 
+
+      //edit profile
+      .patch("/edit/:id",errorCatch(EditCompany))
+      .patch("/edit/logo/:id",upload.single('logo'),errorCatch(LogoOfCompany))
+      .patch("/edit/banner/:id",upload.single('banner'),errorCatch(BannerOfCompany))
+      .get(`/users`,errorCatch(allUsersforCompany))
+
+
+
+      
+      
+        //save routes
+        .post("/save/:id",companyAuth,errorCatch(SaveandUnsavePost))
+        .get("/saveds",companyAuth,errorCatch(AllSaved))
+        .get("/all",companyAuth,errorCatch(All))
+
+        //post by owner
+        .get(
+            "/owner",
+            companyAuth,
+            errorCatch(getPostsByOwner)
+          )
+
+
+          .get("/post/:id",errorCatch(getpostbyid))
+
+//community
+
+.post("/create", companyAuth,errorCatch(createCommunity))
+
+
+.post('/communtyMessage/:id',companyAuth,errorCatch(CommunitySendMessage))
+.get('/getCommuntyMessage/:id',companyAuth,errorCatch(communitymesgById))
+.post('/deletCommuntyMessage/:id',companyAuth,errorCatch(deletecommunitymessage))
 export { companyRouter };

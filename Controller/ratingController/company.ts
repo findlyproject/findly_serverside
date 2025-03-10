@@ -1,12 +1,30 @@
 
 import Rating from "../../model/RatingSchema"
 import { Request,Response } from "express"
-export const findreviewsBycompany=async(req:Request,res:Response)=>{
-    const companyId=req.user?.id
+// export const findreviewsBycompany=async(req:Request,res:Response)=>{
+//     const companyId=req.user?.id
 
-    const reviews=await Rating.find({targetCompanyId:companyId,isDeleted:false}).populate("companyId userId")
-    res.status(200).json({success:true,message:"reviews found it ",reviews})
-  }
+//     const reviews=await Rating.find({targetCompanyId:companyId,isDeleted:false}).populate("companyId userId")
+//     res.status(200).json({success:true,message:"reviews found it ",reviews})
+//   }
+
+
+export const findreviewsBycompany = async (req:Request, res:Response) => {
+  const companyId = req.user?.id;
+  const { page = 1, limit = 5 } = req.query;
+   
+  const pageNumber = Math.max(1, Number(page));  
+  const limitNumber = Math.max(1, Number(limit))
+
+  const totalCount = await Rating.countDocuments({ targetCompanyId: companyId, isDeleted: false });
+  const reviews = await Rating.find({ targetCompanyId: companyId, isDeleted: false })
+    .populate("companyId userId")
+    .skip((pageNumber - 1) * limitNumber)
+    .limit(limitNumber)
+
+  res.status(200).json({ success: true, message: "Reviews found", reviews, totalCount,hasMore: pageNumber * limitNumber < totalCount});
+};
+
 
 export const findreviewsByTargetedId=async(req:Request,res:Response)=>{
     const {targetedId}=req.params

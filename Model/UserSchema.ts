@@ -38,7 +38,7 @@ const UserSchema = new Schema<IUser>(
         country:{type:String} ,
         countryName: {type:String},
         state: {type:String},
-        stateName: {type:String},
+        stateName: {type:String}, 
         city: {type:String}
       }
     ],

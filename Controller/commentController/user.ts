@@ -24,7 +24,7 @@ export const addCommentToPost = async (
   res: Response
 ): Promise<void> => {
   const { postId, comment } = req.body;
-
+console.log(req.body)
   if (!comment || comment.trim() === "") {
     throw new CustomError("Comment cannot be empty", 400);
   }
@@ -49,7 +49,7 @@ export const addCommentToPost = async (
 
   await post.save();
   const populatedComment = await Comment.findById(newComment._id)
-    .populate("user", "firstName lastName email profileImage")
+    .populate("user")
     .exec();
 
   res.status(201).json({
@@ -129,7 +129,7 @@ export const getCommentById = async (
 ): Promise<void> => {
   console.log("req.params.id", req.params.id);
   const comment = await Comment.findById(req.params.id).populate("user");
-
+console.log(comment)
   if (!comment) {
     throw new CustomError("No post found containing this comment", 404);
   }

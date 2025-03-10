@@ -28,17 +28,30 @@ const CommunitySchema = new Schema<ICommunity>(
         
 
     },
+   
     
     members: [
+     
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
+        memberId: {
+          type: mongoose.Schema.Types.ObjectId,
+          
+          refPath: 'memberModel'
+        },
+        memberModel: {
+          type: String,
+          enum: ["User", "Company"], // Allowed values
+        }
+      }
     ],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Company",
       required: true,
+    },
+    isDeleted:{
+      type:Boolean,
+      default:false
     },
   },
   {
@@ -50,9 +63,15 @@ const CommunityMessageSchema=new Schema<ICommunityMessage>({
     communityId: {type:mongoose.Schema.Types.ObjectId, ref:"Community",required:true,},
     sender: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+        // ref: 'User',
+        // required: true,
+        refPath: 'senderModel',
       },
+      senderModel: {
+        type: String,
+        required: true,
+        enum: ["User", "Company"],  // Specify both models
+    },
       message: {
         type: String,
         required: true,

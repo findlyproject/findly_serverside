@@ -5,6 +5,7 @@ import { CustomError } from "../../Utils/errorHandler";
 import mongoose from "mongoose";
 import { IMessage } from "../../types/allTypes";
 import { promise } from "zod";
+import { Company } from "../../model/CompanySchema";
 
 
 
@@ -21,6 +22,7 @@ console.log(message);
   if (!sender || !receiver) {
     res.status(404).json({ message: 'Sender or receiver not found' });
     return;
+  
   }
 io.on("newMessage",(data:string)=>{
   console.log("message",data);
@@ -90,7 +92,7 @@ io.on("newMessage",(data:string)=>{
     const {name,description,profile}=req.body
     console.log("{name,description,profile}",{name,description,profile})
     if(!userId){
-        throw new CustomError('current user not found',404)
+        throw new CustomError('current company not found',404)
     }
     if(!name||!description){
         throw new CustomError('name and description is required',400)
@@ -105,8 +107,13 @@ io.on("newMessage",(data:string)=>{
     name,
     description,
     createdBy:userId,
+
     profile,
-    members:[userId]
+   
+    members:[{
+      memberId:userId,
+      memberModel:'Company'
+    }]
    })
 await community.save()
 
@@ -115,7 +122,7 @@ await community.save()
 
 
 export const AllCommunities=async(req:Request,res:Response):Promise<void>=>{
-    const communities=await Community.find().populate('members')
+    const communities=await Community.find({isDeleted:false}).populate({path:'members.memberId',select:'_id firstName lastName profileImage logo name'})
 
     if(!communities){
         throw new  CustomError("all communities not found",404)
@@ -136,14 +143,14 @@ export const joinCommunity =async(req:Request,res:Response):Promise<void>=>{
     }
 
     const isMember = community.members.some(
-      (member) => member._id.toString() === userId
+      (member) => member.memberId.toString() === userId
     );
     if (isMember) {
       res.status(400).json({status:false, message: 'User is already a member' });
       return;
     }
 
-    community.members.push(new mongoose.Types.ObjectId(userId));
+    community.members.push({ memberId: new mongoose.Types.ObjectId(userId), memberModel: "User" });
 
     await community.save();
     const savedCommunity = await Community.findById(communityId).populate('members');
@@ -160,7 +167,14 @@ export const CommunitySendMessage = async (req:Request,res:Response):Promise<voi
   const communityId = req.params.id;
   const {message,type} = req.body;
 console.log("object",message,type)
-  const currentUser = await User.findOne({_id:userId});
+const [user, company] = await Promise.all([
+  User.findOne({ _id: userId }),
+  Company.findOne({ _id: userId })
+]);
+
+const currentUser = user || company;
+const senderModel = user ? "User" : "Company";
+  console.log("currentUser....",currentUser);
   
   if(!currentUser){
     throw new CustomError("user not found",404)
@@ -178,7 +192,8 @@ console.log("object",message,type)
   }
   const newMessage = await new CommunityMessage({
     communityId,
-    sender:userId,
+    sender:currentUser?._id,
+    senderModel,
     message,
     type,
   })
@@ -195,7 +210,11 @@ if(!findCommunity){
   res.status(404).json({status:false,message:"community is not found"})
   return 
 }
-const findCommunityMessaeg = await CommunityMessage.find({communityId,isDelete:false}).populate("sender","_id firstName lastName profileImage")
+const findCommunityMessaeg = await CommunityMessage.find({communityId,isDelete:false})
+.populate({path:"sender",select:"_id firstName profileImage logo name"})
+// .populate({ path: "sender", select: "_id logo name" })
+console.log("findCommunityMessaeg",findCommunityMessaeg);
+
 res.status(200).json({status:true,message:"get community by id",Message:findCommunityMessaeg})
 }
 
@@ -244,22 +263,129 @@ export const LeaveCommunity=async(req:Request,res:Response):Promise<void>=>{
   
   
   //Community Details
-  export const CommunityDetails=async(req:Request,res:Response):Promise<void>=>{
-  const communityID=req.params.id
-  const community=await Community.findById(communityID).populate('members').populate('createdBy')
-  if(!community){
-    throw new CustomError(`community not found`,404)
-  }
-  res.status(200).json({ status:true,message:'community details',community})
-  }
+  export const CommunityDetails = async (req: Request, res: Response): Promise<void> => {
+    const communityID = req.params.id;
   
+    // Find the community
+    let community = await Community.findById(communityID)
+      .populate({
+        path: "createdBy",
+        select: "_id name logo",
+      })
+      .lean(); // Convert Mongoose document to plain object
+  
+    if (!community) {
+      throw new CustomError(`Community not found`, 404);
+    }
+  
+    // Manually populate members based on model type
+    if (community.members && community.members.length > 0) {
+      community.members = await Promise.all(
+        community.members.map(async (member: any) => {
+          if (member.memberModel === "User") {
+            member.memberId = await User.findById(member.memberId).select("profileImage firstName lastName _id name logo");
+          } else if (member.memberModel === "Company") {
+            member.memberId = await Company.findById(member.memberId).select("_id name logo");
+          }
+          return member;
+        })
+      );
+    }
+  
+    console.log("community..............", community);
+    res.status(200).json({ status: true, message: "Community details", community });
+  };
   
   //UpdateCommunity
   
-  export const  UpdateCommunity=async(req:Request,res:Response):Promise<void>=>{
+  export const  UpdateDescriptionCommunity=async(req:Request,res:Response):Promise<void>=>{
+    const communityid=req.params.id
+    const{description}=req.body
+   
+    
+    const creatorID=req.user?.id
+    if(!description){
+      throw new CustomError(' description is required',400)
+  }
+    const community=await Community.findById(communityid)
+    if(!community){
+      throw new CustomError('community not found',404)
+    }
+
+  
+  if(community.createdBy.toString()!==creatorID){
+    throw new CustomError("Unauthorized! Only the  admin can update this community.", 400)
+  }
+ 
+
+   community.description=description
+ 
+   await community.save()
+   res.status(200).json({status:true,message:'updated successfully',community})
+
   
   
   }
+
+
+
+  export const  UpdateNameCommunity=async(req:Request,res:Response):Promise<void>=>{
+    const communityid=req.params.id
+    const{name}=req.body
+   
+    
+    const creatorID=req.user?.id
+    if(!name){
+      throw new CustomError(' name is required',400)
+  }
+    const community=await Community.findById(communityid)
+    if(!community){
+      throw new CustomError('community not found',404)
+    }
+
+  
+  if(community.createdBy.toString()!==creatorID){
+    throw new CustomError("Unauthorized! Only the  admin can update this community.", 400)
+  }
+ 
+   community.name=name
+   
+  
+   await community.save()
+   res.status(200).json({status:true,message:'updated successfully',community})
+
+  
+  
+  }
+  export const ProfileOfCommunity=async(req:Request,res:Response):Promise<void>=>{
+
+    const communityid=req.params.id
+    
+   
+    
+    const creatorID=req.user?.id
+  
+    const community=await Community.findById(communityid)
+    if(!community){
+      throw new CustomError('community not found',404)
+    }
+
+  
+  if(community.createdBy.toString()!==creatorID){
+    throw new CustomError("Unauthorized! Only the  admin can update this community.", 400)
+  }
+ 
+   if(req.file){
+    community.profile=req.file?.path
+   }
+   console.log("req.file",req.file);
+   
+  
+   await community.save()
+   res.status(200).json({status:true,message:'updated successfully',community})
+  
+  }
+  
   
   
   //admin can Delete Community
@@ -268,12 +394,20 @@ export const LeaveCommunity=async(req:Request,res:Response):Promise<void>=>{
   
   const communityid=req.params.id
   const community=await Community.findById(communityid)
+  const creatorID=req.user?.id
   
   if(!community){
     throw new CustomError(`community not found`,404)
   }
-  
-  
+
+  if(community.createdBy.toString() !==creatorID){
+    throw new CustomError("Unauthorized! Only the  admin can delete this community.", 400)
+  }
+
+  community.isDeleted=true
+  await community.save()
+
+  res.status(200).json({status:true,message:'community deleted',community})
   }
     
   

@@ -4,7 +4,16 @@ import { IReply } from "../types/allTypes";
 
 const ReplySchema = new Schema<IReply>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: { 
+      type: Schema.Types.ObjectId, 
+      required: true, 
+      refPath: "userModel" 
+    },
+    userModel: { 
+      type: String, 
+      required: true, 
+      enum: ["User", "Company"] 
+    },
     reply: { type: String, required: true },
     isDeleted:{type:Boolean,default:false},
   },
@@ -17,7 +26,7 @@ const CommentSchema = new Schema<IComment>(
     user: { 
       type: Schema.Types.ObjectId, 
       required: true, 
-      refPath: "ownerModel" // 🔹 Dynamic reference field
+      refPath: "userModel" // 🔹 Dynamic reference field
     },
     userModel: { 
       type: String, 

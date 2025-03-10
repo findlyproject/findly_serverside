@@ -363,11 +363,43 @@ export const updateJobPost = async (req: Request, res: Response): Promise<void> 
 };
 
 
+export const updateJobDeadline = async (req: Request, res: Response): Promise<void> => {
+
+        const jobId = req.params.jobId;
+        const companyId = req.user?.id; 
+
+        const { applicationDeadline } = req.body;
+
+        if (!applicationDeadline) {
+            res.status(400).json({ message: "Application deadline is required" });
+            return;
+        }
+
+     
+        const job = await JobPost.findOne({ _id: jobId, company: companyId });
+
+        if (!job) {
+            res.status(404).json({ message: "Job post not found or unauthorized" });
+            return;
+        }
+
+        job.applicationDeadline = applicationDeadline;
+        await job.save();
+
+        res.status(200).json({
+            message: "Job application deadline updated successfully",
+            applicationDeadline
+        });
+
+};
+
+
+
 
 export const deleteJobPost = async (req: Request, res: Response): Promise<void> => {
 
     const jobId = req.params.jobId;
-    const companyId = req.company?.id;
+    const companyId = req.user?.id;
 
 
     const job = await JobPost.findOne({ _id: jobId, company: companyId });
@@ -483,15 +515,7 @@ export const getJobsByCompanies = async (req: Request, res: Response) => {
     let page = parseInt(req.query.page as string) || 1;
     let limit = parseInt(req.query.limit as string) || 6;
     let skip = (page - 1) * limit;
-
-    console.log("page",page);
-    console.log("limit",limit);
-    console.log("skip",skip);
-    
-
-
-       
-        const postedJobs = await JobPost.find({ company: companyId })
+        const postedJobs = await JobPost.find({ company: companyId,isDeleted:false })
             .populate("company")
             .skip(skip)
             .limit(limit);

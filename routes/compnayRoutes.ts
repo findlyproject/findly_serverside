@@ -158,6 +158,8 @@ companyRouter
         )
 
 
+        
+
       //edit profile
       .patch("/edit/:id",errorCatch(EditCompany))
       .patch("/edit/logo/:id",upload.single('logo'),errorCatch(LogoOfCompany))

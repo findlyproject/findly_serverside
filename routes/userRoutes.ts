@@ -30,6 +30,10 @@ userRouter
 .post("/refreshtoken",errorCatch(refreshAccessToken))
 
 .post("/emailus",userAuthMiddleware,errorCatch(EmailUs))
+   
+
+
+
 
 //user
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
@@ -39,6 +43,13 @@ userRouter
 .post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
 .get("/getuploadedfiles",userAuthMiddleware,errorCatch(getUploadedFiles))
 .delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
+
+
+
+
+
+
+
 
 
 .get('/all',AllUsersEmailCheck)

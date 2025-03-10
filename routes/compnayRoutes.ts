@@ -4,7 +4,7 @@ import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, re
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, ReplySchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
-import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobPost } from "../Controller/jobController/company";
+import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobDeadline, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
@@ -51,6 +51,7 @@ companyRouter
   .post("/login",validateData(LoginSchema),errorCatch(login))
   .post("/logout",companyAuth, errorCatch(logOut))
   .post("/jobposting",companyAuth,validateData(jobPostSchema),errorCatch(createJobPost))
+  .post("/editdeadline/:jobId",companyAuth,errorCatch(updateJobDeadline))
   .patch("/updatejobs/:jobId",companyAuth,errorCatch(updateJobPost))
   .delete("/deletejobpost/:jobId",companyAuth,errorCatch(deleteJobPost))
   .get("/getalljobs",userAuthMiddleware,errorCatch(getAllJobPost))

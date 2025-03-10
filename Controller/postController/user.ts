@@ -6,6 +6,11 @@ import { v2 as cloudinary } from "cloudinary";
 import { CustomError } from "../../Utils/errorHandler";
 
 
+
+
+
+
+
 export const getAllPosts = async (req: Request, res: Response): Promise<void> => {
   try {
     const { page = 1, limit = 5 } = req.query; 

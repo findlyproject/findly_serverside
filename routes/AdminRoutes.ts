@@ -1,3 +1,4 @@
+
 import express from "express";
 import { login, logout,ProfileEdit } from "../Controller/authController/admin";
 import { adminAuthentication } from "../middleware/adminAuthentication";
@@ -9,6 +10,7 @@ import { deletePost, dismissReports, getReports } from "../Controller/postContro
 import { errorCatch } from "../middleware/tryCatch";
 import { upload } from "../middleware/upload";
 import { approveRating, deleteRating,getRatings } from "../Controller/ratingController/admin";
+import { getAllPosts } from "../Controller/postController/user";
 
 
 const adminRouter = express.Router();
@@ -44,7 +46,7 @@ adminRouter
     validateData(undefined,IdSchema),
     errorCatch(deletePost)
   )
-
+.get("/findallposts",adminAuthentication,errorCatch(getAllPosts))
   //editprofile
   .patch("/editprofile",adminAuthentication,upload.single("profileImage"),errorCatch(ProfileEdit))
 

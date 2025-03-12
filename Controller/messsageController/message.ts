@@ -84,6 +84,26 @@ io.on("newMessage",(data:string)=>{
       res.status(200).json({ messages: conversation.messages});
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    //community
     export const createCommunity=async(req:Request,res:Response):Promise<void>=>{
 
     const userId=req.user?.id

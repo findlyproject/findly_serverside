@@ -40,7 +40,7 @@ const CommunitySchema = new Schema<ICommunity>(
         },
         memberModel: {
           type: String,
-          enum: ["User", "Company"], // Allowed values
+          enum: ["User", "Company"],
         }
       }
     ],

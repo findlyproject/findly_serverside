@@ -1,253 +1,13 @@
-// import { application, Request, Response } from "express";
-// import { JobPost } from "../../model/JobSchema";
-// import { CustomError } from "../../Utils/errorHandler";
-// import { JobApplication } from "../../model/JobApplicationSchema";
-
-// export const createJobPost = async (req: Request, res: Response): Promise<void> => {
-
-//         const companyId = req.user?.id;
-// console.log("heyy");
-
-
-//         const {
-//             title,
-//             company,
-//             location,
-//             jobType,
-//             experienceLevel,
-//             industry,
-//             description,
-//             requirements,
-//             jobResponsibilities,
-//             salary,
-//             applicationDeadline,
-//             benefits,
-//             contactEmail,
-//             contactPhone,
-//             status
-//         } = req.body;
-// console.log("salary",salary);
-
-// if (salary && typeof salary === 'object' && 'rate' in salary && 'min' in salary && 'max' in salary) {
-// } else {
-//     res.status(400).json({ message: "Invalid salary format. Expected an object with rate, min, and max." });
-//     return;
-// }
-
-//         const job = new JobPost({
-//             title,
-//             company,
-//             location,
-//             jobType,
-//             experienceLevel,
-//             industry,
-//             description,
-//             requirements,
-//             jobResponsibilities,
-//             salary,
-//             applicationDeadline,
-//             benefits,
-//             contactEmail,
-//             contactPhone,
-//             status: status || "Open", 
-//             company: companyId,
-//         });
-
-//         await job.save();   
-//         res.status(201).json({ message: "Job post created successfully", job });
-
-// };
-
-
-// export const updateJobPost = async (req: Request, res: Response): Promise<void> => {
-
-//         const jobId = req.params.jobId;
-//         const companyId = req.company?.id;
-
-//         const {
-//             title,
-//             location,
-//             jobType,
-//             experienceLevel,
-//             industry,
-//             description,
-//             requirements,
-//             jobResponsibilities,
-//             salary,
-//             applicationDeadline,
-//             benefits,
-//             contactEmail,
-//             contactPhone,
-//             status
-//         } = req.body;
-
-//         const job = await JobPost.findOne({ _id: jobId, company: companyId });
-
-//         if (!job) {
-//             res.status(404).json({ message: "Job post not found or you do not have permission to edit it" });
-//             return;
-//         }
-//         const updatedFields: Record<string, any> = {};
-
-//         if (title) updatedFields.title = title;
-//         if (location) updatedFields.location = location;
-//         if (jobType) updatedFields.jobType = jobType;
-//         if (experienceLevel) updatedFields.experienceLevel = experienceLevel;
-//         if (industry) updatedFields.industry = industry;
-//         if (description) updatedFields.description = description;
-//         if (requirements) updatedFields.requirements = requirements;
-//         if (jobResponsibilities) updatedFields.jobResponsibilities = jobResponsibilities;
-//         if (salary && typeof salary === "object" && "rate" in salary && "min" in salary && "max" in salary) {
-//             updatedFields.salary = salary;
-//             console.log("ddd");
-
-//         } else if (salary) {
-//             res.status(400).json({ message: "Invalid salary format. Expected an object with rate, min, and max." });
-//             return;
-//         }  
-//         if (applicationDeadline) updatedFields.applicationDeadline = applicationDeadline;
-//         if (benefits) updatedFields.benefits = benefits;
-//         if (contactEmail) updatedFields.contactEmail = contactEmail;
-//         if (contactPhone) updatedFields.contactPhone = contactPhone;
-//         if (status) updatedFields.status = status;
-//         Object.assign(job, updatedFields);
-//         await job.save();
-//         res.status(200).json({
-//             message: "Job post updated successfully",
-//             updatedFields
-//         });
-
-
-// };
-
-
-
-// export const deleteJobPost = async (req: Request, res: Response): Promise<void> => {
-
-//         const jobId = req.params.jobId; 
-//         const companyId = req.company?.id; 
-
-
-//         const job = await JobPost.findOne({ _id: jobId, company: companyId });
-
-//         if (!job) {
-//             res.status(404).json({ message: "Job post not found or you do not have permission to delete it" });
-//             return;
-//         }
-
-//         job.isDeleted = true;
-//         await job.save();
-
-//         res.status(200).json({ message: "Job post soft deleted successfully" });
-
-// };
-
-
-
-
-
-
-
-// /// get jobs by id //
-
-// export const getJobsById = async (req: Request, res: Response): Promise<void> => {
-//     const jobId = req.params.id;
-//     if(!jobId){
-//     throw new CustomError("job Id is required", 400);
-//     }
-//     const findJob = await JobPost.findById(jobId);
-//     if(!findJob){
-//         throw new CustomError("job not found", 404);
-//     }
-// };
-
-
-
-
-
-// ////// get all job post 
-
-// export const getAllJobPost = async (req: Request, res: Response): Promise<void> => {
-
-//     const page = parseInt(req.query.page as string) || 1;  
-//     const limit = 10; 
-//     const skip = (page - 1) * limit;    
-
-//     const jobs = await JobPost.find({ isDeleted: false })
-//         .populate("company")
-//         .skip(skip)
-//         .limit(limit);
-
-//     const totalJobs = await JobPost.countDocuments({ isDeleted: false });
-
-//     res.status(200).json({
-//         status: true,
-//         message: "All jobs fetched successfully",
-//         jobs,
-//         currentPage: page,
-//         totalPages: Math.ceil(totalJobs / limit),
-//         totalJobs
-//     });
-
-// }
-// export const getJobsByCompanies=async(req:Request,res:Response)=>{
-//     const type=req.user &&req.user.type
-//     console.log("type",type);
-
-//     if (type !== "Company") {
-//          res.status(403).json({ success: false, message: "Unauthorized" })
-//          return
-//     }
-//     let companyId =type==="Company"?req.user?.id:null
-
-// console.log("companyId",companyId);
-
-
-//     const postedJobs=await JobPost.find({company:companyId})
-
-//     res.status(200).json({success:true,message:"found it",postedJobs})
-// }
-
-// export const findAppliedUsers=async(req:Request,res:Response)=>{
-//         const companyId=req.user?.id;
-//         const appliedUsers=await JobApplication.find({companyId}).populate("userId").populate("jobId")
-
-
-//         res.status(200).json({success:true,message:"found all applications",appliedUsers})
-// }
-
-
-// export const findUserApplication = async (req: Request, res: Response) => {
-
-//         const { userId, jobId } = req.params; 
-
-//         if (!userId || !jobId) {
-//             throw new CustomError("User ID and Job ID are required", 400);
-//         }
-
-
-//         const application = await JobApplication.findOne({ userId, jobId });
-
-//         if (!application) {
-//             throw new CustomError("No application found for this user and job", 404);
-//         }
-
-//         res.status(200).json({
-//             success: true,
-//             message: "Application found",
-//             application
-//         });
-
-// };
-
-
-
 import { application, Request, Response } from "express";
 import { JobPost } from "../../model/JobSchema";
 import { CustomError } from "../../Utils/errorHandler";
 import { JobApplication } from "../../model/JobApplicationSchema";
 import nodemailer from "nodemailer";
 import { ParsedQs } from "qs";
+import User from "../../model/UserSchema";
+import { Company } from "../../model/CompanySchema";
+const { VertexAI } = require('@google-cloud/vertexai');
+import OpenAI from "openai";
 export const createJobPost = async (req: Request, res: Response): Promise<void> => {
 
     const companyId = req.user?.id;
@@ -685,3 +445,318 @@ export const approveJobApplication = async (req: Request, res: Response): Promis
         message: "Application approved and offer letter sent via email",
     });
 };
+
+
+// export const generateOfferLetter = async (
+//   req: Request,
+//   res: Response
+// ): Promise<void> => {
+//   try {
+//     const { jobApplicationId, startDate } = req.body;
+
+//     // Validate input (important)
+//     if (!jobApplicationId || !startDate) {
+//       res
+//         .status(400)
+//         .json({ error: 'Job application ID and start date are required' });
+//       return;
+//     }
+
+//     // Find JobApplication
+//     const jobApplication = await JobApplication.findById(jobApplicationId);
+
+//     if (!jobApplication) {
+//       res.status(404).json({ error: 'Job application not found' });
+//       return;
+//     }
+
+//     // Fetch related data (use Promise.all for efficiency)
+//     const [jobPost, company, user] = await Promise.all([
+//       JobPost.findById(jobApplication.jobId),
+//       Company.findById(jobApplication.companyId),
+//       User.findById(jobApplication.userId),
+//     ]);
+// console.log(jobPost)
+//     // Check if related data exists
+//     if (!jobPost) {
+//       res.status(404).json({ error: 'Job post not found' });
+//       return;
+//     }
+//     if (!company) {
+//       res.status(404).json({ error: 'Company not found' });
+//       return;
+//     }
+//     if (!user) {
+//       res.status(404).json({ error: 'User not found' });
+//       return;
+//     }
+
+//     // Construct the prompt
+//     const prompt = `Generate a formal offer letter for ${
+//       user.firstName
+//     } ${user.lastName} for the position of ${jobPost.title} at ${company.name}.
+
+//     Company Details:
+//     - Company Name: ${company.name}
+//     - Address: ${company.address?.landmark || ''}, ${
+//       company.address?.city || ''
+//     }, ${company.address?.state || ''}, ${company.address?.country || ''} - ${
+//       company.address?.pincode || ''
+//     }
+
+//     Job Details:
+//     - Job Title: ${jobPost.title}
+//     - Job Type: ${jobPost.jobType}
+//     - Location: ${jobPost.location}
+//     - Start Date: ${startDate}
+//     - Salary: ${jobPost.salary.rate} ${jobPost.salary.min} - ${
+//       jobPost.salary.max
+//     }
+//     - Job Responsibilities: ${jobPost.jobResponsibilities?.join(', ') || ''}
+
+//     User Details:
+//     - Candidate Name: ${user.firstName} ${user.lastName}
+//     - Email: ${user.email}
+
+//     Application Details:
+//     - Resume: ${jobApplication.resumeName}
+//     - Cover Letter: ${jobApplication.coverLetter || 'Not provided'}
+
+//     Instructions:
+//     - Use a formal and professional tone.
+//     - Include standard offer letter clauses.
+//     - Mention that the offer is contingent on background checks (if applicable).
+//     - Add a line for the candidate to sign and return the letter.
+//     `;
+
+//     // Gemini API call
+//     const vertexAI = new VertexAI({
+//       project: process.env.GOOGLE_CLOUD_PROJECT_ID,
+//       location: process.env.GOOGLE_CLOUD_LOCATION,
+//     });
+//     const generativeModel = vertexAI.getGenerativeModel({
+//       model: 'gemini-pro',
+//     });
+
+//     const response = await generativeModel.generateContent({
+//       contents: [{ role: 'user', parts: [{ text: prompt }] }],
+//     });
+
+//     const offerLetter = response.response.candidates[0].content.parts[0].text;
+
+//     // Update Job Application
+//     jobApplication.offerLetter = offerLetter;
+//     jobApplication.status = 'Accepted'; // Or you might have a different logic
+//     await jobApplication.save();
+
+//     res.json({ offerLetter });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Error generating offer letter' });
+//   }
+// };
+
+
+
+const token = process.env["OPENAI_API_KEY"];
+
+export const generateOfferLetter = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { jobApplicationId, startDate } = req.body;
+
+    if (!jobApplicationId || !startDate) {
+      res.status(400).json({ error: "Job application ID and start date are required" });
+      return;
+    }
+
+    const jobApplication = await JobApplication.findById(jobApplicationId);
+    if (!jobApplication) {
+      res.status(404).json({ error: "Job application not found" });
+      return;
+    }
+
+    const [jobPost, company, user] = await Promise.all([
+      JobPost.findById(jobApplication.jobId),
+      Company.findById(jobApplication.companyId),
+      User.findById(jobApplication.userId),
+    ]);
+
+    if (!jobPost || !company || !user) {
+      res.status(404).json({ error: "Related data not found" });
+      return;
+    }
+
+    const openai = new OpenAI({
+      apiKey: token,
+    });
+
+    // Construct the prompt
+    const prompt = `Generate a formal offer letter for ${user.firstName} ${user.lastName} for the position of ${jobPost.title} at ${company.name}.
+
+    Company: ${company.name}, Address: ${company.address?.city || ""}, ${company.address?.state || ""}
+    Job Title: ${jobPost.title}, Job Type: ${jobPost.jobType}, Start Date: ${startDate}
+    Salary: ${jobPost.salary.min} - ${jobPost.salary.max} ${jobPost.salary.rate}
+    Candidate: ${user.firstName} ${user.lastName}, Email: ${user.email}
+
+    Use a formal and professional tone. Include standard offer letter clauses.
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: "You are a professional HR assistant." },
+        { role: "user", content: prompt },
+      ],
+      temperature: 1,
+      max_tokens: 4096,
+      top_p: 1,
+    });
+
+    const offerLetter = response.choices[0]?.message?.content || "";
+
+    if (!offerLetter) {
+      res.status(500).json({ error: "Failed to generate offer letter" });
+      return;
+    }
+
+    // Save offer letter to job application
+    jobApplication.offerLetter = offerLetter;
+    jobApplication.status = "Accepted";
+    await jobApplication.save();
+
+    res.json({ offerLetter });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    res.status(500).json({ error: "Error generating offer letter" });
+  }
+};
+
+
+// import ModelClient, { isUnexpected } from "@azure-rest/ai-inference";
+// import { AzureKeyCredential } from "@azure/core-auth";
+
+// // Azure AI Key (Replace with your actual Azure AI key)
+// const token = process.env["AZURE_AI_KEY"];
+
+// export const generateOfferLetter = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const { jobApplicationId, startDate } = req.body;
+
+//     if (!jobApplicationId || !startDate) {
+//       res.status(400).json({ error: "Job application ID and start date are required" });
+//       return;
+//     }
+
+//     // Fetch Job Application details
+//     const jobApplication = await JobApplication.findById(jobApplicationId);
+//     if (!jobApplication) {
+//       res.status(404).json({ error: "Job application not found" });
+//       return;
+//     }
+
+//     const [jobPost, company, user] = await Promise.all([
+//       JobPost.findById(jobApplication.jobId),
+//       Company.findById(jobApplication.companyId),
+//       User.findById(jobApplication.userId),
+//     ]);
+
+//     if (!jobPost || !company || !user) {
+//       res.status(404).json({ error: "Related data not found" });
+//       return;
+//     }
+
+//     // Initialize Azure AI Client
+//     const client = ModelClient("https://models.inference.ai.azure.com", new AzureKeyCredential(token));
+
+//     // Construct the prompt for Azure AI
+//     const prompt = `Generate a formal offer letter for ${user.firstName} ${user.lastName} for the position of ${jobPost.title} at ${company.name}.
+
+//     Company: ${company.name}, Address: ${company.address?.city || ""}, ${company.address?.state || ""}
+//     Job Title: ${jobPost.title}, Job Type: ${jobPost.jobType}, Start Date: ${startDate}
+//     Salary: ${jobPost.salary.min} - ${jobPost.salary.max} ${jobPost.salary.rate}
+//     Candidate: ${user.firstName} ${user.lastName}, Email: ${user.email}
+
+//     Use a formal and professional tone. Include standard offer letter clauses.
+//     `;
+
+//     // Send request to Azure AI
+//     const response = await client.path("/chat/completions").post({
+//       body: {
+//         messages: [
+//           { role: "system", content: "You are a professional HR assistant." },
+//           { role: "user", content: prompt },
+//         ],
+//         model: "Llama-3.3-70B-Instruct",
+//         temperature: 1,
+//         max_tokens: 4096,
+//         top_p: 1,
+//       },
+//     });
+
+//     if (isUnexpected(response)) {
+//       throw response.body.error;
+//     }
+
+//     const offerLetter = response.body.choices[0]?.message?.content || "";
+
+//     if (!offerLetter) {
+//       res.status(500).json({ error: "Failed to generate offer letter" });
+//       return;
+//     }
+
+//     // Save offer letter to job application
+//     jobApplication.offerLetter = offerLetter;
+//     jobApplication.status = "Accepted";
+//     await jobApplication.save();
+
+//     res.json({ offerLetter });
+//   } catch (error) {
+//     console.error("Unexpected error:", error);
+//     res.status(500).json({ error: "Error generating offer letter" });
+//   }
+// };
+
+
+// import axios from "axios";
+
+
+
+// const API_KEY = process.env.OPENAI_API_KEY; // Secure API key
+
+// const systemMessage = {
+//   role: "system",
+//   content: "Explain things like you're talking to a software professional with 2 years of experience."
+// };
+
+// const fetchData = async () => {
+//   let retries = 3;
+//   let delay = 1000; // Start with 1 second delay
+
+//   for (let i = 0; i < retries; i++) {
+//     try {
+//       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+//         model: "gpt-4o-mini",
+//         messages: [{ role: "user", content: "Give me a recipe" }]
+//       }, {
+//         headers: {
+//           Authorization: `Bearer YOUR_API_KEY`,
+//           'Content-Type': 'application/json'
+//         }
+//       });
+
+//       return response.data;
+//     } catch (error) {
+//         if (axios.isAxiosError(error)) {
+//           console.error("Axios error:", error.response?.data || error.message);
+//         } else {
+//           console.error("Unexpected error:", error);
+//         }
+//       }
+//   }
+//   throw new Error("Max retries reached");
+// };
+
+// fetchData().then(console.log).catch(console.error);

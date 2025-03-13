@@ -2,6 +2,8 @@ import { SubscriptionPlan } from "../../model/SubscriptionSchema";
 import User from "../../model/UserSchema";
 import { CustomError } from "../../Utils/errorHandler";
 import { Request, Response } from "express";
+import { generateOTP } from "../../Utils/otpGenerator";
+import { sendOTP } from "../../Utils/otpService";
 
 export const findCurrentUserDetails = async (
     req: Request,
@@ -54,67 +56,202 @@ export const findCurrentUserDetails = async (
   };
      
   
-  export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
+  // export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
   
-      const userId = req.user?.id; 
+  //     const userId = req.user?.id; 
       
   
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new CustomError("User not found",404);
-    }
+  //   const user = await User.findById(userId);
+  //   if (!user) {
+  //     throw new CustomError("User not found",404);
+  //   }
   
       
-      const {
-        firstName,
-        lastName,
-        email,
-        phoneNumber,
-        dateOfBirth,
-        location,
-        skills,
-        jobTitle,
-        jobLocation,
-        about,
-        education,
-        projects,
-        profileImage,
-        banner
-      } = req.body;
+  //     const {
+  //       firstName,
+  //       lastName,
+  //       email,
+  //       phoneNumber,
+  //       dateOfBirth,
+  //       location,
+  //       skills,
+  //       jobTitle,
+  //       jobLocation,
+  //       about,
+  //       education,
+  //       projects,
+  //       profileImage,
+  //       banner
+  //     } = req.body;
   
-      const updateData: { [key: string]: any } = {
-        ...(firstName && { firstName }),
-        ...(lastName && { lastName }),
-        ...(email && { email }),
-        ...(phoneNumber && { phoneNumber }),
-        ...(dateOfBirth && { dateOfBirth }),
-        ...(location && { location }),
-        ...(skills && { skills }),
-        ...(jobTitle && { jobTitle }),
-        ...(jobLocation && { jobLocation }),
-        ...(about && { about }),
-        ...(education && { education }),
-        ...(projects && { projects }),
-        ...(profileImage && { profileImage }),
-        ...(banner && { banner }),
+  //     const updateData: { [key: string]: any } = {
+  //       ...(firstName && { firstName }),
+  //       ...(lastName && { lastName }),
+  //       ...(email && { email }),
+  //       ...(phoneNumber && { phoneNumber }),
+  //       ...(dateOfBirth && { dateOfBirth }),
+  //       ...(location && { location }),
+  //       ...(skills && { skills }),
+  //       ...(jobTitle && { jobTitle }),
+  //       ...(jobLocation && { jobLocation }),
+  //       ...(about && { about }),
+  //       ...(education && { education }),
+  //       ...(projects && { projects }),
+  //       ...(profileImage && { profileImage }),
+  //       ...(banner && { banner }),
   
-      };
+  //     };
   
-    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
-      new: true,
-    });
+  //   const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+  //     new: true,
+  //   });
   
-      if (!updatedUser) {
-        throw new CustomError("User not found",404);
+  //     if (!updatedUser) {
+  //       throw new CustomError("User not found",404);
         
-      }
+  //     }
   
-      res.status(200).json({status:true, message: "Profile updated successfully", user: updatedUser });
+  //     res.status(200).json({status:true, message: "Profile updated successfully", user: updatedUser });
     
   
   
+  // };
+
+  // update user profile //
+  
+  //banner
+  export const updateBanner = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user?.id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new CustomError("User not found", 404);
+    }
+
+    const { banner } = req.body;
+
+    if (!banner) {
+        throw new CustomError("Banner is required", 400);
+    }
+
+    user.banner = banner;
+    await user.save();
+
+    res.status(200).json({ status: true, message: "Banner updated successfully", user });
+};
+
+//profile image
+export const updateProfileImage = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.id;
+
+
+  const user = await User.findById(userId);
+  if (!user) {
+      throw new CustomError("User not found", 404);
+  }
+
+  const { profileImage } = req.body;
+console.log("req.body",req.body)
+  if (!profileImage) {
+      throw new CustomError("Profile image is required", 400);
+  }
+
+  user.profileImage = profileImage;
+  console.log(user)
+  await user.save();
+
+  res.status(200).json({ status: true, message: "Profile image updated successfully", user });
+  return
+};
+
+//personal details
+export const updateBasicInfo = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.id;
+
+  const user = await User.findById(userId);
+  if (!user) {
+      throw new CustomError("User not found", 404);
+  }
+const {basicInfo}=req.body
+  const { firstName, lastName, email, phoneNumber, dateOfBirth, gender, about } = basicInfo;
+const updateData: { [key: string]: any } = {
+  ...(firstName && { firstName }),
+  ...(lastName && { lastName }),
+  ...(email && { email }),
+  ...(phoneNumber && { phoneNumber }),
+  ...(dateOfBirth && { dateOfBirth }),
+  ...(gender && { gender }),
+  ...(about && { about }),
+};
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+  res.status(200).json({ status: true, message: "Basic information updated successfully", user: updatedUser });
+};
+
+//professional details
+export const updateOtherDetails = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.id;
+
+  const user = await User.findById(userId);
+  if (!user) {
+      throw new CustomError("User not found", 404);
+  }
+  const {otherDetails}=req.body
+  const { location, skills, jobTitle, jobLocation, education, projects,experience } = otherDetails;
+
+  const updateData: { [key: string]: any } = {
+      ...(location && { location }),
+      ...(skills && { skills }),
+      ...(jobTitle && { jobTitle }),
+      ...(jobLocation && { jobLocation }),
+      ...(education && { education }),
+      ...(projects && { projects }),
+      ...(experience && { experience }),
+  };
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+  res.status(200).json({ status: true, message: "Other details updated successfully", user: updatedUser });
+};
+
+//email verification
+interface OTPStore {
+  [key: string]: { otp: string; createdAt: number };
+}
+const OTP_EXPIRATION_TIME = 2 * 60 * 1000;
+const otpStore: OTPStore = {};
+  export const sendotp = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    const { email } = req.body;
+    const existingCompany = await User.findOne({ email });
+    if (existingCompany) {
+      throw new CustomError("Company already exists", 400);
+    }
+    const otp = generateOTP();
+    otpStore[email] = { otp, createdAt: Date.now() };
+    await sendOTP(email, otp);
+    res.status(200).json({
+      message: "OTP sent to your email. Please verify to proceed.",
+    });
   };
   
+  // OTP Verification
+  export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
+    const { otp, email } = req.body;
+  
+    if (otpStore[email]?.otp !== otp.toString()) {
+      throw new CustomError("Invalid OTP. Please try again.", 400);
+    }
+  
+    res.status(200).json({
+      message:
+        "OTP verified successfully. Please proceed to fill the registration form.",
+    });
+  
+    delete otpStore[email];
+  };
   
   
   export const uploadResume = async (req: Request, res: Response): Promise<void> => {

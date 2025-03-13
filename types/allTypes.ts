@@ -159,6 +159,7 @@ export interface IUser extends Document {
   experience: {
     jobRole: string;
     companyName: string;
+    description:String,
     startYear: string;
     endYear: string;
   }[];

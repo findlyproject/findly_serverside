@@ -9,7 +9,7 @@ import ressumeupload from '../middleware/ressumeUploading'
 import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, IdSchema, LoginSchema, ReplySchema, ReportSchema, SubscriptionSchema, UserSchema, VerificationSchema } from "../Utils/zodSchema";
 import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } from "../Controller/authController/user";
-import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
+import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateBanner, updateBasicInfo, updateOtherDetails, updateProfileImage, uploadResume } from "../Controller/userController/user";
 import { applydeJobs, applyToJob, getRecommendedJobs, getsavedjobs, saveJobs, similarjobs } from "../Controller/jobController/user";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 import { createCompanyRating, deleteReview } from "../Controller/ratingController/user";
@@ -38,8 +38,20 @@ userRouter
 //user
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
 .get("/people-you-might-know", userAuthMiddleware, errorCatch(getPeopleYouMightKnow))
-.put("/profile",userAuthMiddleware,validateData(UserSchema),errorCatch(updateUserProfile))
+// .put("/profile",userAuthMiddleware,validateData(UserSchema),errorCatch(updateUserProfile))
+.put('/update-banner',userAuth,errorCatch(updateBanner))
+.put('/update-profile-image',userAuth, errorCatch(updateProfileImage))
+.put('/update-basic-info',userAuth,errorCatch(updateBasicInfo))
+.put('/update-other-details',userAuth,errorCatch(updateOtherDetails))
 
+.post(
+    "/send-otp",
+    errorCatch(sendOtp)
+  )
+  .post(
+    "/verify-otp",
+    errorCatch(verifyOtp)
+  )
 .post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
 .get("/getuploadedfiles",userAuthMiddleware,errorCatch(getUploadedFiles))
 .delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
@@ -157,4 +169,6 @@ userRouter
           userAuth,
           errorCatch(getCommentsWithReplies)
         )
+
+        
 export {userRouter} 

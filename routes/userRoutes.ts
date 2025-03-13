@@ -17,6 +17,7 @@ import { findreviewsByTargetedId } from "../Controller/ratingController/company"
 import { addCommentToPost, deleteComment, editComment, getAllComments, getCommentById } from "../Controller/commentController/user";
 import { deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../Controller/replyController/user";
 import { LikeOrDislike } from "../Controller/postController/user";
+import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
 
 const userRouter = express.Router()
 
@@ -29,7 +30,7 @@ userRouter
 .post("/logout",errorCatch(logout))
 .post("/refreshtoken",errorCatch(refreshAccessToken))
 
-.post("/emailus",userAuthMiddleware,errorCatch(EmailUs))
+.post("/emailus",errorCatch(EmailUs))
    
 
 
@@ -44,6 +45,9 @@ userRouter
 .get("/getuploadedfiles",userAuthMiddleware,errorCatch(getUploadedFiles))
 .delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
 
+.post("/save/:id",userAuth,errorCatch(SaveandUnsavePost))
+.get("/saveds",userAuth,errorCatch(AllSaved))
+.get("/all",userAuth,errorCatch(All))
 
 
 

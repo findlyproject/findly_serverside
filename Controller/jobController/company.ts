@@ -538,7 +538,7 @@ export const getJobsByCompanies = async (req: Request, res: Response) => {
 
 export const findAppliedUsers = async (req: Request, res: Response) => {
     const companyId = req.user?.id;
-    const appliedUsers = await JobApplication.find({ companyId }).populate("userId").populate("jobId")
+    const appliedUsers = await JobApplication.find({ companyId,isCompanyDelete:false }).populate("userId").populate("jobId")
 
 
     res.status(200).json({ success: true, message: "found all applications", appliedUsers })

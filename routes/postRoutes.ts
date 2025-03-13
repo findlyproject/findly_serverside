@@ -16,7 +16,7 @@ import {
   deleteComment,
   getAllComments,
 } from "../Controller/commentController/user";
-import { userAuth } from "../middleware/userauthantication";
+import { companyAuth, userAuth } from "../middleware/userauthantication";
 import {
   deleteReply,
   editReply,
@@ -59,10 +59,5 @@ postRouter
   //report
   .post("/user/reportpost", userAuth, errorCatch(ReportPost))
 
-
-
-  //save routes
-  .post("/user/save/:id",userAuth,errorCatch(SaveandUnsavePost))
-  .get("/user/saveds",userAuth,errorCatch(AllSaved))
-  .get("/user/all",userAuth,errorCatch(All))
+  .post("/company/reportpost", companyAuth, errorCatch(ReportPost))
 export default postRouter;

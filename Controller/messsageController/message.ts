@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import User from "../../model/UserSchema";
-import { Community, CommunityMessage, Conversation, Message } from "../../model/MessageSchema";
+import { Community, CommunityMessage, Conversation, Message } from "../../Model/MessageSchema";
 import { CustomError } from "../../Utils/errorHandler";
 import mongoose from "mongoose";
 import { IMessage } from "../../types/allTypes";

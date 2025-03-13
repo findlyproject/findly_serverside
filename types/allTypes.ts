@@ -271,7 +271,7 @@ export interface IJobPost {
 export interface IJobApplication extends Document {
   jobId: Types.ObjectId | { _id: Types.ObjectId; title: string };
   userId: Types.ObjectId | { _id: Types.ObjectId; email: string; firstName: string };
-  companyId: Types.ObjectId | { _id: Types.ObjectId; name: string }; // Ensuring `_id` in populated data
+  companyId: Types.ObjectId | { _id: Types.ObjectId; name: string }; 
   resumeName: string;
   resumeurl: string;
   coverLetter?: string;
@@ -281,6 +281,9 @@ export interface IJobApplication extends Document {
   createdAt?: Date;
   updatedAt?: Date;
   offerLetter?:string;
+  isUserDelete?:string
+  isCompanyDelete?:boolean
+  isSaved?:boolean;
 }
 export interface IMessage extends Document {
   sender: mongoose.Types.ObjectId;

@@ -4,6 +4,8 @@ import { Report } from "../../model/ReportSchema";
 import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 import { CustomError } from "../../Utils/errorHandler";
+import { ApplicationSave } from "../../model/AppliactionSaveSchema";
+import { JobApplication } from "../../model/JobApplicationSchema";
 
 
 
@@ -236,9 +238,73 @@ export const LikeOrDislike = async (
   }
 };
 
+export const saveOrUnsaveApplication = async (req: Request, res: Response) => {
+     
+
+    const companyId=req.user?.id
+        const {applicationId } = req.body;
+
+        if (!applicationId) {
+             res.status(400).json({ message: "companyId and applicationId are required" });
+             return
+
+        }
+        const jobApplication = await JobApplication.findById(applicationId);
+        if (!jobApplication) {
+             res.status(404).json({ message: "Job application not found" });
+             return 
+        }
+
+        
+        jobApplication.isSaved = !jobApplication.isSaved;
+        await jobApplication.save();
+
+        const existingApplication = await ApplicationSave.findOne({ companyId, applicationId });
+        
+        if (existingApplication) {
+          
+            await ApplicationSave.findByIdAndDelete(existingApplication._id);
+             res.status(200).json({ message: "Application unsaved successfully" });
+        } else {
+          
+            const newApplicationSave = new ApplicationSave({ companyId, applicationId });
+            await newApplicationSave.save();
+             res.status(201).json({ message: "Application saved successfully", data: newApplicationSave });
+        }
+
+};
+
+
+export const getSavedApplicationById = async (req:Request, res:Response) => {
+const companyId=req.user?.id
+      
+      const application = await ApplicationSave.find({companyId:companyId}).populate("companyId applicationId");
+
+      if (!application) {
+           res.status(404).json({ message: "Application not found" });
+           return
+      }
+
+      res.status(200).json({success:true,message:"find all messages",application});
+
+};
+
+export const deleteApplicatio=async(req:Request,res:Response)=>{
+  const companyId=req.user?.id
+  const {applicationId}=req.body
+  const application =await JobApplication.findOne({companyId:companyId,_id:applicationId})
+  if(!application){
+    res.status(404).json({success:false,message:"application not found"})
+    return
+  }
+  application.isCompanyDelete=true;
+
+  await application.save()
+   res.status(200).json({ message: "Application deleted successfully" });
+
+}
+
 // delete 
-
-
 export const DeletePost = async (req: Request, res: Response): Promise<void> => {
   const { postId } = req.params;
 

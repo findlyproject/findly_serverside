@@ -22,7 +22,7 @@ import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargete
 import { getPostsByOwner } from "../Controller/postController/company";
 import { addCommentToPost, deleteComment, editComment, getCommentById } from "../Controller/commentController/user";
 import { deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../Controller/replyController/user";
-import { LikeOrDislike } from "../Controller/postController/user";
+import { deleteApplicatio, getSavedApplicationById, LikeOrDislike, saveOrUnsaveApplication } from "../Controller/postController/user";
 
 import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
 import { getpostbyid, getPostsByOwners } from "../Controller/postController/user";
@@ -76,6 +76,9 @@ companyRouter
         validateData(undefined, VerificationSchema), 
         errorCatch(verifySubscription)
       )  
+      .post("/saveapplication",companyAuth,errorCatch(saveOrUnsaveApplication))
+      .post("/findsavedapplication",companyAuth,errorCatch(getSavedApplicationById))
+      .delete("/deleteapplication",companyAuth,errorCatch(deleteApplicatio))
       .get(
         "/payment/findsubscriptionbyId/:sessionId",
         companyAuth,

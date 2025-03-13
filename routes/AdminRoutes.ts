@@ -10,7 +10,7 @@ import { deletePost, dismissReports, getAllPosts, getReports } from "../Controll
 import { errorCatch } from "../middleware/tryCatch";
 import { upload } from "../middleware/upload";
 import { approveRating, deleteRating,getRatings } from "../Controller/ratingController/admin";
-import { getAllPosts } from "../Controller/postController/user";
+// import { getAllPosts } from "../Controller/postController/user";
 
 
 const adminRouter = express.Router();

@@ -9,80 +9,6 @@ import { Company } from "../../model/CompanySchema";
 
 
 
-export const SendMessage = async (req: Request, res: Response): Promise<void> => {
-  const io = req.app.get("io");
-  
-  const { senderId, receiverId } = req.params;
-  const { message } = req.body;
-console.log(message);
-
-  const sender = await User.findById(senderId);
-  const receiver = await User.findById(receiverId);
-
-  if (!sender || !receiver) {
-    res.status(404).json({ message: 'Sender or receiver not found' });
-    return;
-  
-  }
-io.on("newMessage",(data:string)=>{
-  console.log("message",data);
-  
-})
-  const newMessage = new Message({
-    sender: senderId,
-    receiver: receiverId,
-    message
-  });
-
-  await newMessage.save();
-
-  let conversation = await Conversation.findOne({
-    participants: { $all: [senderId, receiverId] }
-  });
-
-  if (!conversation) {
-    conversation = new Conversation({
-      participants: [senderId, receiverId],
-      messages: [newMessage._id],
-      lastUpdated: new Date()
-    });
-  } else {
-    conversation.messages.push(newMessage._id as IMessage);
-    conversation.lastUpdated = new Date();
-  }
-
-  await conversation.save();
-
-  io.emit("receiveMessage", {
-    message: newMessage,
-    from: senderId
-  });
-
-  res.status(201).json({ message: 'Message sent successfully', newMessage });
-};
-
-  
-
-
-  export const GetConversation=async(req:Request,res:Response)=>{
-
-    const { senderId, receiverId } = req.params;
-
-      const conversation = await Conversation.findOne({
-        participants: { $all: [senderId, receiverId] }
-      }).populate({
-        path: 'messages',
-        model: 'Message',
-        options: { sort: { createdAt: 1 } } 
-      });
-  
-      if (!conversation) {
-        res.status(404).json({ message: 'No conversation found' });
-        return;
-      }
-  
-      res.status(200).json({ messages: conversation.messages});
-    }
 
 
 
@@ -452,3 +378,320 @@ export const LeaveCommunity=async(req:Request,res:Response):Promise<void>=>{
   
   res.status(200).json({status:true,message:'success',community})
   }
+
+
+
+
+  //message
+  export const SendMessage = async (req: Request, res: Response): Promise<void> => {
+    const io = req.app.get("io");
+    
+    const { senderId, receiverId } = req.params;
+    const { message } = req.body;
+  console.log(message);
+  
+    const sender = await User.findById(senderId);
+    const receiver = await User.findById(receiverId);
+  
+    if (!sender || !receiver) {
+      res.status(404).json({ message: 'Sender or receiver not found' });
+      return;
+    
+    }
+  io.on("newMessage",(data:string)=>{
+    console.log("message",data);
+    
+  })
+   
+  
+    let conversation = await Conversation.findOne({
+      participants: { $all: [senderId, receiverId] }
+    });
+   console.log("conversation",conversation);
+   if (conversation && conversation.isBlockedUsers.length > 0) {
+    res.status(403).json({ message: "You cannot send messages in this conversation. Blocked." });
+    return;
+  }
+  const newMessage = new Message({
+    sender: senderId,
+    receiver: receiverId,
+    message
+  });
+
+  await newMessage.save();
+    if (!conversation) {
+      conversation = new Conversation({
+        participants: [senderId, receiverId],
+        messages: [newMessage._id],
+        lastUpdated: new Date()
+      });
+    } else {
+      
+      conversation.messages.push(newMessage._id as IMessage);
+      conversation.lastUpdated = new Date();
+    }
+  
+    await conversation.save();
+  
+    io.emit("receiveMessage", {
+      message: newMessage,
+      from: senderId
+    });
+  
+    res.status(201).json({ message: 'Message sent successfully', newMessage });
+  };
+  
+    
+  
+  
+    export const GetConversation=async(req:Request,res:Response)=>{
+  
+      const { senderId, receiverId } = req.params;
+  
+        const conversation = await Conversation.findOne({
+          participants: { $all: [senderId, receiverId] }
+        
+        }).populate({
+          path: 'messages',
+          model: 'Message',
+          match: { isDeleted: false },
+          options: { sort: { createdAt: 1 } } 
+        });
+    
+        if (!conversation) {
+          res.status(404).json({ message: 'No conversation found' });
+          return;
+        }
+    
+        res.status(200).json({ messages: conversation.messages});
+      }
+
+
+export const Conversations=async(req:Request,res:Response)=>{
+  const { senderId, receiverId } = req.params;
+  
+  const conversation = await Conversation.findOne({ participants: { $all: [senderId, receiverId] }})
+  if(!conversation){
+    throw new CustomError('conversation not found',404)
+  }
+res.status(200).json({status:true,message:'conversation of active user',conversation})
+}
+
+  
+      export const BlockOrUnblockUser = async (req: Request, res: Response): Promise<void> => {
+        const { senderId, receiverId } = req.params; // senderId = active user, receiverId = user to block/unblock
+    const { action } = req.body; // Expecting "block" or "unblock"
+    if (!senderId || !receiverId) {
+       res.status(400).json({ message: "Sender and Receiver IDs are required" });
+       return
+    }
+    // Find existing conversation between sender and receiver
+    const conversation = await Conversation.findOne({
+      participants: { $all: [senderId, receiverId] },
+    });
+
+    if (!conversation) {
+      res.status(404).json({ message: "No conversation found between these users." });
+      return;
+    }
+
+    if (action === "block") {
+      // Check if user already blocked
+      if (conversation.isBlockedUsers.includes(new mongoose.Types.ObjectId(senderId))) {
+        res.status(400).json({ message: "User already blocked." });
+        return;
+      }
+
+      // Add active user to isBlockedUsers array
+      conversation.isBlockedUsers.push(new mongoose.Types.ObjectId(senderId))
+      await conversation.save();
+
+      res.status(200).json({ message: `You have blocked user ${receiverId}.` });
+
+    } else if (action === "unblock") {
+      // Check if user is in the blocked list
+      if (!conversation.isBlockedUsers.includes(new mongoose.Types.ObjectId(senderId))) {
+        res.status(400).json({ message: "User is not blocked." });
+        return;
+      }
+
+      // Remove active user from isBlockedUsers array
+      conversation.isBlockedUsers = conversation.isBlockedUsers.filter(
+        (userId) => userId.toString() !== senderId
+      );
+      await conversation.save();
+
+      res.status(200).json({ message: `You have unblocked user ${receiverId}.` });
+
+    } else {
+      res.status(400).json({ message: "Invalid action. Use 'block' or 'unblock'." });
+    }
+
+      }
+
+
+
+
+      export const GetChatList = async (req: Request, res: Response): Promise<void> => {
+     
+        const activeUserId = req.user?.id;
+
+        // Step 1: Find all conversations involving the active user
+        const conversations = await Conversation.find({
+          participants: activeUserId
+        });
+    
+        if (!conversations.length) {
+          res.status(200).json({ message: "No chats found.", chats: [] });
+          return;
+        }
+    
+        // Step 2: Collect all unique participant IDs except active user
+        const userIdsSet = new Set<string>();
+    
+        conversations.forEach((conv) => {
+          conv.participants.forEach((participant: any) => {
+            if (participant.toString() !== activeUserId) {
+              userIdsSet.add(participant.toString());
+            }
+          });
+        });
+    
+        const userIds = Array.from(userIdsSet); // unique user IDs
+    
+        // Step 3: Fetch user details
+        const users = await User.find({ _id: { $in: userIds } }).select("_id profileImage firstName lastName");
+    
+        // Step 4: Fetch the last message for each user
+        const chatListWithLastMessages = await Promise.all(
+          users.map(async (user) => {
+            const lastMessage = await Message.findOne({
+              $or: [
+                { sender: activeUserId, receiver: user._id },
+                { sender: user._id, receiver: activeUserId }
+              ],
+              isDeleted: false 
+            })
+             
+              .sort({ timestamp: -1 }) // Get the most recent message
+              .limit(1)
+              .lean(); // Optional: make plain JS object
+    
+            return {
+              user: {
+                _id: user._id,
+                profileImage: user.profileImage,
+                firstName: user.firstName,
+                lastName: user.lastName
+              },
+               lastMessage: {
+        message: lastMessage?lastMessage.message:null,
+        timestamp:lastMessage? lastMessage.timestamp:null,
+        sender: lastMessage?lastMessage.sender:null,
+        receiver:lastMessage? lastMessage.receiver:null
+      }
+            };
+          })
+        );
+    
+        // Step 5: Return chat list with last messages
+        res.status(200).json({
+          message: "Chat list fetched successfully.",
+          chats: chatListWithLastMessages
+        });
+        }
+
+
+
+
+  
+
+        export const StarOrRemoveStar = async (req: Request, res: Response): Promise<void> => {
+          const { senderId, receiverId } = req.params; // senderId = active user, receiverId = user to block/unblock
+      const { action } = req.body; // Expecting "block" or "unblock"
+      if (!senderId || !receiverId) {
+         res.status(400).json({ message: "Sender and Receiver IDs are required" });
+         return
+      }
+      // Find existing conversation between sender and receiver
+      const conversation = await Conversation.findOne({
+        participants: { $all: [senderId, receiverId] },
+      });
+  
+      if (!conversation) {
+        res.status(404).json({ message: "No conversation found between these users." });
+        return;
+      }
+  
+      if (action === "star") {
+        // Check if user already blocked
+        if (conversation.isStarredUsers.includes(new mongoose.Types.ObjectId(receiverId))) {
+          res.status(400).json({ message: "User already starred." });
+          return;
+        }
+  
+        // Add active user to isBlockedUsers array
+        conversation.isStarredUsers.push(new mongoose.Types.ObjectId(receiverId))
+        await conversation.save();
+  
+        res.status(200).json({ message: `You have starred user ${receiverId}.` });
+  
+      } else if (action === "removestar") {
+        // Check if user is in the blocked list
+        if (!conversation.isStarredUsers.includes(new mongoose.Types.ObjectId(receiverId))) {
+          res.status(400).json({ message: "User is not stared." });
+          return;
+        }
+  
+        // Remove active user from isBlockedUsers array
+        conversation.isStarredUsers = conversation.isStarredUsers.filter(
+          (userId) => userId.toString() !== receiverId
+        );
+        await conversation.save();
+  
+        res.status(200).json({ message: `You have remove star user ${receiverId}.` });
+  
+      } else {
+        res.status(400).json({ message: "Invalid action. Use 'star' or 'remove star'." });
+      }
+  
+        }
+
+
+export const ClearChat=async(req:Request,res:Response)=>{
+          const {senderId,receiverId}=req.params
+          const conversation=await Conversation.findOne({ participants: { $all: [senderId, receiverId] },})
+          if(!conversation){
+            throw new CustomError('conversation not found ',404)
+          }
+          if (conversation.messages.length > 0) {
+            await Message.updateMany(
+              { _id: { $in: conversation.messages } }, // Filter messages in this conversation
+              { $set: { isDeleted: true } } // Update field to indicate deletion
+            );
+          }
+          conversation.messages=[]
+        await conversation.save()
+
+
+        res.status(200).json({status:true,message:'message cleared successfully',conversation})
+        }
+
+
+
+        export const DeleteConversation=async(req:Request,res:Response)=>{
+
+          const {senderId,receiverId}=req.params
+          const conversation=await Conversation.findOne({ participants: { $all: [senderId, receiverId] },})
+          if(!conversation){
+            throw new CustomError('conversation not found ',404)
+          }
+          await Message.deleteMany({ _id: { $in: conversation.messages } });
+
+          // Step 2: Delete the conversation itself
+          await Conversation.deleteOne({ _id: conversation._id });
+         await conversation.save()
+          res.status(200).json({ status:true,message:'conversation deleted'})
+
+
+        }

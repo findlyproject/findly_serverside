@@ -296,6 +296,8 @@ export interface IConversation extends Document {
   participants: mongoose.Types.ObjectId[];
   messages: IMessage[];
   lastUpdated: Date;
+  isStarredUsers:mongoose.Types.ObjectId[]
+  isBlockedUsers:mongoose.Types.ObjectId[]
 }
 
 export interface ICommunity extends Document{

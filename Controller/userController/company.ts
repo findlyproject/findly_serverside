@@ -36,7 +36,33 @@ export const spacificCompanyDetails = async (
 
 export const EditCompany=async(req:Request,res:Response):Promise<void>=>{
   const companyId=req.params.id
-  const{name,contact,founder,foundedAt,IndustryType,address,socialMedia,services,workHours,about,employees}=req.body
+  const{about}=req.body
+  const company=await Company.findById(companyId)
+  if(!company){
+    throw new CustomError("company not found",404)
+  }
+
+  // company.name=name
+  // company.contact=contact
+  // company.founder=founder
+  // company.foundedAt=foundedAt
+  company.about=about
+  // company.IndustryType=IndustryType
+  // company.address=address
+  // company.socialMedia=socialMedia
+  // company.services=services
+  // company.workHours=workHours
+  // company.employees=employees||[]
+
+await company.save()
+res.status(200).json({status:true,message:'successfully edited',company})
+}
+
+export const EditContacts=async(req:Request,res:Response):Promise<void>=>{
+  const companyId=req.params.id
+  const{name,contact,founder,email}=req.body
+  console.log("nameeeeeeeeeeeeeeeeeeeeeeeeeee",name);
+  
   const company=await Company.findById(companyId)
   if(!company){
     throw new CustomError("company not found",404)
@@ -45,18 +71,38 @@ export const EditCompany=async(req:Request,res:Response):Promise<void>=>{
   company.name=name
   company.contact=contact
   company.founder=founder
-  company.foundedAt=foundedAt
-  company.about=about
-  company.IndustryType=IndustryType
-  company.address=address
-  company.socialMedia=socialMedia
-  company.services=services
-  company.workHours=workHours
-  company.employees=employees||[]
+  company.email=email
+  // company.foundedAt=foundedAt
+  // company.about=about
+  // company.IndustryType=IndustryType
+  // company.address=address
+  // company.socialMedia=socialMedia
+  // company.services=services
+  // company.workHours=workHours
+  // company.employees=employees||[]
 
 await company.save()
 res.status(200).json({status:true,message:'successfully edited',company})
 }
+
+export const EditService=async(req:Request,res:Response):Promise<void>=>{
+  const companyId=req.params.id
+  const{socialMedia}=req.body
+ 
+  
+  const company=await Company.findById(companyId)
+  if(!company){
+    throw new CustomError("company not found",404)
+  }
+
+  company.socialMedia=socialMedia
+
+
+await company.save()
+res.status(200).json({status:true,message:'successfully edited',company})
+}
+
+
 export const LogoOfCompany=async(req:Request,res:Response):Promise<void>=>{
 
   const companyId=req.params.id

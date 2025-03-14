@@ -4,7 +4,7 @@ import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, re
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, ReplySchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
-import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobDeadline, updateJobPost } from "../Controller/jobController/company";
+import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, generateOfferLetter, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobDeadline, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
@@ -60,6 +60,7 @@ companyRouter
   .get("/findapplications/:userId/:jobId",companyAuth,errorCatch(findUserApplication))
   .put("/reject-application/:userId/:jobId", companyAuth, errorCatch(rejectJobApplication))
   .put("/approve/:userId/:jobId", companyAuth,errorCatch(approveJobApplication))
+  .post('/generate-offer-letter',companyAuth,errorCatch(generateOfferLetter) )
   .post("/sendotp/:email",errorCatch(sendOtp))
   .post("/resetpassword/:email/:password",errorCatch(resetPasword))
   .get("/allcompanies",errorCatch(allCompanies))

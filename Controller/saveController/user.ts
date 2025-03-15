@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Post } from "../../model/PostSchema";
 import { CustomError } from "../../Utils/errorHandler";
-import { Save } from "../../model/SaveSchema";
+import { Save } from "../../Model/SaveSchema";
 
 
 export const SaveandUnsavePost=async(req:Request,res:Response):Promise<void>=>{
@@ -42,10 +42,10 @@ export const AllSaved=async(req:Request,res:Response):Promise<void>=>{
 
 }
 
-export const All=async(req:Request,res:Response):Promise<void>=>{
-    const userid=req.user?.id
-    const saved=await Save.find({userId:userid})
+// export const All=async(req:Request,res:Response):Promise<void>=>{
+//     const userid=req.user?.id
+//     const saved=await Save.find({userId:userid})
 
-    res.status(200).json({ status:true,message:'saveds',saved})
+//     res.status(200).json({ status:true,message:'saveds',saved})
 
-}
+// }

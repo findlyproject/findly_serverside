@@ -8,10 +8,10 @@ export const getPostsByOwner = async (
     res: Response
   ): Promise<void> => {
     const ownerId  = req.user?.id
-    
-  
     const posts = await Post.find({ owner: ownerId }).populate({path:"owner",match:{type:"Company"}});  
-
+if(!posts){
+  throw new CustomError("you doesn't have any post", 404);
+}
      
     console.log("posts",posts);
     

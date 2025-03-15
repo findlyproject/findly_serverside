@@ -22,9 +22,9 @@ import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargete
 import { getPostsByOwner } from "../Controller/postController/company";
 import { addCommentToPost, deleteComment, editComment, getCommentById } from "../Controller/commentController/user";
 import { deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../Controller/replyController/user";
-import { deleteApplicatio, getSavedApplicationById, LikeOrDislike, saveOrUnsaveApplication } from "../Controller/postController/user";
+import { addPost, deleteApplicatio, DeletePost, getLikedPosts, getSavedApplicationById, LikeOrDislike, saveOrUnsaveApplication, updatePost } from "../Controller/postController/user";
 
-import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
+import {  AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
 import { getpostbyid, getPostsByOwners } from "../Controller/postController/user";
 import { communitymesgById, CommunitySendMessage, createCommunity, deletecommunitymessage, SendMessage } from "../Controller/messsageController/message";
 
@@ -128,6 +128,11 @@ companyRouter
     companyAuth,
     errorCatch(LikeOrDislike)
   )
+  .get(
+    "/likes",
+    companyAuth,
+    errorCatch(getLikedPosts)
+  )
 
  
 
@@ -177,11 +182,11 @@ companyRouter
         //save routes
         .post("/save/:id",companyAuth,errorCatch(SaveandUnsavePost))
         .get("/saveds",companyAuth,errorCatch(AllSaved))
-        .get("/all",companyAuth,errorCatch(All))
+        // .get("/all",companyAuth,errorCatch(All))
 
         //post by owner
         .get(
-            "/owner",
+            "/posts",
             companyAuth,
             errorCatch(getPostsByOwner)
           )
@@ -197,4 +202,17 @@ companyRouter
 .post('/communtyMessage/:id',companyAuth,errorCatch(CommunitySendMessage))
 .get('/getCommuntyMessage/:id',companyAuth,errorCatch(communitymesgById))
 .post('/deletCommuntyMessage/:id',companyAuth,errorCatch(deletecommunitymessage))
+.post(
+            "/upload",
+            companyAuth,
+            upload.fields([{ name: "media", maxCount: 5 }]),
+            addPost
+          )
+          .patch(
+            "/update/:postId",
+            companyAuth,
+            upload.fields([{ name: "media", maxCount: 5 }]),
+            errorCatch(updatePost)
+          )
+          .put("/delete/:postId",companyAuth, errorCatch(DeletePost))
 export { companyRouter };

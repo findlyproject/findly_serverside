@@ -98,7 +98,7 @@ export const RegistrationUser = async (
 //login
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
-  const logeduser = await User.findOne({ email,isDeleted:false });
+  const logeduser = await User.findOne({ email,isDeleted:false }).populate("connecting.connectionID");
   if (!logeduser) {
     throw new CustomError("email id is wrong", 404);
   }

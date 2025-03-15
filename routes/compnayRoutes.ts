@@ -50,7 +50,7 @@ companyRouter
   )
   .post("/login",validateData(LoginSchema),errorCatch(login))
   .post("/logout",companyAuth, errorCatch(logOut))
-  .post("/jobposting",companyAuth,validateData(jobPostSchema),errorCatch(createJobPost))
+  .post("/jobposting",companyAuth,errorCatch(createJobPost))
   .post("/editdeadline/:jobId",companyAuth,errorCatch(updateJobDeadline))
   .patch("/updatejobs/:jobId",companyAuth,errorCatch(updateJobPost))
   .delete("/deletejobpost/:jobId",companyAuth,errorCatch(deleteJobPost))

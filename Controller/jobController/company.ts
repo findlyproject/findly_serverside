@@ -8,6 +8,7 @@ import User from "../../model/UserSchema";
 import { Company } from "../../model/CompanySchema";
 const { VertexAI } = require('@google-cloud/vertexai');
 import OpenAI from "openai";
+
 export const createJobPost = async (req: Request, res: Response): Promise<void> => {
 
     const companyId = req.user?.id;
@@ -82,6 +83,9 @@ export const updateJobPost = async (req: Request, res: Response): Promise<void> 
         contactPhone,
         status
     } = req.body;
+
+    console.log("experienceLevel",experienceLevel);
+    
 
     const job = await JobPost.findOne({ _id: jobId, company: companyId });
 

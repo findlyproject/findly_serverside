@@ -85,15 +85,66 @@ await company.save()
 res.status(200).json({status:true,message:'successfully edited',company})
 }
 
-export const EditService=async(req:Request,res:Response):Promise<void>=>{
+
+export const EditProfetional=async(req:Request,res:Response):Promise<void>=>{
   const companyId=req.params.id
-  const{socialMedia}=req.body
- 
+  const{name,address,email}=req.body
+  console.log("narrrrrrrrrrrrrrrrrrrrrrr",name);
+  console.log("address",address);
   
   const company=await Company.findById(companyId)
   if(!company){
     throw new CustomError("company not found",404)
   }
+
+  company.name=name
+ 
+  company.email=email
+  // company.foundedAt=foundedAt
+  // company.about=about
+  // company.IndustryType=IndustryType
+  company.address=address
+  // company.socialMedia=socialMedia
+  // company.services=services
+  // company.workHours=workHours
+  // company.employees=employees||[]
+
+await company.save()
+res.status(200).json({status:true,message:'successfully edited',company})
+}
+
+
+export const EditServiecs=async(req:Request,res:Response):Promise<void>=>{
+  const companyId=req.params.id
+  const{services}=req.body
+  console.log("narrrrrrrrrrrrrrrrrrrrrrr",services);
+  console.log("req.body",req.body);
+  
+  
+  const company=await Company.findById(companyId)
+  if(!company){
+    throw new CustomError("company not found",404)
+  }
+
+
+  company.services=services
+  
+
+await company.save()
+res.status(200).json({status:true,message:'successfully edited',company})
+}
+
+export const editsocialmedia=async(req:Request,res:Response):Promise<void>=>{
+  const companyId=req.params.id
+  const{socialMedia}=req.body
+console.log("socialMedia",socialMedia);
+
+  
+  const company=await Company.findById(companyId)
+  if(!company){
+    throw new CustomError("company not found",404)
+  }
+
 
   company.socialMedia=socialMedia
 
@@ -101,6 +152,67 @@ export const EditService=async(req:Request,res:Response):Promise<void>=>{
 await company.save()
 res.status(200).json({status:true,message:'successfully edited',company})
 }
+
+
+// export const editemployee=async(req:Request,res:Response):Promise<void>=>{
+//   const companyId=req.params.id
+//   const{employees}=req.body
+// console.log("employees",employees);
+
+  
+//   const company=await Company.findById(companyId)
+//   if(!company){
+//     throw new CustomError("company not found",404)
+//   }
+
+
+//   company.employees=employees.employees||[]
+//   console.log("company.employees",company.employees);
+  
+
+
+// await company.save()
+// res.status(200).json({status:true,message:'successfully edited',company})
+// }
+
+
+export const editemployee = async (req: Request, res: Response): Promise<void> => {
+  const companyId = req.params.id;
+  const { employees } = req.body;
+
+  console.log("employees", employees);
+
+  const company = await Company.findById(companyId);
+  if (!company) {
+    throw new CustomError("Company not found", 404);
+  }
+
+  // Convert employee names to ObjectIds
+  const updatedEmployees = await Promise.all(
+    employees.employees.map(async (emp: any) => {
+      const employeeDoc = await User.findOne({ firstName: emp.employee }); // Find employee by name
+      if (!employeeDoc) {
+        throw new CustomError(`Employee ${emp.employee} not found`, 400);
+      }
+      return {
+        position: emp.position,
+        employee: employeeDoc._id, // Store ObjectId
+      };
+    })
+  );
+
+  company.employees = updatedEmployees;
+  console.log("company.employees", company.employees);
+
+  await company.save();
+
+  // Populate employees before returning the response
+  const updatedCompany = await Company.findById(companyId).populate("employees.employee"); 
+
+  res.status(200).json({ status: true, message: "Successfully edited", company: updatedCompany });
+};
+
+
 
 
 export const LogoOfCompany=async(req:Request,res:Response):Promise<void>=>{

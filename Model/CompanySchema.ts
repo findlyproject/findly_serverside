@@ -21,6 +21,7 @@ const CompanySchema = new Schema<ICompany>(
     employees: [
       {
         employee: {type:mongoose.Schema.Types.ObjectId,ref:"User"}, 
+        //  employee: { type: String}, 
         position: { type: String}, 
       },
     ],

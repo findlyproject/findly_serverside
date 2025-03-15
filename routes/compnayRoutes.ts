@@ -12,7 +12,7 @@ import { allCompanies } from "../Controller/userController/admin";
 
 import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/user";
 
-import { allUsersforCompany, BannerOfCompany, EditCompany, LogoOfCompany, spacificCompanyDetails } from "../Controller/userController/company";
+import { allUsersforCompany, BannerOfCompany, EditCompany, EditContacts, editemployee, EditProfetional,  EditServiecs, editsocialmedia, LogoOfCompany, spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
 
 
@@ -166,6 +166,12 @@ companyRouter
 
       //edit profile
       .patch("/edit/:id",errorCatch(EditCompany))
+      .patch("/editcontact/:id",errorCatch(EditContacts))
+      .patch("/editservice/:id",errorCatch(EditContacts))
+      .patch("/editprofetional/:id",errorCatch(EditProfetional))
+      .patch("/editsocialmedia/:id",errorCatch(editsocialmedia))
+      .patch("/editservices/:id",errorCatch(EditServiecs))
+      .patch("/editemployee/:id",errorCatch(editemployee))
       .patch("/edit/logo/:id",upload.single('logo'),errorCatch(LogoOfCompany))
       .patch("/edit/banner/:id",upload.single('banner'),errorCatch(BannerOfCompany))
       .get(`/users`,errorCatch(allUsersforCompany))

@@ -27,6 +27,7 @@ export const ReportPost = async (
   const report = new Report({
     reportedBy: userId,
     reason,
+    postId:postId
   });
   await report.save();
 
@@ -73,6 +74,7 @@ export const reportuser = async (
 
   const report = new Report({
     reportedBy: userid,
+    userId:repoteduserid,
     reason,
   });
   await report.save();
@@ -91,3 +93,6 @@ export const reportuser = async (
     .status(200)
     .json({ status: true, message: "Reported successfully", popuatedreports });
 };
+
+
+

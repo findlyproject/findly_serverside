@@ -1,7 +1,7 @@
 import { upload } from '../middleware/upload';
 import express from 'express'
 import { companyAuth, userAuthMiddleware } from '../middleware/userauthantication'
-import { AllCommunities, communitymesgById, CommunitySendMessage, CommunityDetails, createCommunity, deletecommunitymessage, GetConversation, joinCommunity, LeaveCommunity, SearchCommunity, SendMessage, DeleteCommunity, UpdateDescriptionCommunity, UpdateNameCommunity, ProfileOfCommunity, BlockOrUnblockUser, GetChatList, Conversations, StarOrRemoveStar, ClearChat, DeleteConversation } from '../Controller/messsageController/message'
+import { AllCommunities, communitymesgById, CommunitySendMessage, CommunityDetails, createCommunity, deletecommunitymessage, GetConversation, joinCommunity, LeaveCommunity, SearchCommunity, SendMessage, DeleteCommunity, UpdateDescriptionCommunity, UpdateNameCommunity, ProfileOfCommunity, BlockOrUnblockUser, GetChatList, Conversations, StarOrRemoveStar, ClearChat, DeleteConversation, getStarredUsers } from '../Controller/messsageController/message'
 import { errorCatch } from '../middleware/tryCatch'
 
 const messageRoute=express.Router()
@@ -25,11 +25,13 @@ messageRoute
 
 
 .post('/send/:senderId/:receiverId',userAuthMiddleware,errorCatch(SendMessage))
-.get('/conversation/:senderId/:receiverId', GetConversation)
+.get('/conversation/:senderId/:receiverId', userAuthMiddleware,errorCatch(GetConversation))
 .post(`/blockOrunblock/:senderId/:receiverId`,userAuthMiddleware,errorCatch(BlockOrUnblockUser))
 .post(`/starOrRemovestar/:senderId/:receiverId`,userAuthMiddleware,errorCatch(StarOrRemoveStar))
+.get(`/starred`,userAuthMiddleware,errorCatch(getStarredUsers))
 .get(`/chatlist`,userAuthMiddleware,errorCatch(GetChatList))
 .get(`/conversations/:senderId/:receiverId`,errorCatch(Conversations))
 .patch(`/clearchat/:senderId/:receiverId`,errorCatch(ClearChat))
 .delete(`/deleteconversation/:senderId/:receiverId`,errorCatch(DeleteConversation))
+
 export {messageRoute}

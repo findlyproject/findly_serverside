@@ -4,12 +4,15 @@ import { login, logout,ProfileEdit } from "../Controller/authController/admin";
 import { adminAuthentication } from "../middleware/adminAuthentication";
 import { validateData } from "../middleware/zodValidation";
 import { IdSchema, LoginSchema } from "../Utils/zodSchema";
-import { allUsers, blockAndUnblock ,getDailyRevenue,getDailyUsers,createSkills, createTitles, AllSkills, RemoveSkills, AllTitles, RemoveTitle, EditSkill, ApproveSkill, EditTitle, ApproveTitle,createTitlesbyUser, allCompanies, getTotalUserRevenue, getDailyCompanies, getTotalCompanyRevenue, getTotalRevenue, getDailycompany, getDailyuser, AllTitlesAdmin} from "../Controller/userController/admin";
+import { allUsers, blockAndUnblock ,getDailyRevenue,getDailyUsers,createSkills, createTitles, AllSkills, RemoveSkills, AllTitles, RemoveTitle, EditSkill, ApproveSkill, EditTitle, ApproveTitle,createTitlesbyUser, allCompanies, getTotalUserRevenue, getDailyCompanies, getTotalCompanyRevenue, getTotalRevenue, getDailycompany, getDailyuser, AllTitlesAdmin, getLast7DaysRevenue, BlockCompany} from "../Controller/userController/admin";
 
 import { deletePost, dismissReports, getAllPosts, getReports } from "../Controller/postController/admin";
 import { errorCatch } from "../middleware/tryCatch";
 import { upload } from "../middleware/upload";
 import { approveRating, deleteRating,getRatings } from "../Controller/ratingController/admin";
+import { GetAllReportsOfPosts, GetAllReportsOfUsers } from "../Controller/reportController/admin";
+import { spacificuserdetails } from "../Controller/userController/user";
+import { spacificCompanyDetails } from "../Controller/userController/company";
 // import { getAllPosts } from "../Controller/postController/user";
 
 
@@ -34,16 +37,16 @@ adminRouter
   .get("/viewreports", adminAuthentication, errorCatch(getReports))
   .post(
     "/dismissreports/:id",
-    adminAuthentication,
-    validateData(undefined,IdSchema),
+   
+   
     errorCatch(dismissReports)
   )
  
   //post 
-  .delete(
+  .patch(
     "/deletepost/:id",
-    adminAuthentication,
-    validateData(undefined,IdSchema),
+   
+    
     errorCatch(deletePost)
   )
 .get("/findallposts",adminAuthentication,errorCatch(getAllPosts))
@@ -124,5 +127,25 @@ adminRouter
 .patch("/remove/:id",errorCatch(deleteRating))
 .patch("/approve/:id",errorCatch(approveRating))
   .get("/ratings",errorCatch(getRatings))
+
+
+
+
+  //reports
+
+  .get(`/post`,errorCatch(GetAllReportsOfPosts))
+  .get(`/user`,errorCatch(GetAllReportsOfUsers))
+
+
+
+  //User details
+  .get(`/user/:id`,errorCatch(spacificuserdetails))
+
+
+  //company details
+  .get(`/company/:companyId`,errorCatch(spacificCompanyDetails))
+  .patch(`/block/:id`,errorCatch(BlockCompany))
+
+  .get('/sevendays',errorCatch(getLast7DaysRevenue))
 export { adminRouter };
 

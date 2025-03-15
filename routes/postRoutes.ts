@@ -16,7 +16,7 @@ import {
   deleteComment,
   getAllComments,
 } from "../Controller/commentController/user";
-import { userAuth } from "../middleware/userauthantication";
+import { companyAuth, userAuth } from "../middleware/userauthantication";
 import {
   deleteReply,
   editReply,
@@ -28,13 +28,12 @@ import { LikeOrDislike } from "../Controller/postController/user";
 import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, IdSchema, ReplySchema } from "../Utils/zodSchema";
 import { ReportPost } from "../Controller/reportController/user";
-import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
 const postRouter = express.Router();
 
 postRouter
 
   //post
-  .get("/allposts", getAllPosts)
+  .get("/allposts", errorCatch(getAllPosts))
   .get("/post/:id", errorCatch(getpostbyid))
   .get(
     "/owner",
@@ -59,10 +58,5 @@ postRouter
   //report
   .post("/user/reportpost", userAuth, errorCatch(ReportPost))
 
-
-
-  //save routes
-  .post("/user/save/:id",userAuth,errorCatch(SaveandUnsavePost))
-  .get("/user/saveds",userAuth,errorCatch(AllSaved))
-  .get("/user/all",userAuth,errorCatch(All))
+  .post("/company/reportpost", companyAuth, errorCatch(ReportPost))
 export default postRouter;

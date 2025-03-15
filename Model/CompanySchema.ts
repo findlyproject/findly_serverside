@@ -20,7 +20,8 @@ const CompanySchema = new Schema<ICompany>(
     headquarters:{type:String},
     employees: [
       {
-        employee: { type: String}, 
+        employee: {type:mongoose.Schema.Types.ObjectId,ref:"User"}, 
+        //  employee: { type: String}, 
         position: { type: String}, 
       },
     ],

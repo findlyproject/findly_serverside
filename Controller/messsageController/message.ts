@@ -9,7 +9,6 @@ import {
 import { CustomError } from "../../Utils/errorHandler";
 import mongoose from "mongoose";
 import { IMessage } from "../../types/allTypes";
-import { promise } from "zod";
 import { Company } from "../../model/CompanySchema";
 
 //community

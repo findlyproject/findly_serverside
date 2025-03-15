@@ -4,6 +4,8 @@ import { Report } from "../../model/ReportSchema";
 import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 import { CustomError } from "../../Utils/errorHandler";
+import { ApplicationSave } from "../../model/AppliactionSaveSchema";
+import { JobApplication } from "../../model/JobApplicationSchema";
 
 
 
@@ -56,7 +58,7 @@ export const addPost = async (req: Request, res: Response): Promise<void> => {
   if (!req.files) {
     throw new CustomError("No media uploaded", 400);
   }
-
+console.log("req.files",req.files)
   const uploadedImages: string[] = [];
   let uploadedVideo: string | null = null;
 
@@ -87,30 +89,31 @@ export const addPost = async (req: Request, res: Response): Promise<void> => {
   
 
   await newPost.save();
-
+  const populatedPost = await Post.findById(newPost._id)
+  .populate("owner") // Adjust fields based on your schema
+  .exec();
   res.status(201).json({
     status: true,
     message: "Post uploaded successfully",
-    post: newPost,
+    post: populatedPost,
   });
 };
 
 export const updatePost = async (req: Request, res: Response): Promise<void> => {
     const { postId } = req.params;
     const { description } = req.body;
-console.log(req.params)
     if (!postId) {
       throw new CustomError("Post ID is required", 400);
     }
 
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate("owner");
 
     if (!post) {
       throw new CustomError("Post not found", 404);
     }
 
     // Check if the user is the owner of the post
-    if (post.owner.toString() !== req.user?.id) {
+    if (post.owner._id.toString() !== req.user?.id) {
       throw new CustomError("Unauthorized to update this post", 403);
     }
 
@@ -171,7 +174,6 @@ export const getPostsByOwners = async (
   res: Response
 ): Promise<void> => {
   const ownerId  = req.user?.id
-console.log("ownerId",ownerId);
 
   const posts = await Post.find({ owner: ownerId }).populate('owner')
 
@@ -236,9 +238,93 @@ export const LikeOrDislike = async (
   }
 };
 
+export const getLikedPosts = async (req: Request, res: Response): Promise<void> => {
+ 
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new CustomError("Unauthorized: User ID missing", 401);
+    }
+
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
+    // Find posts where the likedBy array contains the user's ID
+    const likedPosts = await Post.find({ likedBy: userObjectId });
+
+    res.status(200).json({
+      status: true,
+      message: "Liked posts retrieved successfully",
+      likedPosts,
+    });
+  
+};
+export const saveOrUnsaveApplication = async (req: Request, res: Response) => {
+     
+
+    const companyId=req.user?.id
+        const {applicationId } = req.body;
+
+        if (!applicationId) {
+             res.status(400).json({ message: "companyId and applicationId are required" });
+             return
+
+        }
+        const jobApplication = await JobApplication.findById(applicationId);
+        if (!jobApplication) {
+             res.status(404).json({ message: "Job application not found" });
+             return 
+        }
+
+        
+        jobApplication.isSaved = !jobApplication.isSaved;
+        await jobApplication.save();
+
+        const existingApplication = await ApplicationSave.findOne({ companyId, applicationId });
+        
+        if (existingApplication) {
+          
+            await ApplicationSave.findByIdAndDelete(existingApplication._id);
+             res.status(200).json({ message: "Application unsaved successfully" });
+        } else {
+          
+            const newApplicationSave = new ApplicationSave({ companyId, applicationId });
+            await newApplicationSave.save();
+             res.status(201).json({ message: "Application saved successfully", data: newApplicationSave });
+        }
+
+};
+
+
+export const getSavedApplicationById = async (req:Request, res:Response) => {
+const companyId=req.user?.id
+      
+      const application = await ApplicationSave.find({companyId:companyId}).populate("companyId applicationId");
+
+      if (!application) {
+           res.status(404).json({ message: "Application not found" });
+           return
+      }
+
+      res.status(200).json({success:true,message:"find all messages",application});
+
+};
+
+export const deleteApplicatio=async(req:Request,res:Response)=>{
+  const companyId=req.user?.id
+  const {applicationId}=req.body
+  const application =await JobApplication.findOne({companyId:companyId,_id:applicationId})
+  if(!application){
+    res.status(404).json({success:false,message:"application not found"})
+    return
+  }
+  application.isCompanyDelete=true;
+
+  await application.save()
+   res.status(200).json({ message: "Application deleted successfully" });
+
+}
+
 // delete 
-
-
 export const DeletePost = async (req: Request, res: Response): Promise<void> => {
   const { postId } = req.params;
 

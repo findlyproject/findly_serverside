@@ -13,6 +13,9 @@ const jobApplicationSchema = new Schema<IJobApplication>(
         introVideoUrl: { type: String },
         status: { type: String, enum: ["Pending", "Accepted", "Rejected"], default: "Pending" },
         offerLetter:{ type: String },
+        isUserDelete:{type:Boolean,default:false},
+        isCompanyDelete:{type:Boolean,default:false},
+        isSaved: { type: Boolean, default: false },
     },
     { timestamps: true }
 );

@@ -71,12 +71,12 @@ export const editComment = async (
     throw new CustomError("Comment cannot be empty", 400);
   }
 
-  const comment = await Comment.findById(commentId);
+  const comment = await Comment.findById(commentId).populate("user");
   if (!comment) {
     throw new CustomError("Comment not found", 404);
   }
 
-  if (comment.user.toString() !== req.user?.id) {
+  if (comment.user._id.toString() !== req.user?.id) {
     throw new CustomError(
       "Unauthorized: You can only edit your own comments",
       403

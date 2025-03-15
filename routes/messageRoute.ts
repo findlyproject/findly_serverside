@@ -1,4 +1,4 @@
-import { upload } from './../middleware/upload';
+import { upload } from '../middleware/upload';
 import express from 'express'
 import { companyAuth, userAuthMiddleware } from '../middleware/userauthantication'
 import { AllCommunities, communitymesgById, CommunitySendMessage, CommunityDetails, createCommunity, deletecommunitymessage, GetConversation, joinCommunity, LeaveCommunity, SearchCommunity, SendMessage, DeleteCommunity, UpdateDescriptionCommunity, UpdateNameCommunity, ProfileOfCommunity, BlockOrUnblockUser, GetChatList, Conversations, StarOrRemoveStar, ClearChat, DeleteConversation, getStarredUsers } from '../Controller/messsageController/message'

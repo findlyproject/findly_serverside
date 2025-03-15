@@ -9,14 +9,16 @@ import ressumeupload from '../middleware/ressumeUploading'
 import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, IdSchema, LoginSchema, ReplySchema, ReportSchema, SubscriptionSchema, UserSchema, VerificationSchema } from "../Utils/zodSchema";
 import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } from "../Controller/authController/user";
-import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateUserProfile, uploadResume } from "../Controller/userController/user";
+import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateBanner, updateBasicInfo, updateOtherDetails, updateProfileImage, uploadResume } from "../Controller/userController/user";
 import { applydeJobs, applyToJob, getRecommendedJobs, getsavedjobs, saveJobs, similarjobs } from "../Controller/jobController/user";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 import { createCompanyRating, deleteReview } from "../Controller/ratingController/user";
 import { findreviewsByTargetedId } from "../Controller/ratingController/company";
 import { addCommentToPost, deleteComment, editComment, getAllComments, getCommentById } from "../Controller/commentController/user";
 import { deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../Controller/replyController/user";
-import { LikeOrDislike } from "../Controller/postController/user";
+import { addPost, DeletePost, getLikedPosts, getPostsByOwners, LikeOrDislike, updatePost } from "../Controller/postController/user";
+import { AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
+import { upload } from "../middleware/upload";
 
 const userRouter = express.Router()
 
@@ -29,7 +31,7 @@ userRouter
 .post("/logout",errorCatch(logout))
 .post("/refreshtoken",errorCatch(refreshAccessToken))
 
-.post("/emailus",userAuthMiddleware,errorCatch(EmailUs))
+.post("/emailus",errorCatch(EmailUs))
    
 
 
@@ -38,12 +40,27 @@ userRouter
 //user
 .get("/currentuserdetails",userAuthMiddleware,errorCatch(findCurrentUserDetails))
 .get("/people-you-might-know", userAuthMiddleware, errorCatch(getPeopleYouMightKnow))
-.put("/profile",userAuthMiddleware,validateData(UserSchema),errorCatch(updateUserProfile))
+// .put("/profile",userAuthMiddleware,validateData(UserSchema),errorCatch(updateUserProfile))
+.put('/update-banner',userAuth,errorCatch(updateBanner))
+.put('/update-profile-image',userAuth, errorCatch(updateProfileImage))
+.put('/update-basic-info',userAuth,errorCatch(updateBasicInfo))
+.put('/update-other-details',userAuth,errorCatch(updateOtherDetails))
 
+.post(
+    "/send-otp",
+    errorCatch(sendOtp)
+  )
+  .post(
+    "/verify-otp",
+    errorCatch(verifyOtp)
+  )
 .post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
 .get("/getuploadedfiles",userAuthMiddleware,errorCatch(getUploadedFiles))
 .delete("/removeresume", userAuthMiddleware, errorCatch(removeResumeFile))
 
+.post("/save/:id",userAuth,errorCatch(SaveandUnsavePost))
+.get("/saveds",userAuth,errorCatch(AllSaved))
+// .get("/all",userAuth,errorCatch(All))
 
 
 
@@ -101,7 +118,11 @@ userRouter
     .post("/accountdeletionreqst",userAuth,errorCatch(requestDeleteAccount))
     .post("/verifyOtp",userAuth,errorCatch(verifyOtp))
 
-
+ .get(
+    "/posts",
+    userAuth,
+    errorCatch(getPostsByOwners)
+  )
 
     .get("/similarjobs/:jobType/:companyName",userAuth,errorCatch(similarjobs))
 
@@ -136,7 +157,11 @@ userRouter
           errorCatch(LikeOrDislike)
         )
       
-       
+        .get(
+          "/likes",
+          userAuth,
+          errorCatch(getLikedPosts)
+        )
       
         //reply
         .post(
@@ -157,4 +182,18 @@ userRouter
           userAuth,
           errorCatch(getCommentsWithReplies)
         )
+         .post(
+            "/upload",
+            userAuth,
+            upload.fields([{ name: "media", maxCount: 5 }]),
+            addPost
+          )
+          .patch(
+            "/update/:postId",
+            userAuth,
+            upload.fields([{ name: "media", maxCount: 5 }]),
+            errorCatch(updatePost)
+          )
+          .put("/delete/:postId",userAuth, errorCatch(DeletePost))
+        
 export {userRouter} 

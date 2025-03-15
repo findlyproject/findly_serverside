@@ -4,7 +4,7 @@ import { initialRegister,verifyOTP,finalRegister,login, logOut, resetPasword, re
 import { upload } from "../middleware/upload";
 import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, ReplySchema, SubscriptionSchema, VerificationSchema } from "../Utils/zodSchema";
-import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobDeadline, updateJobPost } from "../Controller/jobController/company";
+import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, generateOfferLetter, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobDeadline, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
@@ -12,7 +12,7 @@ import { allCompanies } from "../Controller/userController/admin";
 
 import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/user";
 
-import { allUsersforCompany, BannerOfCompany, EditCompany, LogoOfCompany, spacificCompanyDetails } from "../Controller/userController/company";
+import { allUsersforCompany, BannerOfCompany, EditCompany, EditContacts, editemployee, EditProfetional,  EditServiecs, editsocialmedia, LogoOfCompany, spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
 
 
@@ -22,9 +22,9 @@ import { deleteReview, deleteReviews, findreviewsBycompany, findreviewsByTargete
 import { getPostsByOwner } from "../Controller/postController/company";
 import { addCommentToPost, deleteComment, editComment, getCommentById } from "../Controller/commentController/user";
 import { deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../Controller/replyController/user";
-import { LikeOrDislike } from "../Controller/postController/user";
+import { addPost, deleteApplicatio, DeletePost, getLikedPosts, getSavedApplicationById, LikeOrDislike, saveOrUnsaveApplication, updatePost } from "../Controller/postController/user";
 
-import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
+import {  AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
 import { getpostbyid, getPostsByOwners } from "../Controller/postController/user";
 import { communitymesgById, CommunitySendMessage, createCommunity, deletecommunitymessage, SendMessage } from "../Controller/messsageController/message";
 
@@ -60,6 +60,7 @@ companyRouter
   .get("/findapplications/:userId/:jobId",companyAuth,errorCatch(findUserApplication))
   .put("/reject-application/:userId/:jobId", companyAuth, errorCatch(rejectJobApplication))
   .put("/approve/:userId/:jobId", companyAuth,errorCatch(approveJobApplication))
+  .post('/generate-offer-letter',companyAuth,errorCatch(generateOfferLetter) )
   .post("/sendotp/:email",errorCatch(sendOtp))
   .post("/resetpassword/:email/:password",errorCatch(resetPasword))
   .get("/allcompanies",errorCatch(allCompanies))
@@ -76,6 +77,9 @@ companyRouter
         validateData(undefined, VerificationSchema), 
         errorCatch(verifySubscription)
       )  
+      .post("/saveapplication",companyAuth,errorCatch(saveOrUnsaveApplication))
+      .post("/findsavedapplication",companyAuth,errorCatch(getSavedApplicationById))
+      .delete("/deleteapplication",companyAuth,errorCatch(deleteApplicatio))
       .get(
         "/payment/findsubscriptionbyId/:sessionId",
         companyAuth,
@@ -124,6 +128,11 @@ companyRouter
     companyAuth,
     errorCatch(LikeOrDislike)
   )
+  .get(
+    "/likes",
+    companyAuth,
+    errorCatch(getLikedPosts)
+  )
 
  
 
@@ -162,6 +171,12 @@ companyRouter
 
       //edit profile
       .patch("/edit/:id",errorCatch(EditCompany))
+      .patch("/editcontact/:id",errorCatch(EditContacts))
+      .patch("/editservice/:id",errorCatch(EditContacts))
+      .patch("/editprofetional/:id",errorCatch(EditProfetional))
+      .patch("/editsocialmedia/:id",errorCatch(editsocialmedia))
+      .patch("/editservices/:id",errorCatch(EditServiecs))
+      .patch("/editemployee/:id",errorCatch(editemployee))
       .patch("/edit/logo/:id",upload.single('logo'),errorCatch(LogoOfCompany))
       .patch("/edit/banner/:id",upload.single('banner'),errorCatch(BannerOfCompany))
       .get(`/users`,errorCatch(allUsersforCompany))
@@ -173,11 +188,11 @@ companyRouter
         //save routes
         .post("/save/:id",companyAuth,errorCatch(SaveandUnsavePost))
         .get("/saveds",companyAuth,errorCatch(AllSaved))
-        .get("/all",companyAuth,errorCatch(All))
+        // .get("/all",companyAuth,errorCatch(All))
 
         //post by owner
         .get(
-            "/owner",
+            "/posts",
             companyAuth,
             errorCatch(getPostsByOwner)
           )
@@ -193,4 +208,17 @@ companyRouter
 .post('/communtyMessage/:id',companyAuth,errorCatch(CommunitySendMessage))
 .get('/getCommuntyMessage/:id',companyAuth,errorCatch(communitymesgById))
 .post('/deletCommuntyMessage/:id',companyAuth,errorCatch(deletecommunitymessage))
+.post(
+            "/upload",
+            companyAuth,
+            upload.fields([{ name: "media", maxCount: 5 }]),
+            addPost
+          )
+          .patch(
+            "/update/:postId",
+            companyAuth,
+            upload.fields([{ name: "media", maxCount: 5 }]),
+            errorCatch(updatePost)
+          )
+          .put("/delete/:postId",companyAuth, errorCatch(DeletePost))
 export { companyRouter };

@@ -6,6 +6,8 @@ export interface IReport extends Document {
   reason: string;
   reportedAt: Date;
   isDeleted: boolean;  
+  postId:Types.ObjectId;
+  userId:Types.ObjectId
 }
 
 export interface IReply extends Document {

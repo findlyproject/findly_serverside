@@ -190,7 +190,7 @@ export const getpostbyid = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const onepost = await Post.findById(req.params.id).populate("comments owner");
+  const onepost = await Post.findById(req.params.id).populate("comments owner reports")
 console.log("onepost",onepost);
 
   res.status(200).json({ status: true, message: "Got post by ID", onepost });

@@ -98,6 +98,11 @@ companyRouter
 
       //GET POSTS
       .get("/findposts",companyAuth,errorCatch(getPostsByOwner))
+      .get(
+          "/posts",
+          companyAuth,
+          errorCatch(getPostsByOwners)
+        )
 
 
 .get(

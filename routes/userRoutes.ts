@@ -16,8 +16,9 @@ import { createCompanyRating, deleteReview } from "../Controller/ratingControlle
 import { findreviewsByTargetedId } from "../Controller/ratingController/company";
 import { addCommentToPost, deleteComment, editComment, getAllComments, getCommentById } from "../Controller/commentController/user";
 import { deleteReply, editReply, getCommentsWithReplies, getRepliesForComment, replyToComment } from "../Controller/replyController/user";
-import { LikeOrDislike } from "../Controller/postController/user";
-import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
+import { addPost, DeletePost, getLikedPosts, getPostsByOwners, LikeOrDislike, updatePost } from "../Controller/postController/user";
+import { AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
+import { upload } from "../middleware/upload";
 
 const userRouter = express.Router()
 
@@ -59,7 +60,7 @@ userRouter
 
 .post("/save/:id",userAuth,errorCatch(SaveandUnsavePost))
 .get("/saveds",userAuth,errorCatch(AllSaved))
-.get("/all",userAuth,errorCatch(All))
+// .get("/all",userAuth,errorCatch(All))
 
 
 
@@ -117,7 +118,11 @@ userRouter
     .post("/accountdeletionreqst",userAuth,errorCatch(requestDeleteAccount))
     .post("/verifyOtp",userAuth,errorCatch(verifyOtp))
 
-
+ .get(
+    "/posts",
+    userAuth,
+    errorCatch(getPostsByOwners)
+  )
 
     .get("/similarjobs/:jobType/:companyName",userAuth,errorCatch(similarjobs))
 
@@ -152,7 +157,11 @@ userRouter
           errorCatch(LikeOrDislike)
         )
       
-       
+        .get(
+          "/likes",
+          userAuth,
+          errorCatch(getLikedPosts)
+        )
       
         //reply
         .post(
@@ -173,6 +182,18 @@ userRouter
           userAuth,
           errorCatch(getCommentsWithReplies)
         )
-
+         .post(
+            "/upload",
+            userAuth,
+            upload.fields([{ name: "media", maxCount: 5 }]),
+            addPost
+          )
+          .patch(
+            "/update/:postId",
+            userAuth,
+            upload.fields([{ name: "media", maxCount: 5 }]),
+            errorCatch(updatePost)
+          )
+          .put("/delete/:postId",userAuth, errorCatch(DeletePost))
         
 export {userRouter} 

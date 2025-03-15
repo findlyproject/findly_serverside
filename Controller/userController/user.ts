@@ -48,7 +48,7 @@ export const findCurrentUserDetails = async (
           { "location.country": location?.country, "location.state": location?.state, "location.city": location?.city }
         ]
       })
-        .select("firstName lastName profileImage jobTitle location") 
+  
         .limit(10) 
         .lean();
   

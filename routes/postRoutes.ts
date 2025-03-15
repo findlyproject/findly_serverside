@@ -28,13 +28,12 @@ import { LikeOrDislike } from "../Controller/postController/user";
 import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, IdSchema, ReplySchema } from "../Utils/zodSchema";
 import { ReportPost } from "../Controller/reportController/user";
-import { All, AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
 const postRouter = express.Router();
 
 postRouter
 
   //post
-  .get("/allposts", getAllPosts)
+  .get("/allposts", errorCatch(getAllPosts))
   .get("/post/:id", errorCatch(getpostbyid))
   .get(
     "/owner",

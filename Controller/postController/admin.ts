@@ -19,27 +19,17 @@ export const dismissReports = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const postId = req.params.id;
+  const reportId = req.params.id;
 
-  const post = await Post.findById(postId).select("reports");
-  if (!post) {
-    throw new CustomError("Post not found", 404);
+  const report = await Report.findById(reportId)
+  if (!report) {
+    throw new CustomError("report not found", 404);
   }
-
-  const updatedReports = await Report.updateMany(
-    { _id: { $in: post.reports } },
-    { $set: { isDeleted: true } }
-  );
-
-  if (updatedReports.matchedCount === 0) {
-    throw new CustomError("No reports found for this post", 404);
-  }
-
-  await Post.findByIdAndUpdate(postId, { $set: { reports: [] } });
-
+ report.isDeleted=true
+ await report.save()
   res
     .status(200)
-    .json({ status: "success", message: "Reports dismissed successfully" });
+    .json({ status: "success", message: "Reports dismissed successfully", report});
 };
 
 //delete a post

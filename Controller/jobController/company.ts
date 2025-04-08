@@ -84,6 +84,9 @@ export const updateJobPost = async (req: Request, res: Response): Promise<void> 
         status
     } = req.body;
 
+    console.log("experienceLevel",experienceLevel);
+    
+
     const job = await JobPost.findOne({ _id: jobId, company: companyId });
 
     if (!job) {

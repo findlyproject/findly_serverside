@@ -50,7 +50,7 @@ export const deleteRating = async (req: Request, res: Response) :Promise<void>=>
 
   export const getRatings=async(req:Request,res:Response):Promise<void>=>{
 
-    const ratings=await Rating.find({isDeleted:false}).populate("userId")
+    const ratings=await Rating.find({isDeleted:false,companyId:null}).populate("userId")
 
     if(!ratings){
       throw new CustomError("ratings not found",404)

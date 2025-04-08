@@ -15,7 +15,7 @@ import { companyRouter } from "./routes/compnayRoutes";
 import { app, server } from "./socket";
 import { messageRoute } from "./routes/messageRoute";
 
-
+console.log("heloooooooooo")
  
 
 dotenv.config();

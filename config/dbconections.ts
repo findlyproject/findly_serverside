@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const connectMongodb = ()=>{
+const   connectMongodb = ()=>{
     mongoose
   .connect(process.env.MONGODB_URL as string,{
     serverSelectionTimeoutMS: 3000,

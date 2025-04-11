@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 
 export const findComapanies=async(req:Request,res:Response)=>{
        const companies=await Company.find()
-       res.status(200).json({success:true,message:"founded",companies})
+        res.status(200).json({success:true,message:"founded",companies})
 }
 
 
@@ -154,62 +154,106 @@ res.status(200).json({status:true,message:'successfully edited',company})
 }
 
 
-// export const editemployee=async(req:Request,res:Response):Promise<void>=>{
-//   const companyId=req.params.id
-//   const{employees}=req.body
-// console.log("employees",employees);
-
-  
-//   const company=await Company.findById(companyId)
-//   if(!company){
-//     throw new CustomError("company not found",404)
-//   }
 
 
-//   company.employees=employees.employees||[]
-//   console.log("company.employees",company.employees);
-  
+export const removeEmployee = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const companyId = req.params.id;
+    const { email } = req.body;
+    console.log("req.body",req.body);
+    
 
+    // 1. Find company
+    const company = await Company.findById(companyId);
+    if (!company) {
+      res.status(404).json({ success: false, message: "Company not found" });
+      return;
+    }
 
-// await company.save()
-// res.status(200).json({status:true,message:'successfully edited',company})
-// }
+    // 2. Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
+    }
+
+    // 3. Remove employee from company
+    const updatedEmployees = company.employees.filter(
+      (emp) => emp.employee.toString() !== user._id.toString()
+    );
+
+    company.employees = updatedEmployees;
+
+    await company.save();
+
+    const updatedCompany = await Company.findById(companyId).populate("employees.employee");
+
+    res.status(200).json({
+      status: true,
+      message: "Employee removed successfully",
+      company: updatedCompany,
+    });
+  } catch (error) {
+    console.error("Error removing employee:", error);
+    res.status(500).json({ status: false, message: "Internal server error" });
+  }
+};
+
 
 
 export const editemployee = async (req: Request, res: Response): Promise<void> => {
-  const companyId = req.params.id;
-  const { employees } = req.body;
+  try {
+    const companyId = req.params.id;
+    const { employee, position, email } = req.body.employees
 
-  console.log("employees", employees);
+    console.log("body",req.body);
+    
 
-  const company = await Company.findById(companyId);
-  if (!company) {
-    throw new CustomError("Company not found", 404);
+    // 1. Check if company exists
+    const company = await Company.findById(companyId);
+    if (!company) {
+      res.status(404).json({success:false,message:"company not found"})
+      return
+    }
+
+ console.log("emm",email);
+ 
+    const user = await User.findOne({ email });
+    if (!user) {
+       res.status(404).json({success:false,message:"User not found"})
+       return
+    }
+ 
+    // 3. Check if employee already exists in company
+    const existingIndex = company.employees.findIndex(
+      (emp) => emp.employee.toString() === user._id.toString()
+    );
+
+    if (existingIndex !== -1) {
+      // Update position if already exists
+      company.employees[existingIndex].position = position;
+    } else {
+      // Push new employee
+      company.employees.push({
+        employee: user._id,
+        position: position,
+      });
+    }
+
+    await company.save();
+
+    // 4. Populate employee data for response
+    const updatedCompany = await Company.findById(companyId).populate("employees.employee");
+
+    res.status(200).json({
+      status: true,
+      message: "Successfully edited employees",
+      company: updatedCompany,
+    });
+  } catch (error) {
+    console.error("Error updating employee:", error);
+    res.status(500).json({ status: false, message: "Internal server error" });
   }
-
-  // Convert employee names to ObjectIds
-  const updatedEmployees = await Promise.all(
-    employees.employees.map(async (emp: any) => {
-      const employeeDoc = await User.findOne({ firstName: emp.employee }); // Find employee by name
-      if (!employeeDoc) {
-        throw new CustomError(`Employee ${emp.employee} not found`, 400);
-      }
-      return {
-        position: emp.position,
-        employee: employeeDoc._id, // Store ObjectId
-      };
-    })
-  );
-
-  company.employees = updatedEmployees;
-  console.log("company.employees", company.employees);
-
-  await company.save();
-
-  // Populate employees before returning the response
-  const updatedCompany = await Company.findById(companyId).populate("employees.employee"); 
-
-  res.status(200).json({ status: true, message: "Successfully edited", company: updatedCompany });
 };
 
 

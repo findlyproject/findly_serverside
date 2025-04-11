@@ -61,14 +61,13 @@ const CommunityMessageSchema = new Schema<ICommunityMessage>({
   },
   sender: {
     type: mongoose.Schema.Types.ObjectId,
-    // ref: 'User',
-    // required: true,
+
     refPath: "senderModel",
   },
   senderModel: {
     type: String,
     required: true,
-    enum: ["User", "Company"], // Specify both models
+    enum: ["User", "Company"], 
   },
   message: {
     type: String,

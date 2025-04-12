@@ -22,7 +22,7 @@ const UserSchema = new Schema<IUser>(
     deletionReasons:[{type:String}],
     reports: [{ type: Schema.Types.ObjectId, ref: "Report" }],
 
-    gender: { type: String, enum: ["Male", "Female", "Other"] },
+    gender: { type: String, enum: ["male", "female", "other"] },
     profileImage: {
       type: String,
       default: profile,

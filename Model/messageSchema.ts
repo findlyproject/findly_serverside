@@ -68,7 +68,7 @@ const CommunityMessageSchema = new Schema<ICommunityMessage>({
   senderModel: {
     type: String,
     required: true,
-    enum: ["User", "Company"], // Specify both models
+    enum: ["User", "Company"], 
   },
   message: {
     type: String,

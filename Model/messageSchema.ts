@@ -61,8 +61,7 @@ const CommunityMessageSchema = new Schema<ICommunityMessage>({
   },
   sender: {
     type: mongoose.Schema.Types.ObjectId,
-    // ref: 'User',
-    // required: true,
+
     refPath: "senderModel",
   },
   senderModel: {

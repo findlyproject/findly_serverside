@@ -12,7 +12,7 @@ import { allCompanies } from "../Controller/userController/admin";
 
 import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/user";
 
-import { allUsersforCompany, BannerOfCompany, EditCompany, EditContacts, editemployee, EditProfetional,  EditServiecs, editsocialmedia, LogoOfCompany, spacificCompanyDetails } from "../Controller/userController/company";
+import { allUsersforCompany, BannerOfCompany, EditCompany, EditContacts, editemployee, EditProfetional,  EditServiecs, editsocialmedia, LogoOfCompany, removeEmployee, spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
 
 
@@ -98,6 +98,11 @@ companyRouter
 
       //GET POSTS
       .get("/findposts",companyAuth,errorCatch(getPostsByOwner))
+      .get(
+          "/posts",
+          companyAuth,
+          errorCatch(getPostsByOwners)
+        )
 
 
 .get(
@@ -177,6 +182,7 @@ companyRouter
       .patch("/editsocialmedia/:id",errorCatch(editsocialmedia))
       .patch("/editservices/:id",errorCatch(EditServiecs))
       .patch("/editemployee/:id",errorCatch(editemployee))
+      .patch("/removeemployee/:id",errorCatch(removeEmployee))
       .patch("/edit/logo/:id",upload.single('logo'),errorCatch(LogoOfCompany))
       .patch("/edit/banner/:id",upload.single('banner'),errorCatch(BannerOfCompany))
       .get(`/users`,errorCatch(allUsersforCompany))

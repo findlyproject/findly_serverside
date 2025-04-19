@@ -12,7 +12,7 @@ import { allCompanies } from "../Controller/userController/admin";
 
 import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/user";
 
-import { allUsersforCompany, BannerOfCompany, EditCompany, EditContacts, editemployee, EditProfetional,  EditServiecs, editsocialmedia, LogoOfCompany, spacificCompanyDetails } from "../Controller/userController/company";
+import { allUsersforCompany, BannerOfCompany, EditCompany, EditContacts, editemployee, EditProfetional,  EditServiecs, editsocialmedia, LogoOfCompany, removeEmployee, spacificCompanyDetails } from "../Controller/userController/company";
 import { createCompanyRating } from "../Controller/ratingController/user";
 
 
@@ -27,6 +27,7 @@ import { addPost, deleteApplicatio, DeletePost, getLikedPosts, getSavedApplicati
 import {  AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
 import { getpostbyid, getPostsByOwners } from "../Controller/postController/user";
 import { communitymesgById, CommunitySendMessage, createCommunity, deletecommunitymessage, SendMessage } from "../Controller/messsageController/message";
+import { PremiumDetailsOfActiveCompany } from "../Controller/subscriptionController/company";
 
 const companyRouter = express.Router();
 
@@ -77,6 +78,7 @@ companyRouter
         validateData(undefined, VerificationSchema), 
         errorCatch(verifySubscription)
       )  
+          .get("/payment/subscriptiondetails",errorCatch(PremiumDetailsOfActiveCompany))
       .post("/saveapplication",companyAuth,errorCatch(saveOrUnsaveApplication))
       .post("/findsavedapplication",companyAuth,errorCatch(getSavedApplicationById))
       .delete("/deleteapplication",companyAuth,errorCatch(deleteApplicatio))
@@ -182,6 +184,7 @@ companyRouter
       .patch("/editsocialmedia/:id",errorCatch(editsocialmedia))
       .patch("/editservices/:id",errorCatch(EditServiecs))
       .patch("/editemployee/:id",errorCatch(editemployee))
+      .patch("/removeemployee/:id",errorCatch(removeEmployee))
       .patch("/edit/logo/:id",upload.single('logo'),errorCatch(LogoOfCompany))
       .patch("/edit/banner/:id",upload.single('banner'),errorCatch(BannerOfCompany))
       .get(`/users`,errorCatch(allUsersforCompany))

@@ -64,6 +64,7 @@ export interface ISubscription extends Document {
   plan?: string;
   active?: boolean;
   startDate?: Date;
+  isDeleted?:boolean;
   endDate?: Date;
   sessionId?: string;
   type: "UserSubscription" | "CompanySubscription";
@@ -244,7 +245,7 @@ export interface IJobPost {
   title: string;
   company: ICompany;
   location: string;
-  jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
+  jobType: "Full-time" | "Part-time" | "Contract" | "Internship"|"Temporary"
   experienceLevel:"Entry" | "Mid" | "Senior" | "Expert";
   jobResponsibilities:string[]
   industry:string;

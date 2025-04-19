@@ -27,6 +27,7 @@ import { addPost, deleteApplicatio, DeletePost, getLikedPosts, getSavedApplicati
 import {  AllSaved, SaveandUnsavePost } from "../Controller/saveController/user";
 import { getpostbyid, getPostsByOwners } from "../Controller/postController/user";
 import { communitymesgById, CommunitySendMessage, createCommunity, deletecommunitymessage, SendMessage } from "../Controller/messsageController/message";
+import { PremiumDetailsOfActiveCompany } from "../Controller/subscriptionController/company";
 
 const companyRouter = express.Router();
 
@@ -77,6 +78,7 @@ companyRouter
         validateData(undefined, VerificationSchema), 
         errorCatch(verifySubscription)
       )  
+          .get("/payment/subscriptiondetails",errorCatch(PremiumDetailsOfActiveCompany))
       .post("/saveapplication",companyAuth,errorCatch(saveOrUnsaveApplication))
       .post("/findsavedapplication",companyAuth,errorCatch(getSavedApplicationById))
       .delete("/deleteapplication",companyAuth,errorCatch(deleteApplicatio))

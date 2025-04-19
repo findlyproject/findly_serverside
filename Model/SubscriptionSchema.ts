@@ -8,6 +8,7 @@ const SubscriptionPlanSchema = new Schema<ISubscription>(
       ref: "User",
       required: false,
     },
+    isDeleted:{type:Boolean,default:false},
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Company",
@@ -42,6 +43,7 @@ const SubscriptionPlanSchema = new Schema<ISubscription>(
       default: "pending",
       enum: ["pending", "completed"],
     },
+   
   },
   { discriminatorKey: "type", timestamps: true }
 );

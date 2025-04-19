@@ -126,6 +126,8 @@ console.log("plan",plan);
 
 //verification
 export const verifySubscription = async (req: Request, res: Response) => {
+  console.log("hello working");
+  
   const { sessionId } = req.params;
   const subscription = await SubscriptionPlan.findOne({ sessionId });
   if (!subscription) {
@@ -154,7 +156,9 @@ export const verifySubscription = async (req: Request, res: Response) => {
 console.log("accountInfo",accountInfo);
 
   if (subscription.paymentStatus === "completed") {
-    throw new CustomError("Payment has already been processed", 404);
+     res.status(404).json({success:false,message:"Payment has already been processed"})
+     return
+
   }
 
   const startDate = new Date();
@@ -221,6 +225,8 @@ if (!subscriptionToken) {
 };
 
 export const findSubscriptionById = async (req: Request, res: Response) => {
+  console.log("ddddsdasdfdssd");
+  
   const { sessionId } = req.params;
   if (!sessionId) {
     res.status(404).json({ success: false, message: "sessionId not found" });
@@ -234,6 +240,9 @@ export const findSubscriptionById = async (req: Request, res: Response) => {
 
   res.status(200).json({ success: true, message: "Completed", subscription });
 };
+
+
+
 
 export const PremiumDetailsOfActiveUser=async(req:Request,res:Response):Promise<void>=>{
   const userId=req.user?.id

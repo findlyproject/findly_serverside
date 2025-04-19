@@ -7,6 +7,7 @@ import { sendOTP } from "../../Utils/otpService";
 import { generateOTP } from "../../Utils/otpGenerator";
 import nodemailer from "nodemailer";
 import { ICompany } from "../../types/allTypes";
+import { SubscriptionPlan } from "../../model/SubscriptionSchema";
 
 //Registration
 
@@ -148,9 +149,21 @@ export const login = async (req: Request, res: Response) => {
   if (!verfyPassword) {
     throw new CustomError("password is wrong", 404);
   }
-
+    
   const currentDate = new Date();
-  if (company.role === "premium" && company.subscriptionEndDate) {
+const subscription= await SubscriptionPlan.find({companyId:company._id,isDeleted:false})
+console.log("kaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",subscription);
+
+if(subscription.length===0){
+
+  
+  company.role = "company";
+
+  company.subscriptionStartDate = null;
+  company.subscriptionEndDate = null;
+  await company.save();
+  console.log("roliooos",company.role);
+}else if (company.role === "premium" && company.subscriptionEndDate) {
     if (company.subscriptionEndDate < currentDate) {
       company.role = "company";
       company.subscriptionStartDate = null;
@@ -195,55 +208,57 @@ export const login = async (req: Request, res: Response) => {
     });
   }
 
-  if (company.role === "premium" && company.subscriptionEndDate) {
-    const subscriptionEndDate = company.subscriptionEndDate
-      ? new Date(company.subscriptionEndDate)
-      : null;
-
-    if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
-      const currentDate = new Date();
-
-      const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0));
-
-      const normalizedEndDate = startOfDay(subscriptionEndDate);
-      const normalizedCurrentDate = startOfDay(currentDate);
-
-      const differenceInTime =
-        normalizedEndDate.getTime() - normalizedCurrentDate.getTime();
-
-      const remainingValidityDays = Math.floor(
-        differenceInTime / (1000 * 60 * 60 * 24)
-      );
-
-      if (remainingValidityDays > 0) {
-        const payload = {
-          userId: company._id,
-          email: company.email,
-          role: company.role,
-          remainingValidityDays,
-        };
-
-        const secretKey = process.env.USER_SECRETKEY!;
-
-        const subscriptionToken = jwt.sign(payload, secretKey, {
-          expiresIn: `${remainingValidityDays}d`,
-        });
-
-        res.cookie("subscriptionToken", subscriptionToken, {
-          httpOnly: false,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          path: "/",
-          maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
-        });
-      } else {
-        throw new CustomError(
-          "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
-          403
+  if(subscription.length>0){
+    if (company.role === "premium" && company.subscriptionEndDate) {
+      const subscriptionEndDate = company.subscriptionEndDate
+        ? new Date(company.subscriptionEndDate)
+        : null;
+  
+      if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
+        const currentDate = new Date();
+  
+        const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0));
+  
+        const normalizedEndDate = startOfDay(subscriptionEndDate);
+        const normalizedCurrentDate = startOfDay(currentDate);
+  
+        const differenceInTime =
+          normalizedEndDate.getTime() - normalizedCurrentDate.getTime();
+  
+        const remainingValidityDays = Math.floor(
+          differenceInTime / (1000 * 60 * 60 * 24)
         );
+  
+        if (remainingValidityDays > 0) {
+          const payload = {
+            userId: company._id,
+            email: company.email,
+            role: company.role,
+            remainingValidityDays,
+          };
+  
+          const secretKey = process.env.USER_SECRETKEY!;
+  
+          const subscriptionToken = jwt.sign(payload, secretKey, {
+            expiresIn: `${remainingValidityDays}d`,
+          });
+  
+          res.cookie("subscriptionToken", subscriptionToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
+            maxAge: remainingValidityDays * 24 * 60 * 60 * 1000,
+          });
+        } else {
+          throw new CustomError(
+            "Your premium membership has expired. Please renew to continue enjoying premium benefits.",
+            403
+          );
+        }
+      } else {
+        console.error("Invalid subscription end date");
       }
-    } else {
-      console.error("Invalid subscription end date");
     }
   }
 

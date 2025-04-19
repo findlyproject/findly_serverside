@@ -249,7 +249,7 @@ export const getLikedPosts = async (req: Request, res: Response): Promise<void> 
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
     // Find posts where the likedBy array contains the user's ID
-    const likedPosts = await Post.find({ likedBy: userObjectId });
+    const likedPosts = await Post.find({ likedBy: userObjectId }).populate('owner')
 
     res.status(200).json({
       status: true,

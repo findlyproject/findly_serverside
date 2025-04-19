@@ -68,7 +68,7 @@ export interface ISubscription extends Document {
   endDate?: Date;
   sessionId?: string;
   type: "UserSubscription" | "CompanySubscription";
-  paymentStatus: "pending" | "completed";
+  paymentStatus: "pending" | "completed"|"cenceled";
 }
 
 export interface ICompany extends Document {

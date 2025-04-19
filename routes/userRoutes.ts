@@ -11,7 +11,7 @@ import { CommentSchema, IdSchema, LoginSchema, ReplySchema, ReportSchema, Subscr
 import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } from "../Controller/authController/user";
 import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateBanner, updateBasicInfo, updateOtherDetails, updateProfileImage, uploadResume } from "../Controller/userController/user";
 import { applydeJobs, applyToJob, getRecommendedJobs, getsavedjobs, saveJobs, similarjobs } from "../Controller/jobController/user";
-import { createSubscription, findSubscriptionById, PremiumDetailsOfActiveUser, verifySubscription } from "../Controller/subscriptionController/user";
+import { createSubscription, findSubscriptionById, planCancellation, PremiumDetailsOfActiveUser, verifySubscription } from "../Controller/subscriptionController/user";
 import { createCompanyRating, deleteReview } from "../Controller/ratingController/user";
 import { findreviewsByTargetedId } from "../Controller/ratingController/company";
 import { addCommentToPost, deleteComment, editComment, getAllComments, getCommentById } from "../Controller/commentController/user";
@@ -111,7 +111,7 @@ userRouter
       // validateData(undefined, VerificationSchema),
       errorCatch(findSubscriptionById)
     )
-    .get("/payment/subscriptiondetails",errorCatch(PremiumDetailsOfActiveUser))
+    .get("/payment/subscriptiondetails",userAuth,errorCatch(PremiumDetailsOfActiveUser))
     .post("/companyrating/:targetedId",userAuth,errorCatch(createCompanyRating))
    
     .get("/findrating/:targetedId",userAuth,errorCatch(findreviewsByTargetedId))
@@ -195,5 +195,6 @@ userRouter
             errorCatch(updatePost)
           )
           .put("/delete/:postId",userAuth, errorCatch(DeletePost))
+          .post("/plancancellation/:sessionId",userAuth,errorCatch(planCancellation))
         
 export {userRouter} 

@@ -41,8 +41,10 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
             if (error) {
                 throw new CustomError("Invalid token",401);
             }
-
+          
             req.user = user as JwtDecoded; 
+            console.log("req.usessssssssssssssr",req.user);
+            
             
             next();
         });

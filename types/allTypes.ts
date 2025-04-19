@@ -64,6 +64,7 @@ export interface ISubscription extends Document {
   plan?: string;
   active?: boolean;
   startDate?: Date;
+  isDeleted?:boolean;
   endDate?: Date;
   sessionId?: string;
   type: "UserSubscription" | "CompanySubscription";

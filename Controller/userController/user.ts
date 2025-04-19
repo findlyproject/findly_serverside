@@ -219,39 +219,54 @@ interface OTPStore {
   [key: string]: { otp: string; createdAt: number };
 }
 const OTP_EXPIRATION_TIME = 2 * 60 * 1000;
-const otpStore: OTPStore = {};
-  export const sendotp = async (
-    req: Request,
-    res: Response
-  ): Promise<void> => {
-    const { email } = req.body;
-    const existingCompany = await User.findOne({ email });
-    if (existingCompany) {
-      throw new CustomError("Company already exists", 400);
+const otpStore: OTPStore = {};export const sendingOTP = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { email } = req.body;
+  const existingCompany = await User.findOne({ email });
+  if (existingCompany) {
+    throw new CustomError("User already exists", 400);
+  }
+  const otp = generateOTP();
+  otpStore[email] = { otp, createdAt: Date.now() };
+  await sendOTP(email, otp);
+  console.log(otpStore)
+  res.status(200).json({
+    message: "OTP sent to your email. Please verify to proceed.",
+  });
+};
+
+export const verifyingOTP = async (req: Request, res: Response): Promise<void> => {
+  const { otp, email } = req.body;
+  const userId = req.user?.id;
+  console.log(otp, email);
+
+  if (otpStore[email]?.otp !== otp.toString()) {
+    throw new CustomError("Invalid OTP. Please try again.", 400);
+  }
+
+    // ✅ Mark user as  erified in DB (example: setting emailVerified = true)
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: {email: email,emailVerified: true } }, // Add other fields if needed
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw new CustomError("User not found.", 404);
     }
-    const otp = generateOTP();
-    otpStore[email] = { otp, createdAt: Date.now() };
-    await sendOTP(email, otp);
-    res.status(200).json({
-      message: "OTP sent to your email. Please verify to proceed.",
-    });
-  };
-  
-  // OTP Verification
-  export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
-    const { otp, email } = req.body;
-  
-    if (otpStore[email]?.otp !== otp.toString()) {
-      throw new CustomError("Invalid OTP. Please try again.", 400);
-    }
-  
-    res.status(200).json({
-      message:
-        "OTP verified successfully. Please proceed to fill the registration form.",
-    });
-  
+
     delete otpStore[email];
-  };
+
+    res.status(200).json({
+      message: "OTP verified successfully.",
+      user: updatedUser,
+    });
+
+  
+};
+
   
   
   export const uploadResume = async (req: Request, res: Response): Promise<void> => {

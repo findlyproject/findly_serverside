@@ -12,7 +12,6 @@ import axios from "axios";
 export const createJobPost = async (req: Request, res: Response): Promise<void> => {
 
     const companyId = req.user?.id;
-    console.log("heyy");
 
 
     const {
@@ -31,12 +30,12 @@ export const createJobPost = async (req: Request, res: Response): Promise<void> 
         contactPhone,
         status
     } = req.body;
-
-    if (salary && typeof salary === 'object' && 'rate' in salary && 'min' in salary && 'max' in salary) {
-    } else {
-        res.status(400).json({ message: "Invalid salary format. Expected an object with rate, min, and max." });
-        return;
-    }
+console.log(req.body)
+    // if (salary && typeof salary === 'object' && 'rate' in salary && 'min' in salary && 'max' in salary) {
+    // } else {
+    //     res.status(400).json({ message: "Invalid salary format. Expected an object with rate, min, and max." });
+    //     return;
+    // }
 
     const job = new JobPost({
         title,
@@ -57,6 +56,7 @@ export const createJobPost = async (req: Request, res: Response): Promise<void> 
     });
 
     await job.save();
+    console.log(job)
     res.status(201).json({ message: "Job post created successfully", job });
 
 };
@@ -277,7 +277,7 @@ export const getJobsByCompanies = async (req: Request, res: Response) => {
 
 
     let page = parseInt(req.query.page as string) || 1;
-    let limit = parseInt(req.query.limit as string) || 6;
+    let limit = parseInt(req.query.limit as string) ;
     let skip = (page - 1) * limit;
         const postedJobs = await JobPost.find({ company: companyId,isDeleted:false })
             .populate("company")
@@ -490,9 +490,11 @@ console.log(req.body)
     Company: ${company.name}, Address: ${company.address?.city || ""}, ${company.address?.state || ""}
     Job Title: ${jobPost.title}, Job Type: ${jobPost.jobType}, Start Date: ${startDate}
     Salary: ${jobPost.salary.min} - ${jobPost.salary.max} ${jobPost.salary.rate}
+    contact number:${company.contact}
     Candidate: ${user.firstName} ${user.lastName}, Email: ${user.email}
-
+    interview date ${startDate}
     Use a formal and professional tone. Include standard offer letter clauses.
+
     `;
 
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -519,7 +521,6 @@ console.log(req.body)
 
     // Save offer letter to job application
     jobApplication.offerLetter = offerLetter;
-    jobApplication.status = "Accepted";
     await jobApplication.save();
 
     res.json({ offerLetter });

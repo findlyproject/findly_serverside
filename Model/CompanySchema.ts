@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { ICompany } from "../types/allTypes";
 import { string } from "zod";
-const banner = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1738735269/banner_ozuamb.png"
+const banner = "https://res.cloudinary.com/dq1auwpkm/image/upload/v1740220803/linkedinheaders-desktop_fw5iio.jpg"
 
 const CompanySchema = new Schema<ICompany>(
   {

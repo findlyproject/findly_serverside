@@ -245,7 +245,7 @@ export interface IJobPost {
   title: string;
   company: ICompany;
   location: string;
-  jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
+  jobType: "Full-time" | "Part-time" | "Contract" | "Internship"|"Temporary"
   experienceLevel:"Entry" | "Mid" | "Senior" | "Expert";
   jobResponsibilities:string[]
   industry:string;

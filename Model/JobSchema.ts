@@ -8,7 +8,7 @@ const JobPostSchema = new Schema<IJobPost>(
     location: { type: String, required: true },
     jobType: { 
       type: String, 
-      enum: ["Full-time", "Part-time", "Contract", "Internship"], 
+      enum: ["Full-time", "Part-time","Temporary" ,"Contract", "Internship"], 
       required: true 
     },
     experienceLevel: {

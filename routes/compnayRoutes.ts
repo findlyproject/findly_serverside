@@ -7,7 +7,7 @@ import { CommentSchema, CompanySchema, IdSchema, jobPostSchema, LoginSchema, Rep
 import { approveJobApplication, createJobPost, deleteJobPost, findAppliedUsers, findUserApplication, generateOfferLetter, getAllJobPost, getJobsByCompanies, getJobsById, rejectJobApplication, updateJobDeadline, updateJobPost } from "../Controller/jobController/company";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { sendOtp } from "../Controller/authController/company";
-import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
+import { createSubscription, findSubscriptionById, planCancellation, verifySubscription } from "../Controller/subscriptionController/user";
 import { allCompanies } from "../Controller/userController/admin";
 
 import { FollowAndUnfollowCompany } from "../Controller/ConnectingController/user";
@@ -78,7 +78,7 @@ companyRouter
         validateData(undefined, VerificationSchema), 
         errorCatch(verifySubscription)
       )  
-          .get("/payment/subscriptiondetails",errorCatch(PremiumDetailsOfActiveCompany))
+          .get("/payment/subscriptiondetails",companyAuth,errorCatch(PremiumDetailsOfActiveCompany))
       .post("/saveapplication",companyAuth,errorCatch(saveOrUnsaveApplication))
       .post("/findsavedapplication",companyAuth,errorCatch(getSavedApplicationById))
       .delete("/deleteapplication",companyAuth,errorCatch(deleteApplicatio))
@@ -88,6 +88,7 @@ companyRouter
         validateData(undefined, VerificationSchema),
         errorCatch(findSubscriptionById)
       )
+       .post("/plancancellation/:sessionId",companyAuth,errorCatch(planCancellation))
       .get("/getjobs",companyAuth,errorCatch(getJobsByCompanies))
       .post("/companyrating/:targetedId",companyAuth,errorCatch(createCompanyRating))
       .delete("/deletereview/:id",companyAuth,errorCatch(deleteReview))

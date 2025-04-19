@@ -9,7 +9,7 @@ import ressumeupload from '../middleware/ressumeUploading'
 import { validateData } from "../middleware/zodValidation";
 import { CommentSchema, IdSchema, LoginSchema, ReplySchema, ReportSchema, SubscriptionSchema, UserSchema, VerificationSchema } from "../Utils/zodSchema";
 import { AllUsersEmailCheck, googleauthlogin, login, logout, RegistrationUser } from "../Controller/authController/user";
-import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, spacificuserdetails, updateBanner, updateBasicInfo, updateOtherDetails, updateProfileImage, uploadResume } from "../Controller/userController/user";
+import { findCurrentUserDetails, getPeopleYouMightKnow, getPrimeClients, getTotalRevenue, getUploadedFiles, removeResumeFile, sendingOTP, spacificuserdetails, updateBanner, updateBasicInfo, updateOtherDetails, updateProfileImage, uploadResume, verifyingOTP } from "../Controller/userController/user";
 import { applydeJobs, applyToJob, getRecommendedJobs, getsavedjobs, saveJobs, similarjobs } from "../Controller/jobController/user";
 import { createSubscription, findSubscriptionById, verifySubscription } from "../Controller/subscriptionController/user";
 import { createCompanyRating, deleteReview } from "../Controller/ratingController/user";
@@ -48,11 +48,13 @@ userRouter
 
 .post(
     "/send-otp",
-    errorCatch(sendOtp)
+    userAuthMiddleware,
+    errorCatch(sendingOTP)
   )
   .post(
     "/verify-otp",
-    errorCatch(verifyOtp)
+    userAuthMiddleware,
+    errorCatch(verifyingOTP)
   )
 .post("/uploadressume",userAuthMiddleware,ressumeupload,errorCatch(uploadResume))
 .get("/getuploadedfiles",userAuthMiddleware,errorCatch(getUploadedFiles))

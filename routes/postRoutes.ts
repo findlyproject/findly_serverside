@@ -9,24 +9,8 @@ import {
 } from "../Controller/postController/user";
 import { upload } from "../middleware/upload";
 import { errorCatch } from "../middleware/tryCatch";
-import {
-  getCommentById,
-  addCommentToPost,
-  editComment,
-  deleteComment,
-  getAllComments,
-} from "../Controller/commentController/user";
 import { companyAuth, userAuth } from "../middleware/userauthantication";
-import {
-  deleteReply,
-  editReply,
-  getCommentsWithReplies,
-  getRepliesForComment,
-  replyToComment,
-} from "../Controller/replyController/user";
-import { LikeOrDislike } from "../Controller/postController/user";   
-import { validateData } from "../middleware/zodValidation";
-import { CommentSchema, IdSchema, ReplySchema } from "../Utils/zodSchema";
+
 import { ReportPost } from "../Controller/reportController/user";
 const postRouter = express.Router();
 

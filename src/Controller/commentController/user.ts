@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Comment } from "../../model/CommentSchema";
 import { Post } from "../../model/PostSchema";
 import { CustomError } from "../../Utils/errorHandler";
+import { Comment } from "../../model/CommentSchema";
 
 // Get all comments
 export const getAllComments = async (

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Post } from "../../model/PostSchema";
 import { CustomError } from "../../Utils/errorHandler";
-import { Save } from "../../Model/SaveSchema";
+import { Save } from "../../model/SaveSchema";
 
 
 export const SaveandUnsavePost=async(req:Request,res:Response):Promise<void>=>{

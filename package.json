@@ -28,7 +28,9 @@
     "zod": "^3.24.1"
   },
   "scripts": {
-    "start": "nodemon index.ts"
+    "start": "nodemon index.ts",
+    "build": "tsc",
+    "clean": "find . -type f -name '*.js' -not -path './node_modules/*' -delete"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

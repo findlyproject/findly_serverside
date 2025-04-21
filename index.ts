@@ -1,19 +1,19 @@
 import express from "express";
 import dotenv from "dotenv";
-import { connectMongodb } from "./config/dbconections";
+import { connectMongodb } from "./src/config/dbconections";
 import cors from 'cors';
 import cookieParser from "cookie-parser";
-import { userRouter } from "./routes/userRoutes";
-import { ratingRouter } from "./routes/ratingRoutes";
-import { paymentRouter } from "./routes/PaymentRoutes";
-import{searchRouter} from'./routes/searchRoutes';
-import { adminRouter } from "./routes/AdminRoutes";
-import errorHandler from "./middleware/customClassMiddleware";
-import postRouter from "./routes/postRoutes";
-import { connectionRouter } from "./routes/connectionRoutes";
-import { companyRouter } from "./routes/compnayRoutes";
+import { userRouter } from "./src/routes/userRoutes";
+import { ratingRouter } from "./src/routes/ratingRoutes";
+import { paymentRouter } from "./src/routes/PaymentRoutes";
+import{searchRouter} from'./src/routes/searchRoutes';
+import { adminRouter } from "./src/routes/AdminRoutes";
+import errorHandler from "./src/middleware/customClassMiddleware";
+import postRouter from "./src/routes/postRoutes";
+import { connectionRouter } from "./src/routes/connectionRoutes";
+import { companyRouter } from "./src/routes/compnayRoutes";
 import { app, server } from "./socket";
-import { messageRoute } from "./routes/messageRoute";
+import { messageRoute } from "./src/routes/messageRoute";
 
 console.log("heloooooooooo")
  

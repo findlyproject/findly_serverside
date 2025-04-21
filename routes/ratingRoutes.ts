@@ -8,7 +8,7 @@ import { errorCatch } from "../middleware/tryCatch";
 import { companyAuth, userAuthMiddleware } from "../middleware/userauthantication";
 import { validateData } from "../middleware/zodValidation";
 import { IdSchema, RatingSchema } from "../Utils/zodSchema";
-import { deleteReview, findreviewsBycompany } from "../Controller/ratingController/company";
+import { findreviewsBycompany } from "../Controller/ratingController/company";
 const ratingRouter = express.Router();
 
 ratingRouter

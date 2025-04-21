@@ -1,4 +1,4 @@
-import { SubscriptionPlan } from './../../model/SubscriptionSchema';
+import { SubscriptionPlan } from '../../model/SubscriptionSchema';
 import { subscription } from './../../../findly_clientside/src/lib/store/features/actions/subscriptionActions';
 import { Request, Response } from "express";
 import Stripe from "stripe";

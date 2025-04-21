@@ -1,4 +1,4 @@
-import { Company } from "./../../model/CompanySchema";
+import { Company } from "../../model/CompanySchema";
 import { Request, Response } from "express";
 import User from "../../model/UserSchema";
 import { CustomError } from "../../Utils/errorHandler";

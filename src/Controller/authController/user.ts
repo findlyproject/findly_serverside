@@ -158,7 +158,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const subscriptionEndDate = logeduser.subscriptionEndDate
       ? new Date(logeduser.subscriptionEndDate)
       : null;
-
+    
     if (subscriptionEndDate && !isNaN(subscriptionEndDate.getTime())) {
       const currentDate = new Date();
 

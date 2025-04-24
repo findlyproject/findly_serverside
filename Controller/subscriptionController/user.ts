@@ -126,18 +126,23 @@ console.log("plan",plan);
 
 //verification
 export const verifySubscription = async (req: Request, res: Response) => {
-  console.log("hello working");
+
   
   const { sessionId } = req.params;
   const subscription = await SubscriptionPlan.findOne({ sessionId });
   if (!subscription) {
-    throw new CustomError("Payment not found", 404);
+    res.status(404).json({success:false,message:"Payment not found"})
+    return
   }
+  
 
   console.log("subscription",subscription);
   
   let accountInfo = null;
   let accountType = ""; 
+  console.log("subscription.userId",subscription.userId);
+  console.log("subscription.companyId",subscription.companyId);
+  
 
   if (subscription.type === "UserSubscription" && subscription.userId) {
     accountInfo = await User.findById(subscription.userId);
@@ -151,7 +156,9 @@ export const verifySubscription = async (req: Request, res: Response) => {
   }
 
   if (!accountInfo) {
-    throw new CustomError("User or Company not found", 404);
+   
+    res.status(404).json({success:false,message:"User or Company not found"})
+    return
   }
 console.log("accountInfo",accountInfo);
 
@@ -205,14 +212,19 @@ const durationDays =
 console.log("Duration (days):", durationDays);
 
 const secretKey = process.env.USER_SECRETKEY;
-if (!secretKey) throw new CustomError("Secret key is missing", 500);
+if (!secretKey) {
+ 
+  res.status(500).json({success:false,message:"Secret key is missing"})
+  return
+}
 
-const expiresIn=durationDays
+const expiresIn = Math.floor(durationDays * 24 * 60 * 60);
 
 const subscriptionToken = jwt.sign(payload, secretKey, { expiresIn });
 
 if (!subscriptionToken) {
-  throw new CustomError("Error creating subscription token", 400);
+  res.status(400).json({success:false,message:"Error creating subscription token"})
+  return
 }
   res.cookie("subscriptionToken", subscriptionToken, {
     httpOnly: false,
@@ -235,7 +247,8 @@ export const findSubscriptionById = async (req: Request, res: Response) => {
   const subscription = await SubscriptionPlan.findOne({ sessionId: sessionId });
 
   if (!subscription) {
-    throw new CustomError("Subscription plan not found", 404);
+    res.status(404).json({ success: false, message: "Subscription plan not found" });
+    return
   }
 
   res.status(200).json({ success: true, message: "Completed", subscription });
@@ -254,3 +267,60 @@ export const PremiumDetailsOfActiveUser=async(req:Request,res:Response):Promise<
   }
 res.status(200).json({status:true,message:"subscription details",subscription})
 }
+
+
+export const planCancellation = async (req: Request, res: Response) => {
+  try {
+    const { sessionId } = req.params;
+
+    if (!sessionId) {
+      throw new CustomError("Session ID is required", 400);
+    }
+
+    const subscription = await SubscriptionPlan.findOne({ sessionId });
+
+    if (!subscription) {
+      throw new CustomError("Subscription not found", 404);
+    }
+
+    if (subscription.paymentStatus !== "completed") {
+       res.status(400).json({ success: false, message: "Cannot cancel an unpaid or already canceled plan." });
+       return
+    }
+
+    let accountInfo = null;
+    if (subscription.type === "UserSubscription" && subscription.userId) {
+      accountInfo = await User.findById(subscription.userId);
+    } else if (subscription.type === "CompanySubscription" && subscription.companyId) {
+      accountInfo = await Company.findById(subscription.companyId);
+    }
+
+    if (!accountInfo) {
+      throw new CustomError("User or Company not found", 404);
+    }
+
+    
+    subscription.paymentStatus = "cenceled"; 
+    subscription.active = false;
+    await subscription.save();
+
+
+    accountInfo.role = subscription.type === "UserSubscription" ? "user" : "company";
+    accountInfo.subscriptionStartDate = null;
+    accountInfo.subscriptionEndDate = null;
+    await accountInfo.save();
+
+
+    res.clearCookie("subscriptionToken");
+
+     res.status(200).json({
+      success: true,
+      message: "Subscription cancelled successfully.",
+      subscription,
+    });
+
+  } catch (err: any) {
+    console.error(err);
+    res.status(err.statusCode || 500).json({ success: false, message: err.message });
+  }
+};

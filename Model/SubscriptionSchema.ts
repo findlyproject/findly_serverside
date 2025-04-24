@@ -41,7 +41,7 @@ const SubscriptionPlanSchema = new Schema<ISubscription>(
       type: String,
       required: true,  
       default: "pending",
-      enum: ["pending", "completed"],
+      enum: ["pending", "completed","cenceled"],
     },
    
   },

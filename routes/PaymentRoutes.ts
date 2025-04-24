@@ -33,5 +33,6 @@ paymentRouter
     errorCatch(findSubscriptionById)
   )
 
+
   // .get("/subscriptiondetails",userAuthMiddleware,errorCatch(PremiumDetailsOfActiveUser))
 export { paymentRouter };

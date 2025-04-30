@@ -1,4 +1,4 @@
-//CONTACT US
+
 import nodemailer from "nodemailer";
 import { Request, Response } from "express";
 import { CustomError } from "../Utils/errorHandler";

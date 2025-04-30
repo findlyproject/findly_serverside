@@ -28,7 +28,7 @@
     "zod": "^3.24.1"
   },
   "scripts": {
-    "start": "node --max-old-space-size=512 index.js",
+    "start": "nodemon --max-old-space-size=512 index.ts",
     "build": "tsc",
     "clean": "find . -type f -name '*.js' -not -path './node_modules/*' -delete"
   },

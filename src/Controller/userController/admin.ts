@@ -277,11 +277,11 @@ export const RemoveSkills = async (
 
 export const EditSkill = async (req: Request, res: Response): Promise<void> => {
   const skillId = req.params.id;
-  console.log("skillId", skillId);
+
 
   const { newskill } = req.body;
   const skill = await Skill.findById({ _id: skillId });
-  console.log("skill", skill);
+
 
   if (!skill) {
     throw new CustomError("skill not found", 404);
@@ -365,7 +365,7 @@ export const RemoveTitle = async (
   res: Response
 ): Promise<void> => {
   const titleId = req.params.titleid;
-  console.log("titleId", titleId);
+
 
   const title = await Title.findById({ _id: titleId });
   if (!title) {
@@ -380,11 +380,11 @@ export const RemoveTitle = async (
 
 export const EditTitle = async (req: Request, res: Response): Promise<void> => {
   const titleId = req.params.id;
-  console.log("title", titleId);
+
 
   const { newTitle } = req.body;
   const title = await Title.findById({ _id: titleId });
-  console.log("title", title);
+
 
   if (!title) {
     throw new CustomError("title not found", 404);

@@ -1,14 +1,6 @@
 
 import Rating from "../../model/RatingSchema"
 import { Request,Response } from "express"
-// export const findreviewsBycompany=async(req:Request,res:Response)=>{
-//     const companyId=req.user?.id
-
-//     const reviews=await Rating.find({targetCompanyId:companyId,isDeleted:false}).populate("companyId userId")
-//     res.status(200).json({success:true,message:"reviews found it ",reviews})
-//   }
-
-
 export const findreviewsBycompany = async (req:Request, res:Response) => {
   const companyId = req.user?.id;
   const { page = 1, limit = 5 } = req.query;

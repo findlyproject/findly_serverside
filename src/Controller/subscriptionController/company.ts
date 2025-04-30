@@ -5,7 +5,6 @@ import { Request, Response } from "express";
 
 export const PremiumDetailsOfActiveCompany=async(req:Request,res:Response):Promise<void>=>{
   const userId=req.user?.id
-  console.log("userIddd",userId);
   
   const subscription=await SubscriptionPlan.find({companyId:userId})
 

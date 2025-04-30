@@ -12,9 +12,7 @@ export const getPostsByOwner = async (
 if(!posts){
   throw new CustomError("you doesn't have any post", 404);
 }
-     
-    console.log("posts",posts);
-    
+
     res
       .status(200)
       .json({ status: true, message: "Got the posts by the owner", posts });

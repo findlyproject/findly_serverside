@@ -29,12 +29,9 @@ export const createRating = async (
   export const createCompanyRating=async(req:Request,res:Response)=>{
          
            const {targetedId}=req.params
-           console.log("targetedId",targetedId);
            
            const { review, starsRating,name,email } = req.body;
            const type=req.user &&req.user.type
-           console.log("type",type);
-           
            let userId = type==="User"?req.user?.id:null
            let companyId =type==="Company"?req.user?.id:null
            if (!review || !starsRating ) {

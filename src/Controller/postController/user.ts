@@ -6,13 +6,6 @@ import { v2 as cloudinary } from "cloudinary";
 import { CustomError } from "../../Utils/errorHandler";
 import { ApplicationSave } from "../../model/AppliactionSaveSchema";
 import { JobApplication } from "../../model/JobApplicationSchema";
-
-
-
-
-
-
-
 export const getAllPosts = async (req: Request, res: Response): Promise<void> => {
   try {
     const { page = 1, limit = 5 } = req.query; 
@@ -193,7 +186,7 @@ export const getpostbyid = async (
   res: Response
 ): Promise<void> => {
   const onepost = await Post.findById(req.params.id).populate("comments owner reports")
-console.log("onepost",onepost);
+
 
   res.status(200).json({ status: true, message: "Got post by ID", onepost });
 };

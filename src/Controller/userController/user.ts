@@ -54,72 +54,7 @@ export const findCurrentUserDetails = async (
   
       res.status(200).json({status:true,message:"found", suggestedUsers });
   };
-     
-  
-  // export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
-  
-  //     const userId = req.user?.id; 
-      
-  
-  //   const user = await User.findById(userId);
-  //   if (!user) {
-  //     throw new CustomError("User not found",404);
-  //   }
-  
-      
-  //     const {
-  //       firstName,
-  //       lastName,
-  //       email,
-  //       phoneNumber,
-  //       dateOfBirth,
-  //       location,
-  //       skills,
-  //       jobTitle,
-  //       jobLocation,
-  //       about,
-  //       education,
-  //       projects,
-  //       profileImage,
-  //       banner
-  //     } = req.body;
-  
-  //     const updateData: { [key: string]: any } = {
-  //       ...(firstName && { firstName }),
-  //       ...(lastName && { lastName }),
-  //       ...(email && { email }),
-  //       ...(phoneNumber && { phoneNumber }),
-  //       ...(dateOfBirth && { dateOfBirth }),
-  //       ...(location && { location }),
-  //       ...(skills && { skills }),
-  //       ...(jobTitle && { jobTitle }),
-  //       ...(jobLocation && { jobLocation }),
-  //       ...(about && { about }),
-  //       ...(education && { education }),
-  //       ...(projects && { projects }),
-  //       ...(profileImage && { profileImage }),
-  //       ...(banner && { banner }),
-  
-  //     };
-  
-  //   const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
-  //     new: true,
-  //   });
-  
-  //     if (!updatedUser) {
-  //       throw new CustomError("User not found",404);
-        
-  //     }
-  
-  //     res.status(200).json({status:true, message: "Profile updated successfully", user: updatedUser });
-    
-  
-  
-  // };
 
-  // update user profile //
-  
-  //banner
   export const updateBanner = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
 
@@ -151,13 +86,11 @@ export const updateProfileImage = async (req: Request, res: Response): Promise<v
   }
 
   const { profileImage } = req.body;
-console.log("req.body",req.body)
   if (!profileImage) {
       throw new CustomError("Profile image is required", 400);
   }
 
   user.profileImage = profileImage;
-  console.log(user)
   await user.save();
 
   res.status(200).json({ status: true, message: "Profile image updated successfully", user });
@@ -218,7 +151,7 @@ export const updateOtherDetails = async (req: Request, res: Response): Promise<v
 interface OTPStore {
   [key: string]: { otp: string; createdAt: number };
 }
-const OTP_EXPIRATION_TIME = 2 * 60 * 1000;
+
 const otpStore: OTPStore = {};export const sendingOTP = async (
   req: Request,
   res: Response

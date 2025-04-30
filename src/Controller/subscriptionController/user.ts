@@ -17,7 +17,6 @@ export const createSubscription = async (
   
   const { plan, price, features } = req.body;
   const type=req.user &&req.user.type
-  console.log("type",type);
   
   let userId = type==="User"?req.user?.id:null
   let companyId =type==="Company"?req.user?.id:null
@@ -25,10 +24,6 @@ export const createSubscription = async (
     res.status(404).json({ success: false, message: "not found features" });
     return;
   }
-
-  console.log("userId",userId); 
-  console.log("companyId",companyId);
-  
   if (!userId && !companyId) {
     throw new CustomError("Either userId or companyId must be provided.", 401);
   }
@@ -39,9 +34,6 @@ export const createSubscription = async (
     );
   }
 const route=userId?"user":"company"
-console.log("route",route);
-console.log("plan",plan);
-
   const amountInINR = price * 100;
 
   const featuresString = features?.join(",");
@@ -110,11 +102,8 @@ console.log("plan",plan);
     startDate: new Date(),
     endDate: getEndDate(plan)
   });
-  console.log("subscription.endDate",subscription.endDate);
-  
 
   await subscription.save();
-  console.log("subscription.endDate saved",subscription.endDate);
   subscription.features = featuresString;
   await subscription.save();
   res.status(200).json({
@@ -133,16 +122,8 @@ export const verifySubscription = async (req: Request, res: Response) => {
     res.status(404).json({success:false,message:"Payment not found"})
     return
   }
-  
-
-  console.log("subscription",subscription);
-  
   let accountInfo = null;
   let accountType = ""; 
-  console.log("subscription.userId",subscription.userId);
-  console.log("subscription.companyId",subscription.companyId);
-  
-
   if (subscription.type === "UserSubscription" && subscription.userId) {
     accountInfo = await User.findById(subscription.userId);
     accountType="user"
@@ -159,7 +140,6 @@ export const verifySubscription = async (req: Request, res: Response) => {
     res.status(404).json({success:false,message:"User or Company not found"})
     return
   }
-console.log("accountInfo",accountInfo);
 
   if (subscription.paymentStatus === "completed") {
      res.status(404).json({success:false,message:"Payment has already been processed"})
@@ -194,9 +174,6 @@ console.log("accountInfo",accountInfo);
   
   await accountInfo.save();
   await subscription.save();
-console.log("accountInfo",accountInfo);
-
- 
 const payload = {   
   userId: accountInfo._id,
   email: accountInfo.email,
@@ -207,8 +184,6 @@ const durationDays =
     ? (accountInfo.subscriptionEndDate.getTime() - accountInfo.subscriptionStartDate.getTime()) /
       (1000 * 60 * 60 * 24)
     : 1; 
-
-console.log("Duration (days):", durationDays);
 
 const secretKey = process.env.USER_SECRETKEY;
 if (!secretKey) {
@@ -236,8 +211,6 @@ if (!subscriptionToken) {
 };
 
 export const findSubscriptionById = async (req: Request, res: Response) => {
-  console.log("ddddsdasdfdssd");
-  
   const { sessionId } = req.params;
   if (!sessionId) {
     res.status(404).json({ success: false, message: "sessionId not found" });

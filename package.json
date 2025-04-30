@@ -26,12 +26,12 @@
     "socket.io": "^4.8.1",
     "stripe": "^17.6.0",
     "zod": "^3.24.1"
-  },  
-"scripts": {
-  "start": "nodemon index.ts",
-  "build": "node --max-old-space-size=4096 ./node_modules/.bin/tsc",
-  "clean": "rimraf dist"
-},
+  },
+  "scripts": {
+   "start": "nodemon index.ts",
+    "build": "tsc",
+    "clean": "find . -type f -name '*.js' -not -path './node_modules/*' -delete"
+  },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.8",

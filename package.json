@@ -28,7 +28,8 @@
     "zod": "^3.24.1"
   },
   "scripts": {
-    "start": "nodemon index.ts"
+    "start": "nodemon index.ts",
+    "build":"tsc"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

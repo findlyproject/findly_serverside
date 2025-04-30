@@ -3,7 +3,7 @@ import { Post } from "../../model/PostSchema";
 import { CustomError } from "../../Utils/errorHandler";
 import { Comment } from "../../model/CommentSchema";
 
-// Get all comments
+
 export const getAllComments = async (
   req: Request,
   res: Response
@@ -18,7 +18,6 @@ export const getAllComments = async (
   });
 };
 
-// Comment on a Post
 export const addCommentToPost = async (
   req: Request,
   res: Response

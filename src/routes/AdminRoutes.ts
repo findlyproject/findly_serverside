@@ -13,7 +13,7 @@ import { approveRating, deleteRating,getRatings } from "../Controller/ratingCont
 import { GetAllReportsOfPosts, GetAllReportsOfUsers } from "../Controller/reportController/admin";
 import { spacificuserdetails } from "../Controller/userController/user";
 import { spacificCompanyDetails } from "../Controller/userController/company";
-// import { getAllPosts } from "../Controller/postController/user";
+
 
 
 const adminRouter = express.Router();

@@ -65,7 +65,7 @@ console.log(req.body)
 export const updateJobPost = async (req: Request, res: Response): Promise<void> => {
 
     const jobId = req.params.jobId;
-    const companyId = req.company?.id;
+    const companyId = req.user?.id;
 
     const {
         title,

@@ -266,7 +266,7 @@ if(subscription.length===0){
 };
 
 export const logOut = async (req: Request, res: Response) => {
-  const companyId = req.company?.id;
+  const companyId = req.user?.id;
   if (companyId) {
     const company = await Company.findById(companyId);
 

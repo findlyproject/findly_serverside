@@ -12,10 +12,10 @@ export const createCommunity = async (
   res: Response
 ): Promise<void> => {
   const userId = req.user?.id;
-  console.log("userId", userId);
+
 
   const { name, description, profile } = req.body;
-  console.log("{name,description,profile}", { name, description, profile });
+
   if (!userId) {
     throw new CustomError("current company not found", 404);
   }
@@ -116,7 +116,6 @@ export const CommunitySendMessage = async (
   const userId = req.user?.id;
   const communityId = req.params.id;
   const { message, type } = req.body;
-  console.log("object", message, type);
   const [user, company] = await Promise.all([
     User.findOne({ _id: userId }),
     Company.findOne({ _id: userId }),
@@ -124,7 +123,6 @@ export const CommunitySendMessage = async (
 
   const currentUser = user || company;
   const senderModel = user ? "User" : "Company";
-  console.log("currentUser....", currentUser);
 
   if (!currentUser) {
     throw new CustomError("user not found", 404);
@@ -176,8 +174,6 @@ export const communitymesgById = async (
     path: "sender",
     select: "_id firstName profileImage logo name",
   });
-  // .populate({ path: "sender", select: "_id logo name" })
-  console.log("findCommunityMessaeg", findCommunityMessaeg);
 
   res
     .status(200)
@@ -209,7 +205,6 @@ export const deletecommunitymessage = async (
     communityId: findMessage.communityId,
     isDelete: false,
   });
-  console.log("findMessage", findecommunitymessage);
   io.emit("undeletedMessages", findMessage);
   res.status(200).json({ status: true, message: "delete successfully" });
 };
@@ -221,7 +216,6 @@ export const LeaveCommunity = async (
 ): Promise<void> => {
   const communityid = req.params.id;
   const userid = req.user?.id;
-  console.log("userid for community", userid);
 
   const community = await Community.findById(communityid);
   if (!community) {
@@ -278,7 +272,7 @@ export const CommunityDetails = async (
     );
   }
 
-  console.log("community..............", community);
+ 
   res
     .status(200)
     .json({ status: true, message: "Community details", community });
@@ -370,7 +364,7 @@ export const ProfileOfCommunity = async (
   if (req.file) {
     community.profile = req.file?.path;
   }
-  console.log("req.file", req.file);
+ 
 
   await community.save();
   res
@@ -413,10 +407,9 @@ export const SearchCommunity = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  console.log("dfghjsdfgh");
 
   const { query } = req.query;
-  console.log("query", query);
+ 
 
   if (!query) {
     throw new CustomError(`query is required`, 400);

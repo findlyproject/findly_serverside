@@ -19,31 +19,45 @@ import { messageRoute } from "./src/routes/messageRoute";
  
 
 dotenv.config();
-// const app = express();
 
-app.use(express.json({ limit: "50mb" })); // Increase JSON payload size
-app.use(express.urlencoded({ extended: true, limit: "50mb" })); // Increase URL-encoded payload size
+
+// app.use(express.json({ limit: "50mb" })); 
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" })); 
 app.use(cookieParser())
 app.use(cors({
     origin: 'http://localhost:3000',   
     credentials: true, 
   }));
+
   app.use("/api/user",userRouter)
   app.use("/api/rating",ratingRouter) 
   app.use("/api/post",postRouter)
   app.use("/api/payment",paymentRouter)
-  app.use("/api/user",searchRouter)
+  app.use("/api/search",searchRouter)
   app.use("/api/connecting",connectionRouter)
   app.use("/api/admin",adminRouter)
   app.use("/api/company",companyRouter)
 app.use("/api/message",messageRoute)
   app.use(errorHandler);
+  app.use((req, res, next) => {
+    console.log(`Incoming: ${req.method} ${req.originalUrl}`);
+    next();
+  });
 
-
-
-connectMongodb()
-
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+  (async () => {
+    console.time('Startup1');
+    console.log('Connecting to DB...');
+    await connectMongodb();
+    console.timeEnd('Startup1');
+  
+    const PORT = process.env.PORT || 4000;
+    server.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
+  })();
+  
+// const PORT = process.env.PORT || 4000;
+// server.listen(PORT, () => {
+//   console.log(`Server listening on port ${PORT}`);
+// });

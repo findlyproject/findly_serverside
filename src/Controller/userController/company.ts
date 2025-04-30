@@ -42,17 +42,8 @@ export const EditCompany=async(req:Request,res:Response):Promise<void>=>{
     throw new CustomError("company not found",404)
   }
 
-  // company.name=name
-  // company.contact=contact
-  // company.founder=founder
-  // company.foundedAt=foundedAt
   company.about=about
-  // company.IndustryType=IndustryType
-  // company.address=address
-  // company.socialMedia=socialMedia
-  // company.services=services
-  // company.workHours=workHours
-  // company.employees=employees||[]
+
 
 await company.save()
 res.status(200).json({status:true,message:'successfully edited',company})
@@ -61,7 +52,7 @@ res.status(200).json({status:true,message:'successfully edited',company})
 export const EditContacts=async(req:Request,res:Response):Promise<void>=>{
   const companyId=req.params.id
   const{name,contact,founder,email}=req.body
-  console.log("nameeeeeeeeeeeeeeeeeeeeeeeeeee",name);
+
   
   const company=await Company.findById(companyId)
   if(!company){
@@ -72,14 +63,7 @@ export const EditContacts=async(req:Request,res:Response):Promise<void>=>{
   company.contact=contact
   company.founder=founder
   company.email=email
-  // company.foundedAt=foundedAt
-  // company.about=about
-  // company.IndustryType=IndustryType
-  // company.address=address
-  // company.socialMedia=socialMedia
-  // company.services=services
-  // company.workHours=workHours
-  // company.employees=employees||[]
+
 
 await company.save()
 res.status(200).json({status:true,message:'successfully edited',company})
@@ -89,8 +73,7 @@ res.status(200).json({status:true,message:'successfully edited',company})
 export const EditProfetional=async(req:Request,res:Response):Promise<void>=>{
   const companyId=req.params.id
   const{name,address,email}=req.body
-  console.log("narrrrrrrrrrrrrrrrrrrrrrr",name);
-  console.log("address",address);
+
   
   const company=await Company.findById(companyId)
   if(!company){
@@ -100,14 +83,9 @@ export const EditProfetional=async(req:Request,res:Response):Promise<void>=>{
   company.name=name
  
   company.email=email
-  // company.foundedAt=foundedAt
-  // company.about=about
-  // company.IndustryType=IndustryType
+
   company.address=address
-  // company.socialMedia=socialMedia
-  // company.services=services
-  // company.workHours=workHours
-  // company.employees=employees||[]
+
 
 await company.save()
 res.status(200).json({status:true,message:'successfully edited',company})
@@ -117,10 +95,6 @@ res.status(200).json({status:true,message:'successfully edited',company})
 export const EditServiecs=async(req:Request,res:Response):Promise<void>=>{
   const companyId=req.params.id
   const{services}=req.body
-  console.log("narrrrrrrrrrrrrrrrrrrrrrr",services);
-  console.log("req.body",req.body);
-  
-  
   const company=await Company.findById(companyId)
   if(!company){
     throw new CustomError("company not found",404)
@@ -137,9 +111,6 @@ res.status(200).json({status:true,message:'successfully edited',company})
 export const editsocialmedia=async(req:Request,res:Response):Promise<void>=>{
   const companyId=req.params.id
   const{socialMedia}=req.body
-console.log("socialMedia",socialMedia);
-
-  
   const company=await Company.findById(companyId)
   if(!company){
     throw new CustomError("company not found",404)
@@ -160,10 +131,6 @@ export const removeEmployee = async (req: Request, res: Response): Promise<void>
   try {
     const companyId = req.params.id;
     const { email } = req.body;
-    console.log("req.body",req.body);
-    
-
-    // 1. Find company
     const company = await Company.findById(companyId);
     if (!company) {
       res.status(404).json({ success: false, message: "Company not found" });
@@ -204,20 +171,12 @@ export const removeEmployee = async (req: Request, res: Response): Promise<void>
 export const editemployee = async (req: Request, res: Response): Promise<void> => {
   try {
     const companyId = req.params.id;
-    const { employee, position, email } = req.body.employees
-
-    console.log("body",req.body);
-    
-
-    // 1. Check if company exists
+    const { position, email } = req.body.employees
     const company = await Company.findById(companyId);
     if (!company) {
       res.status(404).json({success:false,message:"company not found"})
       return
     }
-
- console.log("emm",email);
- 
     const user = await User.findOne({ email });
     if (!user) {
        res.status(404).json({success:false,message:"User not found"})
@@ -303,7 +262,7 @@ res.status(200).json({status:true,message:'successfully updated',company})
 export const allUsersforCompany=async(req:Request,res:Response):Promise<void>=>{
 
   const {query}=req.query
-    console.log("query",query);
+
     
     if(!query){
       throw new CustomError(`query is required`,400)

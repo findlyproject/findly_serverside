@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomError } from "../Utils/errorHandler";
-import { companyAuthMiddleware } from "./companyAuthentication";
+// import { companyAuthMiddleware } from "./companyAuthentication";
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -23,10 +23,6 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
     try {
         const token: string | undefined = req.cookies?.token;
         if (!token) {
-            
-
-        //    await companyAuthMiddleware(req, res, next);  
-        //    return; 
             res.status(401).json({status:false,message:"Authentication token missing"})
             return             
         }
@@ -43,7 +39,7 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
             }
           
             req.user = user as JwtDecoded; 
-            console.log("req.usessssssssssssssr",req.user);
+           
             
             
             next();
@@ -56,7 +52,7 @@ const userAuthMiddleware = async (req: Request, res: Response, next: NextFunctio
 
 
 const companyAuth=(req:Request,res:Response,next:NextFunction):void=>{
-    console.log('Admin auth middleware');
+ 
     userAuthMiddleware(req,res,()=>{
        
         
@@ -72,7 +68,7 @@ const companyAuth=(req:Request,res:Response,next:NextFunction):void=>{
 
 
 const userAuth=(req:Request,res:Response,next:NextFunction):void=>{
-    console.log('user auth middleware');
+   
     userAuthMiddleware(req,res,()=>{
     
        

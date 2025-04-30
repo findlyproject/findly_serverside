@@ -4,30 +4,6 @@ import { CustomError } from "../Utils/errorHandler";
 import { JobPost } from "../model/JobSchema";
 import { Company } from "../model/CompanySchema";
 
-// export const UserSearch = async (req: Request, res: Response): Promise<void> => {
-//   const { firstName } = req.query;
-// console.log("firstName",firstName);
-// console.log("req.query",req.query);
-
-//   if (!firstName) {
-//     throw new CustomError("Search term is required", 400);
-//   }
-
-//   const users = await User.find({
-//     firstName: { $regex: `^${firstName}`, $options: "i" },
-//   });
-
-//   const companies=await Company.find({
-//     name:{$regex:`${firstName}`,$options:"i"}
-//   })
-//   console.log("companies",companies);
-  
-
-//   const results = [...users, ...companies];
-
-//   res.status(200).json({ status: true, message: "search results", results });
-// };
-
 
 export const UserSearch = async (req: Request, res: Response): Promise<void> => {
   const { firstName } = req.query;
@@ -36,14 +12,13 @@ export const UserSearch = async (req: Request, res: Response): Promise<void> => 
     throw new CustomError("Search term is required", 400);
   }
 
-  // Fetch users and add type field
   const users = await User.find({
     firstName: { $regex: `^${firstName}`, $options: "i" },
-  }).lean(); // Converts Mongoose documents to plain objects
+  }).lean(); 
 
   const formattedUsers = users.map(user => ({
     ...user,
-    type: "User", // Add type field
+    type: "User",
   }));
 
   // Fetch companies and add type field
@@ -66,10 +41,6 @@ export const UserSearch = async (req: Request, res: Response): Promise<void> => 
 
 export const jobSearch = async (req: Request, res: Response): Promise<void> => {
   const { jobName, location } = req.query;
-
-  console.log("jobName:", jobName);
-  console.log("location:", location);
-  console.log("req.query:", req.query);
 
   if (!jobName && !location) {
     throw new CustomError("At least one search term is required", 400);

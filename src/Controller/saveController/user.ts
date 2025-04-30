@@ -41,11 +41,3 @@ export const AllSaved=async(req:Request,res:Response):Promise<void>=>{
     res.status(200).json({ status:true,message:'saveds',saved})
 
 }
-
-// export const All=async(req:Request,res:Response):Promise<void>=>{
-//     const userid=req.user?.id
-//     const saved=await Save.find({userId:userid})
-
-//     res.status(200).json({ status:true,message:'saveds',saved})
-
-// }

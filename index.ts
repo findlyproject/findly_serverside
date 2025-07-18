@@ -44,6 +44,6 @@ app.use("/api/message",messageRoute)
 connectMongodb()
 
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
